@@ -1,0 +1,31 @@
+<clickhouse>
+    <!-- HTTP port for ACME challenge -->
+    <http_port>80</http_port>
+    <!-- HTTPS port for encrypted traffic -->
+    <https_port>443</https_port>
+
+    <acme>
+        <!-- Email for ACME account -->
+        <email>your-email@example.com</email>
+        
+        <!-- Accept ACME Terms of Service -->
+        <terms_of_service_agreed>true</terms_of_service_agreed>
+        
+        <!-- Domains to request certificates for -->
+        <domains>
+            <domain>your-domain.com</domain>
+        </domains>
+        
+        <!-- Optional: Use Let's Encrypt staging for testing -->
+        <!--<directory_url>https://acme-staging-v02.api.letsencrypt.org/directory</directory_url>-->
+        
+        <!-- Optional: Use ZeroSSL instead -->
+        <!--<directory_url>https://acme.zerossl.com/v2/DV90</directory_url>-->
+        
+        <!-- Optional: Renew 30 days before expiration (default) -->
+        <!--<refresh_certificates_before>2592000</refresh_certificates_before>-->
+        
+        <!-- Optional: Check every hour for renewal (default) -->
+        <!--<refresh_certificates_task_interval>3600</refresh_certificates_task_interval>-->
+    </acme>
+</clickhouse>

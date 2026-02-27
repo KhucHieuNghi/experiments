@@ -1,0 +1,46 @@
+<clickhouse>
+    <!-- HTTPS Port -->
+    <https_port>8443</https_port>
+    <!-- Disable HTTP -->
+    <!--<http_port>8123</http_port>-->
+
+    <!-- Native Secure TCP Port -->
+    <tcp_port_secure>9440</tcp_port_secure>
+    <!-- Disable default native port -->
+    <!--<tcp_port>9000</tcp_port>-->
+
+    <!-- Interserver HTTPS (for replication) -->
+    <interserver_https_port>9010</interserver_https_port>
+    <!--<interserver_http_port>9009</interserver_http_port>-->
+
+    <!-- Listen on all interfaces -->
+    <listen_host>0.0.0.0</listen_host>
+
+    <!-- OpenSSL Server Configuration -->
+    <openSSL>
+        <server>
+            <certificateFile>/etc/clickhouse-server/certs/server.crt</certificateFile>
+            <privateKeyFile>/etc/clickhouse-server/certs/server.key</privateKeyFile>
+            <verificationMode>relaxed</verificationMode>
+            <caConfig>/etc/clickhouse-server/certs/marsnet_ca.crt</caConfig>
+            <cacheSessions>true</cacheSessions>
+            <disableProtocols>sslv2,sslv3</disableProtocols>
+            <preferServerCiphers>true</preferServerCiphers>
+        </server>
+        <client>
+            <loadDefaultCAFile>false</loadDefaultCAFile>
+            <caConfig>/etc/clickhouse-server/certs/marsnet_ca.crt</caConfig>
+            <cacheSessions>true</cacheSessions>
+            <disableProtocols>sslv2,sslv3</disableProtocols>
+            <preferServerCiphers>true</preferServerCiphers>
+            <verificationMode>relaxed</verificationMode>
+            <invalidCertificateHandler>
+                <name>RejectCertificateHandler</name>
+            </invalidCertificateHandler>
+        </client>
+    </openSSL>
+
+    <!-- Disable MySQL and PostgreSQL emulation ports -->
+    <!--<mysql_port>9004</mysql_port>-->
+    <!--<postgresql_port>9005</postgresql_port>-->
+</clickhouse>

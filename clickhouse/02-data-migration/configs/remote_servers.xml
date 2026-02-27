@@ -1,0 +1,204 @@
+<?xml version="1.0"?>
+<!--
+  ClickHouse Remote Servers Configuration
+  
+  This file defines cluster configurations for distributed query processing
+  and data migration between ClickHouse instances.
+  
+  Location: /etc/clickhouse-server/conf.d/remote_servers.xml
+  
+  Clusters defined:
+  - migration_cluster: Two-node cluster for migration between VPS A and VPS B
+  - source_cluster: Single-node cluster pointing to VPS A
+  - dest_cluster: Single-node cluster pointing to VPS B
+  - production_cluster: Multi-shard multi-replica setup
+-->
+<clickhouse>
+    <remote_servers>
+        <!-- Migration Cluster: VPS A to VPS B -->
+        <migration_cluster>
+            <!-- Single shard with two replicas -->
+            <shard>
+                <!-- Internal replication enabled for ReplicatedMergeTree tables -->
+                <internal_replication>true</internal_replication>
+                
+                <!-- VPS A - Source Server -->
+                <replica>
+                    <host>vps-a.example.com</host>
+                    <port>9000</port>
+                    <!-- Use secure port if TLS is enabled -->
+                    <!-- <secure>1</secure> -->
+                    <!-- Default database for this replica -->
+                    <default_database>default</default_database>
+                    <!-- Connection timeout in seconds -->
+                    <priority>1</priority>
+                </replica>
+                
+                <!-- VPS B - Destination Server -->
+                <replica>
+                    <host>vps-b.example.com</host>
+                    <port>9000</port>
+                    <!-- Use secure port if TLS is enabled -->
+                    <!-- <secure>1</secure> -->
+                    <default_database>default</default_database>
+                    <priority>2</priority>
+                </replica>
+            </shard>
+        </migration_cluster>
+
+        <!-- Source Cluster: VPS A Only -->
+        <source_cluster>
+            <shard>
+                <internal_replication>false</internal_replication>
+                
+                <replica>
+                    <host>vps-a.example.com</host>
+                    <port>9000</port>
+                    <default_database>default</default_database>
+                </replica>
+            </shard>
+        </source_cluster>
+
+        <!-- Destination Cluster: VPS B Only -->
+        <dest_cluster>
+            <shard>
+                <internal_replication>false</internal_replication>
+                
+                <replica>
+                    <host>vps-b.example.com</host>
+                    <port>9000</port>
+                    <default_database>default</default_database>
+                </replica>
+            </shard>
+        </dest_cluster>
+
+        <!-- Production Cluster Template -->
+        <!-- Use this as a template for production multi-shard setups -->
+        <production_cluster>
+            <!-- Shard 1 -->
+            <shard>
+                <internal_replication>true</internal_replication>
+                <weight>1</weight>
+                
+                <!-- Replica 1A -->
+                <replica>
+                    <host>shard1-replica1.example.com</host>
+                    <port>9000</port>
+                    <secure>1</secure>
+                    <default_database>default</default_database>
+                    <priority>1</priority>
+                </replica>
+                
+                <!-- Replica 1B -->
+                <replica>
+                    <host>shard1-replica2.example.com</host>
+                    <port>9000</port>
+                    <secure>1</secure>
+                    <default_database>default</default_database>
+                    <priority>2</priority>
+                </replica>
+            </shard>
+            
+            <!-- Shard 2 -->
+            <shard>
+                <internal_replication>true</internal_replication>
+                <weight>1</weight>
+                
+                <!-- Replica 2A -->
+                <replica>
+                    <host>shard2-replica1.example.com</host>
+                    <port>9000</port>
+                    <secure>1</secure>
+                    <default_database>default</default_database>
+                    <priority>1</priority>
+                </replica>
+                
+                <!-- Replica 2B -->
+                <replica>
+                    <host>shard2-replica2.example.com</host>
+                    <port>9000</port>
+                    <secure>1</secure>
+                    <default_database>default</default_database>
+                    <priority>2</priority>
+                </replica>
+            </shard>
+        </production_cluster>
+
+        <!-- Secure Migration Cluster (with TLS) -->
+        <migration_cluster_secure>
+            <shard>
+                <internal_replication>true</internal_replication>
+                
+                <!-- VPS A - Secure Connection -->
+                <replica>
+                    <host>vps-a.example.com</host>
+                    <port>9440</port>
+                    <secure>1</secure>
+                    <default_database>default</default_database>
+                </replica>
+                
+                <!-- VPS B - Secure Connection -->
+                <replica>
+                    <host>vps-b.example.com</host>
+                    <port>9440</port>
+                    <secure>1</secure>
+                    <default_database>default</default_database>
+                </replica>
+            </shard>
+        </migration_cluster_secure>
+
+        <!-- Geo-Distributed Cluster Template -->
+        <geo_cluster>
+            <!-- US East Shard -->
+            <shard>
+                <internal_replication>true</internal_replication>
+                <weight>1</weight>
+                
+                <replica>
+                    <host>us-east-1.example.com</host>
+                    <port>9000</port>
+                    <secure>1</secure>
+                </replica>
+                <replica>
+                    <host>us-east-2.example.com</host>
+                    <port>9000</port>
+                    <secure>1</secure>
+                </replica>
+            </shard>
+            
+            <!-- EU West Shard -->
+            <shard>
+                <internal_replication>true</internal_replication>
+                <weight>1</weight>
+                
+                <replica>
+                    <host>eu-west-1.example.com</host>
+                    <port>9000</port>
+                    <secure>1</secure>
+                </replica>
+                <replica>
+                    <host>eu-west-2.example.com</host>
+                    <port>9000</port>
+                    <secure>1</secure>
+                </replica>
+            </shard>
+            
+            <!-- Asia Pacific Shard -->
+            <shard>
+                <internal_replication>true</internal_replication>
+                <weight>1</weight>
+                
+                <replica>
+                    <host>ap-south-1.example.com</host>
+                    <port>9000</port>
+                    <secure>1</secure>
+                </replica>
+                <replica>
+                    <host>ap-south-2.example.com</host>
+                    <port>9000</port>
+                    <secure>1</secure>
+                </replica>
+            </shard>
+        </geo_cluster>
+    </remote_servers>
+</clickhouse>
