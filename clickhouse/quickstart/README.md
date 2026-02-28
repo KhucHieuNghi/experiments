@@ -26,6 +26,41 @@ This guide provides minimal settings to configure ClickHouse to use OpenSSL cert
 
 ### Installation
 
+#### Option A: Quick Install (For Testing/Development)
+
+ClickHouse runs natively on Linux, FreeBSD and macOS, and runs on Windows via the WSL. The simplest way to download ClickHouse locally is to run the following curl command. It determines if your operating system is supported, then downloads an appropriate ClickHouse binary.
+
+> **Note:** We recommend running the command below from a new and empty subdirectory as some configuration files will be created in the directory the binary is located in the first time ClickHouse server is run. This script isn't the recommended way to install ClickHouse for production.
+
+```bash
+curl https://clickhouse.com/ | sh
+```
+
+You should see output similar to:
+```text
+Successfully downloaded the ClickHouse binary, you can run it as:
+    ./clickhouse
+
+You can also install it:
+sudo ./clickhouse install
+```
+
+At this stage, you can ignore the prompt to run the install command.
+
+> **Note for Mac users:** If you're getting errors that the developer of the binary can't be verified, please see "Fix the Developer Verification Error in MacOS".
+
+Start the server:
+```bash
+./clickhouse server
+```
+
+Start the client in a new terminal:
+```bash
+./clickhouse client
+```
+
+#### Option B: DEB Package Installation (Production)
+
 Install ClickHouse using the official DEB package:
 
 ```bash

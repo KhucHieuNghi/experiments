@@ -26,7 +26,6 @@ clickhouse/
 
 1. **Setup TLS Configuration**: Follow instructions in `quickstart/README.md`
 2. **Configure Data Migration**: Follow instructions in `02-data-migration/README.md`
-3. **Review Architecture**: See `docs/architecture.md` for system overview
 
 ## Components
 
