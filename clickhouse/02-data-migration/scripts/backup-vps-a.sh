@@ -25,6 +25,7 @@ BACKUP_FORMAT="Native"  # Native, TSV, Parquet
 MAX_THREADS=4
 REMOVE_OLD_BACKUPS=true
 KEEP_BACKUPS_DAYS=7
+DRY_RUN=false
 
 # ClickHouse connection settings
 CLICKHOUSE_HOST="localhost"
@@ -236,7 +237,7 @@ get_databases() {
 get_tables() {
     local db=$1
     local client_cmd=$(build_client_cmd)
-    eval "$client_cmd -q \"SELECT database, name, engine FROM system.tables WHERE database = '${db}' AND engine NOT IN ('View', 'MaterializedView', 'Dictionary') ORDER BY name\""
+    eval "$client_cmd -q \"SELECT database, name, engine FROM system.tables WHERE database = '${db}' ORDER BY name\""
 }
 
 # Backup database schemas
@@ -303,6 +304,12 @@ backup_data() {
             # Skip system tables
             [[ "$db" == "system" ]] && continue
             
+            # Skip schema-only objects (Views, MaterializedViews, Dictionaries)
+            if [[ "$engine" == "View" ]] || [[ "$engine" == "MaterializedView" ]] || [[ "$engine" == "Dictionary" ]]; then
+                log "  Skipping data export for ${db}.${table_name} (${engine} - schema only)"
+                continue
+            fi
+            
             log "  Backing up data: ${db}.${table_name}"
             
             if [[ "$DRY_RUN" == "true" ]]; then
@@ -332,7 +339,7 @@ backup_data() {
             
             # Compress if enabled
             if [[ "$COMPRESS_BACKUP" == "true" ]] && [[ "$BACKUP_FORMAT" != "Parquet" ]]; then
-                gzip "$output_file" && mv "${output_file}.gz" "$output_file.gz"
+                gzip "$output_file"
                 output_file="${output_file}.gz"
             fi
             
@@ -357,17 +364,17 @@ backup_users() {
         return
     fi
     
-    # Backup users
+    # Backup users (TSV for reference)
     eval "$client_cmd -q \"SELECT * FROM system.users FORMAT TSVWithNamesAndTypes\"" > "${BACKUP_DIR}/users/users.tsv" 2>&1 || {
         warning "Failed to backup users"
     }
     
-    # Backup grants
+    # Backup grants (TSV for reference)
     eval "$client_cmd -q \"SELECT * FROM system.grants FORMAT TSVWithNamesAndTypes\"" > "${BACKUP_DIR}/users/grants.tsv" 2>&1 || {
         warning "Failed to backup grants"
     }
     
-    # Backup roles
+    # Backup roles (TSV for reference)
     eval "$client_cmd -q \"SELECT * FROM system.roles FORMAT TSVWithNamesAndTypes\"" > "${BACKUP_DIR}/users/roles.tsv" 2>&1 || {
         warning "Failed to backup roles"
     }
@@ -382,10 +389,26 @@ backup_users() {
         warning "Failed to backup settings profiles"
     }
     
-    # Generate SQL scripts for recreation
+    # Generate user list
     eval "$client_cmd -q \"SHOW USERS\"" > "${BACKUP_DIR}/users/user_list.txt" 2>&1 || true
     
-    success "Users and permissions backed up"
+    # Generate replayable SQL for users and grants
+    log "  Generating SQL scripts for user restoration..."
+    > "${BACKUP_DIR}/users/create_users.sql"
+    > "${BACKUP_DIR}/users/grant_statements.sql"
+    
+    while IFS= read -r user; do
+        [[ -z "$user" ]] && continue
+        [[ "$user" == "default" ]] && continue
+        
+        eval "$client_cmd -q \"SHOW CREATE USER \\\`${user}\\\`\"" >> "${BACKUP_DIR}/users/create_users.sql" 2>/dev/null || true
+        echo ";" >> "${BACKUP_DIR}/users/create_users.sql"
+        
+        eval "$client_cmd -q \"SHOW GRANTS FOR \\\`${user}\\\`\"" >> "${BACKUP_DIR}/users/grant_statements.sql" 2>/dev/null || true
+        echo ";" >> "${BACKUP_DIR}/users/grant_statements.sql"
+    done < "${BACKUP_DIR}/users/user_list.txt"
+    
+    success "Users and permissions backed up (TSV + SQL)"
 }
 
 # Backup metadata

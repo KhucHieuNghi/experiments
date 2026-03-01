@@ -22,24 +22,20 @@
                 <!-- Internal replication enabled for ReplicatedMergeTree tables -->
                 <internal_replication>true</internal_replication>
                 
-                <!-- VPS A - Source Server -->
+                <!-- VPS A - Source Server (TLS) -->
                 <replica>
                     <host>vps-a.example.com</host>
-                    <port>9000</port>
-                    <!-- Use secure port if TLS is enabled -->
-                    <!-- <secure>1</secure> -->
-                    <!-- Default database for this replica -->
+                    <port>9440</port>
+                    <secure>1</secure>
                     <default_database>default</default_database>
-                    <!-- Connection timeout in seconds -->
                     <priority>1</priority>
                 </replica>
                 
-                <!-- VPS B - Destination Server -->
+                <!-- VPS B - Destination Server (TLS) -->
                 <replica>
                     <host>vps-b.example.com</host>
-                    <port>9000</port>
-                    <!-- Use secure port if TLS is enabled -->
-                    <!-- <secure>1</secure> -->
+                    <port>9440</port>
+                    <secure>1</secure>
                     <default_database>default</default_database>
                     <priority>2</priority>
                 </replica>
@@ -53,7 +49,8 @@
                 
                 <replica>
                     <host>vps-a.example.com</host>
-                    <port>9000</port>
+                    <port>9440</port>
+                    <secure>1</secure>
                     <default_database>default</default_database>
                 </replica>
             </shard>
@@ -66,7 +63,8 @@
                 
                 <replica>
                     <host>vps-b.example.com</host>
-                    <port>9000</port>
+                    <port>9440</port>
+                    <secure>1</secure>
                     <default_database>default</default_database>
                 </replica>
             </shard>
@@ -124,28 +122,6 @@
             </shard>
         </production_cluster>
 
-        <!-- Secure Migration Cluster (with TLS) -->
-        <migration_cluster_secure>
-            <shard>
-                <internal_replication>true</internal_replication>
-                
-                <!-- VPS A - Secure Connection -->
-                <replica>
-                    <host>vps-a.example.com</host>
-                    <port>9440</port>
-                    <secure>1</secure>
-                    <default_database>default</default_database>
-                </replica>
-                
-                <!-- VPS B - Secure Connection -->
-                <replica>
-                    <host>vps-b.example.com</host>
-                    <port>9440</port>
-                    <secure>1</secure>
-                    <default_database>default</default_database>
-                </replica>
-            </shard>
-        </migration_cluster_secure>
 
         <!-- Geo-Distributed Cluster Template -->
         <geo_cluster>

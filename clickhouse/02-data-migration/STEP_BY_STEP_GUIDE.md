@@ -223,6 +223,25 @@ sudo ./scripts/emergency-migrate.sh export-all --host YOUR_VPS_B_IP
 screen -r migration
 ```
 
+### Step 3A.3.5: Import Data on VPS B
+
+**After export-all completes, run on VPS B:**
+
+```bash
+cd /opt/02-data-migration
+
+# Import all exported data (creates databases, tables, views, MVs, dicts, users)
+sudo ./scripts/emergency-migrate.sh import
+
+# This processes everything in dependency order:
+# 1. Databases
+# 2. Data tables + data
+# 3. Dictionaries
+# 4. Materialized Views
+# 5. Views
+# 6. Users, roles, grants
+```
+
 ### Step 3A.4: Monitor Progress
 
 **On VPS A (new terminal):**
@@ -244,10 +263,13 @@ df -h /migration/
 top -p $(pgrep clickhouse-server)
 ```
 
-**On VPS B (verify incoming data):**
+**On VPS B (verify incoming files):**
 
 ```bash
-# Check what tables have been created
+# Check migration files transferred
+ls -la /migration/emergency/
+
+# After running 'import', check what tables have been created
 clickhouse-client --secure --port 9440 -q "SELECT database, count() as tables FROM system.tables WHERE database != 'system' GROUP BY database"
 
 # Check data size
@@ -276,7 +298,7 @@ mkdir -p /migration/manual/$table
 clickhouse-client --secure --port 9440 -q "SHOW CREATE TABLE $table" > /migration/manual/$table/schema.sql
 
 # Export in very small batches (10K rows)
-clickhouse-client --secure --port 9440 -q "SELECT * FROM $table LIMIT 10000 FORMAT TSV" | gzip > /migration/manual/$table/batch_1.tsv.gz
+clickhouse-client --secure --port 9440 -q "SELECT * FROM $table LIMIT 10000 FORMAT Native" | gzip > /migration/manual/$table/batch_1.native.gz
 
 # Transfer to VPS B
 scp /migration/manual/$table/* root@YOUR_VPS_B_IP:/migration/incoming/
@@ -293,11 +315,11 @@ MAX_TS=$(ssh root@YOUR_VPS_B_IP "clickhouse-client --secure --port 9440 -q 'SELE
 echo "Last sync: $MAX_TS"
 
 # Export only new data
-clickhouse-client --secure --port 9440 -q "SELECT * FROM db.orders WHERE created_at > '$MAX_TS' FORMAT TSV" | gzip > /migration/delta_orders.tsv.gz
+clickhouse-client --secure --port 9440 -q "SELECT * FROM db.orders WHERE created_at > '$MAX_TS' FORMAT Native" | gzip > /migration/delta_orders.native.gz
 
 # Transfer and import
-scp /migration/delta_orders.tsv.gz root@YOUR_VPS_B_IP:/tmp/
-ssh root@YOUR_VPS_B_IP "zcat /tmp/delta_orders.tsv.gz | clickhouse-client --secure --port 9440 -q 'INSERT INTO db.orders FORMAT TSV'"
+scp /migration/delta_orders.native.gz root@YOUR_VPS_B_IP:/tmp/
+ssh root@YOUR_VPS_B_IP "zcat /tmp/delta_orders.native.gz | clickhouse-client --secure --port 9440 -q 'INSERT INTO db.orders FORMAT Native'"
 ```
 
 ---
@@ -306,27 +328,17 @@ ssh root@YOUR_VPS_B_IP "zcat /tmp/delta_orders.tsv.gz | clickhouse-client --secu
 
 **Use this if ClickHouse won't start at all**
 
-### Step 3B.1: Stop ClickHouse on VPS A
-
-```bash
-# Stop ClickHouse to prevent data corruption during copy
-systemctl stop clickhouse-server
-systemctl status clickhouse-server
-
-# Verify it's stopped
-ps aux | grep clickhouse
-```
-
-### Step 3B.2: Start File Copy
+### Step 3B.1: Initial File Copy (ClickHouse Running)
 
 **On VPS B:**
 
 ```bash
 # Start screen session
-screen -S filecopy
+screen -S filecopy_pass1
 
-# Copy data files using rsync (with progress and resume)
-rsync -avz --progress --bwlimit=0 \
+# Pass 1: Copy data files using rsync while ClickHouse is RUNNING on VPS A
+# This copies the bulk of data without downtime
+rsync -av --progress --bwlimit=0 \
     -e "ssh -i /root/.ssh/migration_key" \
     root@YOUR_VPS_A_IP:/var/lib/clickhouse/ \
     /var/lib/clickhouse/
@@ -335,16 +347,30 @@ rsync -avz --progress --bwlimit=0 \
 # Detach with Ctrl+A, D
 ```
 
-**Alternative: Using tar + netcat (faster for first copy)**
+### Step 3B.2: Stop ClickHouse and Final Delta Sync
 
-**On VPS B (receiver):**
+**On VPS A:**
+
 ```bash
-nc -l 12345 | tar -xzf - -C /var/lib/clickhouse/
+# Stop ClickHouse to prevent data corruption during final copy
+systemctl stop clickhouse-server
+systemctl status clickhouse-server
+
+# Verify it's stopped
+ps aux | grep clickhouse
 ```
 
-**On VPS A (sender):**
+**On VPS B:**
+
 ```bash
-tar -czf - /var/lib/clickhouse/ | nc YOUR_VPS_B_IP 12345
+# Start screen session for Pass 2 (or use existing)
+screen -S filecopy_pass2
+
+# Pass 2: Final rsync to catch deltas (takes seconds/min since Pass 1)
+rsync -avz --progress --delete \
+    -e "ssh -i /root/.ssh/migration_key" \
+    root@YOUR_VPS_A_IP:/var/lib/clickhouse/ \
+    /var/lib/clickhouse/
 ```
 
 ### Step 3B.3: Fix Permissions on VPS B
@@ -360,9 +386,9 @@ chmod 755 /var/lib/clickhouse/
 chmod 700 /var/lib/clickhouse/data/*
 chmod 700 /var/lib/clickhouse/metadata/*
 
-# Copy configuration
+# Copy configuration from VPS A
 rsync -avz -e "ssh -i /root/.ssh/migration_key" \
-    root@YOUR_VPS_B_IP:/etc/clickhouse-server/ \
+    root@YOUR_VPS_A_IP:/etc/clickhouse-server/ \
     /etc/clickhouse-server/
 
 chown -R clickhouse:clickhouse /etc/clickhouse-server/
@@ -385,14 +411,16 @@ tail -f /var/log/clickhouse-server/clickhouse-server.log
 
 ### Step 4.1: Verify All Tables Migrated
 
-**On VPS B:**
+**On VPS A:**
 
 ```bash
 cd /opt/02-data-migration
 
-# Run verification
+# Run verification — queries local (VPS A) and remote (VPS B) row counts, then compares
 sudo ./scripts/emergency-migrate.sh verify --host YOUR_VPS_B_IP
 ```
+
+> **Note:** The `verify` command runs on **VPS A**. It reads local row counts and SSHes to VPS B to compare.
 
 **Expected Output:**
 ```
@@ -453,14 +481,13 @@ iptables -A INPUT -p tcp --dport 9440 -j DROP
 iptables -A INPUT -p tcp --dport 8443 -j DROP
 ```
 
-### Step 5.2: Final Sync
-
 ```bash
 # Run final delta sync if needed
+# WARNING: Query-based delta sync requires a strictly monotonic ID/timestamp
 sudo ./scripts/emergency-migrate.sh export-all --host YOUR_VPS_B_IP
 ```
 
-### Step 5.3: Update Application Configuration
+### Step 5.2: Update Application Configuration
 
 **Update your application to connect to VPS B:**
 
@@ -583,7 +610,7 @@ sudo ./scripts/emergency-migrate.sh export-all --host YOUR_VPS_B_IP
 df -h
 
 # Clean up old backups
-rm -rf /migration/incoming/*/batch_*.tsv.gz
+rm -rf /migration/incoming/*/batch_*.native.gz
 
 # Expand disk or delete non-essential files
 ```
@@ -596,7 +623,7 @@ rm -rf /migration/incoming/*/batch_*.tsv.gz
 clickhouse-client --secure --port 9440 -q "SELECT count() FROM db.orders WHERE created_at > '2024-01-01'"
 
 # Export missing range
-clickhouse-client --secure --port 9440 -q "SELECT * FROM db.orders WHERE id > LAST_MIGRATED_ID FORMAT TSV" | gzip > missing.tsv.gz
+clickhouse-client --secure --port 9440 -q "SELECT * FROM db.orders WHERE id > LAST_MIGRATED_ID FORMAT Native" | gzip > missing.native.gz
 ```
 
 ---

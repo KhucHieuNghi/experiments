@@ -155,7 +155,7 @@ build_client_cmd() {
     local cmd="clickhouse-client --host $host --port $CLICKHOUSE_PORT"
     
     if [[ "${USE_TLS:-false}" == "true" ]]; then
-        cmd="clickhouse-client --host $host --secure --port $CLICKHOUSE_SECURE_PORT"
+        cmd="clickhouse-client --host $host --secure --port $CLICKHOUSE_PORT"
     fi
     
     echo "$cmd"
@@ -270,7 +270,7 @@ setup_replication_user() {
     local dest_cmd=$(build_client_cmd "$DEST_HOST")
     
     local create_user_sql="CREATE USER IF NOT EXISTS ${REPLICATION_USER} IDENTIFIED WITH sha256_password BY '${REPLICATION_PASSWORD}'"
-    local grant_sql="GRANT ALL ON *.* TO ${REPLICATION_USER}"
+    local grant_sql="GRANT SELECT, INSERT, CREATE, ALTER ON *.* TO ${REPLICATION_USER}"
     
     log "Creating replication user on source..."
     eval "$source_cmd -q \"$create_user_sql\"" 2>&1 || warning "Failed to create replication user on source"

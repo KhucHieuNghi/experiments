@@ -120,9 +120,9 @@ migrate_table() {
     while [ $offset -lt $total_rows ]; do
         echo "Exporting batch $batch (offset: $offset, limit: $BATCH_SIZE)"
         
-        output_file="${full_table}_batch_${batch}.tsv"
+        output_file="${full_table}_batch_${batch}.native"
         
-        clickhouse-client --secure --port 9440 -q "SELECT * FROM $full_table LIMIT $BATCH_SIZE OFFSET $offset FORMAT TSV" > "$output_file" 2>&1
+        clickhouse-client --secure --port 9440 -q "SELECT * FROM $full_table LIMIT $BATCH_SIZE OFFSET $offset FORMAT Native" > "$output_file" 2>&1
         
         if [ $? -eq 0 ] && [ -s "$output_file" ]; then
             # Compress and transfer immediately
@@ -242,7 +242,9 @@ ls -la /usr/bin/clickhouse*
 # See quickstart/README.md for installation
 ```
 
-### Phase 2: Copy Data Files
+### Phase 2: Copy Data Files (Two-Pass Rsync)
+
+To minimize downtime, do an initial sync while ClickHouse is running, then stop ClickHouse and perform a quick second sync for deltas.
 
 ```bash
 #!/bin/bash
@@ -253,19 +255,22 @@ VPS_B_IP="vps-b-ip"
 DATA_DIR="/var/lib/clickhouse"
 CONFIG_DIR="/etc/clickhouse-server"
 
-# Method 1: Using rsync (recommended for resume capability)
-echo "Starting rsync of data files..."
-rsync -avz --progress --bwlimit=50000 \
+echo "PASS 1: Initial sync (ClickHouse RUNNING on VPS A)..."
+# This copies 99% of data with ZERO downtime
+rsync -av --progress --bwlimit=50000 \
     -e "ssh -p 22" \
     root@${VPS_A_IP}:${DATA_DIR}/ \
     ${DATA_DIR}/
 
-# Method 2: Using tar + nc (faster for large datasets)
-# On VPS B (receiver):
-nc -l 12345 | tar -xzf - -C ${DATA_DIR}/
+echo "PASS 2: Final delta sync (ClickHouse STOPPED on VPS A)..."
+# First, stop ClickHouse on VPS A
+ssh root@${VPS_A_IP} "systemctl stop clickhouse-server"
 
-# On VPS A (sender):
-tar -czf - ${DATA_DIR}/ | nc vps-b-ip 12345
+# Second rsync catches the few files that changed since Pass 1 (takes seconds/minutes)
+rsync -avz --progress --delete \
+    -e "ssh -p 22" \
+    root@${VPS_A_IP}:${DATA_DIR}/ \
+    ${DATA_DIR}/
 
 # Copy configuration
 rsync -avz -e "ssh -p 22" \
@@ -348,19 +353,12 @@ wait
 rsync -avz --progress root@vps-a:/var/lib/clickhouse/data/db/large_table_* /var/lib/clickhouse/data/db/
 ```
 
-### Phase 3: Data Synchronization
+### Phase 3: Data Synchronization (Warnings)
 
-```bash
-# After initial migration, sync any new data
-# Get max timestamp from VPS B
-MAX_TIMESTAMP=$(clickhouse-client --secure --port 9440 -q "SELECT max(timestamp) FROM db.orders")
+> [!WARNING]
+> It is extremely dangerous to perform delta synchronizations based strictly on timestamps (e.g. `SELECT * WHERE timestamp > MAX_TIMESTAMP`). This requires monotonically increasing timestamps and perfectly ordered inserts on the source and ignores out-of-order inserts, background mutations, or updates. If you require zero-downtime streaming sync, rely instead on Native Replication (`ReplicatedMergeTree`) or the native ClickHouse `BACKUP`/`RESTORE` features.
 
-# Export only new data from VPS A
-clickhouse-client --secure --port 9440 -q "SELECT * FROM db.orders WHERE timestamp > '$MAX_TIMESTAMP' FORMAT TSV" > new_data.tsv
-
-# Import to VPS B
-clickhouse-client --secure --port 9440 -q "INSERT INTO db.orders FORMAT TSV" < new_data.tsv
-```
+If you must use query-based sync, only do so if your insertion logic strictly guarantees timestamp safety.
 
 ---
 
@@ -388,12 +386,18 @@ comm -3 <(sort vps_a_counts.txt) <(sort vps_b_counts.txt)
 ### Checksum Verification
 
 ```bash
-# For critical tables, verify checksums
-clickhouse-client --secure --port 9440 -q "SELECT cityHash64(*) FROM db.critical_table" > vps_b_checksums.txt
+# For critical tables, verify aggregate checksums
+# This produces a single row with count + hash sum for easy comparison
 
-ssh root@vps-a "clickhouse-client -q \"SELECT cityHash64(*) FROM db.critical_table\"" > vps_a_checksums.txt
+TABLE="db.critical_table"
 
-diff vps_a_checksums.txt vps_b_checksums.txt
+# Get checksum from VPS A
+ssh root@vps-a "clickhouse-client --secure --port 9440 -q \"SELECT count(), sum(cityHash64(*)) FROM $TABLE\""
+
+# Get checksum from VPS B
+clickhouse-client --secure --port 9440 -q "SELECT count(), sum(cityHash64(*)) FROM $TABLE"
+
+# Both should output the same count and hash sum
 ```
 
 ---
@@ -486,10 +490,10 @@ sudo rm -rf /var/lib/clickhouse/metadata/*
 clickhouse-client --secure --port 9440 -q "SELECT database, table, formatReadableSize(sum(bytes)) FROM system.parts WHERE active GROUP BY database, table ORDER BY sum(bytes) DESC"
 
 # Export single table
-clickhouse-client --secure --port 9440 -q "SELECT * FROM db.table FORMAT TSV" | gzip > table.tsv.gz
+clickhouse-client --secure --port 9440 -q "SELECT * FROM db.table FORMAT Native" | gzip > table.native.gz
 
 # Import single table
-gunzip < table.tsv.gz | clickhouse-client --secure --port 9440 -q "INSERT INTO db.table FORMAT TSV"
+gunzip < table.native.gz | clickhouse-client --secure --port 9440 -q "INSERT INTO db.table FORMAT Native"
 
 # Check replication lag (if using)
 clickhouse-client --secure --port 9440 -q "SELECT * FROM system.replicas FORMAT Vertical"

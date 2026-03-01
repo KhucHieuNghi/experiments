@@ -35,11 +35,14 @@ Emergency scenarios covered:
 
 Quick commands:
 ```bash
-# Assess the situation
+# Assess the situation (classifies all objects by type)
 sudo ./scripts/emergency-migrate.sh assess
 
-# Export all tables with resume capability  
+# Export all objects with resume capability (tables, views, MVs, dicts, users)
 sudo ./scripts/emergency-migrate.sh export-all --host vps-b.example.com
+
+# Import on VPS B (run this ON VPS B — creates schemas + imports data)
+sudo ./scripts/emergency-migrate.sh import
 
 # Or direct file copy if ClickHouse won't start
 sudo ./scripts/emergency-migrate.sh copy-files --host vps-b.example.com
@@ -69,18 +72,29 @@ Before starting migration:
 
 ## Migration Strategies
 
-### Strategy 1: Offline Migration (Downtime Required)
+### Strategy 1: Native Backup & Restore (Recommended for ClickHouse 22.8+)
 
-Best for: Small datasets (< 100GB), acceptable downtime
+Best for: Very safe, consistent offline migration with minimal manual scripting.
 
 1. Stop writes to VPS A
-2. Backup all data from VPS A
-3. Transfer to VPS B
-4. Restore on VPS B
+2. Run `BACKUP TABLE` or `BACKUP DATABASE` to local disk or S3
+3. Transfer backup directory to VPS B
+4. Run `RESTORE TABLE` or `RESTORE DATABASE` on VPS B
 5. Update application connections
 6. Resume writes on VPS B
 
-### Strategy 2: Online Migration (Minimal Downtime)
+### Strategy 2: Offline Migration via Native Format Export (Downtime Required)
+
+Best for: Small datasets (< 100GB), acceptable downtime, older ClickHouse versions.
+
+1. Stop writes to VPS A
+2. Backup all data from VPS A using `FORMAT Native`
+3. Transfer to VPS B
+4. Restore on VPS B using `FORMAT Native`
+5. Update application connections
+6. Resume writes on VPS B
+
+### Strategy 3: Online Migration (Minimal Downtime)
 
 Best for: Large datasets, minimal downtime requirement
 
@@ -91,7 +105,7 @@ Best for: Large datasets, minimal downtime requirement
 5. Switch application to VPS B
 6. Stop replication
 
-### Strategy 3: Parallel Run (Zero Downtime)
+### Strategy 4: Parallel Run (Zero Downtime)
 
 Best for: Critical production systems
 
@@ -134,9 +148,6 @@ sudo ./migrate-realtime.sh --source vps-a.example.com --mode setup
 02-data-migration/
 ├── configs/
 │   └── remote_servers.xml        # Cluster configuration template
-├── examples/
-│   ├── sample-table.sql          # Example table for testing
-│   └── migration-workflow.md     # Detailed workflow examples
 ├── scripts/
 │   ├── backup-vps-a.sh           # Standard backup script
 │   ├── restore-vps-b.sh          # Standard restore script
@@ -169,13 +180,13 @@ Both servers must have:
 Create a dedicated migration user on both servers:
 
 ```sql
--- On VPS A
+-- On VPS A (source - only needs SELECT)
 CREATE USER migration_user IDENTIFIED WITH sha256_password BY 'secure_password';
-GRANT ALL ON *.* TO migration_user;
+GRANT SELECT ON *.* TO migration_user;
 
--- On VPS B
+-- On VPS B (destination - needs INSERT and DDL)
 CREATE USER migration_user IDENTIFIED WITH sha256_password BY 'secure_password';
-GRANT ALL ON *.* TO migration_user;
+GRANT SELECT, INSERT, CREATE, ALTER, DROP ON *.* TO migration_user;
 ```
 
 ## Backup Process
@@ -183,16 +194,16 @@ GRANT ALL ON *.* TO migration_user;
 ### What Gets Backed Up
 
 1. **Database schemas** (CREATE TABLE statements)
-2. **Table data** (exported as TSV or Native format)
+2. **Table data** (exported as Native format or via `BACKUP` command)
 3. **User definitions** (users, roles, quotas)
 4. **Configuration files** (optional)
 5. **Metadata** (partitions, mutations)
 
 ### Backup Formats
 
-- **Native**: Binary format, fastest for ClickHouse-to-ClickHouse
-- **TSV**: Text format, human-readable, larger size
-- **Parquet**: Columnar format, good for analytics
+- **Native**: Binary format. This is the **Absolute Requirement** for fast ClickHouse-to-ClickHouse migrations.
+- **Parquet**: Columnar format, good for analytics.
+- **TSV**: Text format, human-readable. *WARNING: Do not use TSV for large migrations (>10GB) due to high CPU/Memory overhead and slow performance.*
 
 ### Backup Storage
 
