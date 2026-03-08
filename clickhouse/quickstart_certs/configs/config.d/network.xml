@@ -1,0 +1,78 @@
+<clickhouse>
+    <!-- Lắng nghe trên tất cả interface cho các cổng bảo mật -->
+    <!-- Listen on all interfaces for secure ports -->
+    <listen_host>0.0.0.0</listen_host>
+
+    <!-- Cấu hình port -->
+    <!-- Port configuration -->
+    
+    <!-- HTTP port - chỉ cho localhost (được proxy bởi Nginx) -->
+    <!-- HTTP port - localhost only (proxied by Nginx) -->
+    <http_port>8123</http_port>
+    
+    <!-- Native TCP port - chỉ cho localhost -->
+    <!-- Native TCP port - localhost only -->
+    <tcp_port>9000</tcp_port>
+    
+    <!-- HTTPS port - Có thể mở nếu cần (thường dùng 8443 qua Nginx) -->
+    <!-- HTTPS port - Can open if needed (usually use 8443 via Nginx) -->
+    <https_port remove="remove"/>
+    
+    <!-- Native Secure TCP - Mở ra ngoài cho apps -->
+    <!-- Native Secure TCP - Open for apps -->
+    <tcp_port_secure>9440</tcp_port_secure>
+    
+    <!-- Interserver HTTPS cho replication -->
+    <!-- Interserver HTTPS for replication -->
+    <interserver_https_port>9010</interserver_https_port>
+
+    <!-- OpenSSL Configuration -->
+    <openSSL>
+        <server>
+            <!-- Đường dẫn tới chứng chỉ Let's Encrypt -->
+            <!-- Let's Encrypt certificate paths -->
+            <certificateFile>/etc/letsencrypt/live/ch.domain.com/fullchain.pem</certificateFile>
+            <privateKeyFile>/etc/letsencrypt/live/ch.domain.com/privkey.pem</privateKeyFile>
+            
+            <!-- Hoặc dùng chứng chỉ tự tạo cho development -->
+            <!-- Or use self-signed for development -->
+            <!-- <certificateFile>/etc/clickhouse-server/certs/server.crt</certificateFile> -->
+            <!-- <privateKeyFile>/etc/clickhouse-server/certs/server.key</privateKeyFile> -->
+            
+            <verificationMode>relaxed</verificationMode>
+            <loadDefaultCAFile>true</loadDefaultCAFile>
+            <cacheSessions>true</cacheSessions>
+            <disableProtocols>sslv2,sslv3</disableProtocols>
+            <preferServerCiphers>true</preferServerCiphers>
+        </server>
+        
+        <client>
+            <loadDefaultCAFile>true</loadDefaultCAFile>
+            <cacheSessions>true</cacheSessions>
+            <disableProtocols>sslv2,sslv3</disableProtocols>
+            <preferServerCiphers>true</preferServerCiphers>
+            <verificationMode>relaxed</verificationMode>
+        </client>
+    </openSSL>
+
+    <!-- Network restrictions - Chỉ cho phép localhost truy cập trực tiếp -->
+    <!-- Network restrictions - Only allow localhost direct access -->
+    <networks>
+        <ip>127.0.0.1</ip>
+        <ip>::1</ip>
+        <!-- Thêm dải IP mạng nội bộ nếu cần -->
+        <!-- Add internal network ranges if needed -->
+        <!-- <ip>10.0.0.0/8</ip> -->
+        <!-- <ip>172.16.0.0/12</ip> -->
+        <!-- <ip>192.168.0.0/16</ip> -->
+    </networks>
+
+    <!-- Logging for debugging -->
+    <logger>
+        <level>information</level>
+        <log>/var/log/clickhouse-server/clickhouse-server.log</log>
+        <errorlog>/var/log/clickhouse-server/clickhouse-server.err.log</errorlog>
+        <size>1000M</size>
+        <count>10</count>
+    </logger>
+</clickhouse>
