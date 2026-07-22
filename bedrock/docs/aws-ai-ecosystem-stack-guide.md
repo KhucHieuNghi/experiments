@@ -2,7 +2,7 @@
 
 Ngay xac minh: 2026-07-22
 
-Tai lieu nay bo sung cho visualization `aws-ai-ecosystem-map.html`. Muc tieu la giup hinh dung AWS cho minh nhung stack nao khi build ung dung AI, genAI, agent va ML production.
+Tai lieu nay bo sung cho visualization `aws-ai-project-stack-map.html`. Muc tieu la giup hinh dung AWS cho minh nhung stack nao khi build ung dung AI, genAI, agent va ML production.
 
 ## 1. Nhin tong the
 
@@ -29,6 +29,125 @@ AWS AI ecosystem co the chia thanh 8 stack:
 | Data/RAG/search | Can dua enterprise data vao AI | Storage, catalog, vector/search, governed access | Data freshness, ACL, chunking, lineage, tenant boundary |
 | Runtime/integration | Can gan AI vao product/workflow | Events, APIs, orchestration, containers, queues | Failure handling, retries, approvals, idempotency |
 | Security/ops | Can productionize safely | Identity, encryption, logs, audit, deployment IaC | Least privilege, SLO, runbook, incident process |
+
+## 2A. Mental model cho software engineer
+
+Dung ban do nay theo thu tu tu tren xuong:
+
+1. **Amazon Q la managed product**: minh enable/rollout assistant co san cho employee, developer, BI user. Day la duong nhanh nhat neu bai toan khop UX va permission model cua AWS.
+2. **Bedrock la genAI application platform**: minh build custom app bang foundation model, prompt contract, guardrail, RAG, flow va evaluation. Day la lop nen bat dau cho chatbot/RAG/custom generation.
+3. **AgentCore la production infrastructure cho agent**: minh van phai viet agent boundary/business logic, nhung AWS cung cap runtime, harness, gateway, memory, identity, policy, observability, evaluation va optimization.
+4. **SageMaker AI la ML/model lifecycle platform**: dung khi minh can train/tune/host custom model, data science workflow, feature store, model monitor, model card, pipeline va governance.
+5. **Data, runtime, security la lop bat buoc**: S3/vector/search, Lambda/ECS/EKS/Step Functions, IAM/KMS/VPC/CloudWatch/CloudTrail khong phai "AI feature" nhung quyet dinh he thong co chay production duoc hay khong.
+
+Mot cach chon nhanh:
+
+```text
+Need ready-made assistant?      -> Amazon Q
+Need custom LLM/RAG app?        -> Bedrock
+Need agent goi tool/memory?     -> AgentCore
+Need custom model/MLOps?        -> SageMaker AI
+Need OCR/speech/vision API?     -> Applied AI APIs
+Need governed enterprise data?  -> Data/RAG/search layer
+Need production workflow?       -> Runtime + security + ops layer
+```
+
+## 2B. Decision matrix cho du an thuc te
+
+| Neu request/product can | Chon chinh | Them khi nao | Ly do |
+|---|---|---|---|
+| Employee hoi tai lieu noi bo, can ACL nhanh | Amazon Q Business | Them custom app sau neu can UX/workflow rieng | Q da co assistant UX, connectors, permission-aware retrieval va rollout model |
+| Developer assistant trong IDE/CLI | Amazon Q Developer | Them internal MCP/tools neu team can platform hoa | Giam effort build assistant tu dau |
+| Chat/RAG tren data cua product | Bedrock + Knowledge Bases + Guardrails | Them Flows/Step Functions neu co workflow node ro | Model, prompt, retrieval, citation va guardrail nam trong mot lop genAI app |
+| Workflow deterministic: retrieve -> transform -> call API -> respond | Bedrock Flows hoac app backend/Step Functions + Bedrock | Them AgentCore neu can agent tu lap ke hoach | Flow/state machine de test, retry, approve va rollback de hon autonomous loop |
+| Agent phai goi tool nhieu buoc, co memory, identity, policy | AgentCore Runtime/Harness + Gateway + Memory + Policy | Bedrock lam model provider; Lambda/API/MCP lam tools | AgentCore giai quyet session isolation, tool access, auth, trace va eval |
+| Internal APIs can expose cho nhieu agent | AgentCore Gateway + Registry | Them Policy/Identity cho production | Gateway chuan hoa Lambda/OpenAPI/MCP thanh tool entrypoint co governance |
+| Custom classification/ranking/forecasting/model artifact | SageMaker AI | Bedrock co the goi SageMaker endpoint nhu tool/API | SageMaker phu hop train/tune/deploy/monitor custom model hon |
+| OCR, speech-to-text, translation, vision, NLP ready-made | Textract/Transcribe/Translate/Rekognition/Comprehend/Lex | Bedrock/AgentCore reasoning tren output neu can | API chuyen dung re hon, de operate hon LLM neu task khop |
+
+## 2C. Cost model nen lap truoc khi spike
+
+AI cost khong chi la token. Nen tinh theo request/session va tach cac dong chi phi sau:
+
+### Bedrock RAG app
+
+```text
+Cost/request =
+  model input tokens
++ model output tokens
++ prompt cache/cache write neu dung
++ Knowledge Base storage/indexing/retrieval
++ embedding/reranking neu dung custom model
++ Guardrails input/output evaluation
++ Lambda/ECS/EKS/API Gateway/app runtime
++ vector/search/data-store storage
++ CloudWatch logs/metrics/traces
++ data transfer va retry overhead
+```
+
+Risk cost chinh: prompt/context qua dai, retrieval tra qua nhieu chunk, output dai, guardrail/rerank bat tren moi request, log payload qua day, retry khong co idempotency.
+
+### AgentCore agent
+
+```text
+Cost/session =
+  model tokens cho moi reasoning step
++ AgentCore Runtime CPU/memory active consumption
++ Gateway list/invoke/search/tool-indexing calls
++ Policy authorization requests cho tool calls
++ Identity token/API-key requests neu dung non-AWS resources
++ Memory short-term events, long-term records, retrieval
++ Browser/Code Interpreter CPU/memory neu dung
++ Web Search queries neu dung
++ CloudWatch telemetry
++ Evaluation sampling/batch/A-B test
+```
+
+Risk cost chinh: agent loop khong gioi han iteration, tool call fan-out, web search/browser lam mac dinh, memory ghi qua nhieu, eval sampling qua cao, trace/log giu payload lon.
+
+### Amazon Q Business
+
+```text
+Cost/month =
+  user subscriptions
++ index units per hour
++ connector/indexing capacity
++ media/document processing
++ optional API/embedded chat consumption
+```
+
+Risk cost chinh: index ton tai se tiep tuc tinh tien, connector sync nhieu data khong can thiet, rollout Pro cho user chua dung that.
+
+### SageMaker AI
+
+```text
+Cost/month =
+  Studio/domain/notebook/compute
++ training/tuning jobs
++ endpoint instance/serverless/async/batch inference
++ storage/artifacts/features
++ pipelines/processing jobs
++ Model Monitor/Clarify/CloudWatch
+```
+
+Risk cost chinh: endpoint realtime chay idle, notebook/Studio resources de quen, training job lap lai khong track, endpoint scale qua muc.
+
+## 2D. Production readiness checklist
+
+Truoc khi dua vao pilot voi user that, can co toi thieu:
+
+- Account, region, service availability, model access va quota da xac minh.
+- IAM roles theo least privilege; tach deploy role, runtime role, data-access role.
+- KMS, VPC/PrivateLink, data residency, logging policy da quyet dinh.
+- Tenant boundary va ACL model ro rang; test user khong doc duoc data ngoai quyen.
+- Prompt contract/versioning va release/rollback strategy.
+- RAG source-of-truth, freshness SLA, chunking, metadata filter, citation policy.
+- Tool catalog: schema, owner, timeout, retry, rate limit, idempotency, destructive-action approval.
+- Guardrail/policy test cases: prompt attack, PII, denied topics, forbidden tool call.
+- Golden dataset va evaluation rubric: accuracy, groundedness, refusal quality, tool success, latency.
+- Observability: correlation id, spans, token count, model latency, retrieval latency, tool latency, error taxonomy.
+- Budget/quota alarms: tokens, retrieval, Gateway calls, Web Search, Browser/Code Interpreter, CloudWatch ingestion.
+- Incident runbook: model outage, retrieval degradation, tool failure, cost spike, bad answer, credential issue.
 
 ## 3. Bedrock stack
 
@@ -269,6 +388,12 @@ Tu khoa de thiet ke: request path la data plane; setup guide/IaC/evaluation/runb
 - AWS: [Amazon Bedrock Flows](https://docs.aws.amazon.com/bedrock/latest/userguide/flows.html)
 - AWS: [Amazon Bedrock AgentCore overview](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/what-is-bedrock-agentcore.html)
 - AWS: [Get started with Amazon Bedrock AgentCore](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/agentcore-get-started-cli.html)
+- AWS: [AgentCore harness vs Runtime](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/harness-vs-runtime.html)
+- AWS: [Amazon Bedrock Agents Classic maintenance mode](https://docs.aws.amazon.com/bedrock/latest/userguide/agents-classic-maintenance-mode.html)
+- AWS: [Amazon Bedrock pricing](https://aws.amazon.com/bedrock/pricing/)
+- AWS: [Amazon Bedrock AgentCore pricing](https://aws.amazon.com/bedrock/agentcore/pricing/)
+- AWS: [Amazon Q Business pricing](https://aws.amazon.com/q/business/pricing/)
+- AWS: [Amazon SageMaker pricing](https://aws.amazon.com/sagemaker/pricing/)
 - AWS: [Amazon SageMaker AI documentation](https://docs.aws.amazon.com/sagemaker/)
 - AWS: [Guide to getting set up with Amazon SageMaker AI](https://docs.aws.amazon.com/sagemaker/latest/dg/gs.html)
 - AWS: [Amazon Q documentation](https://docs.aws.amazon.com/amazonq/)

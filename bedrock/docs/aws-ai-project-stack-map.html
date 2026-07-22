@@ -249,6 +249,316 @@
       color: var(--muted);
     }
 
+    .relationship-grid,
+    .cost-grid,
+    .ops-grid {
+      display: grid;
+      gap: 10px;
+    }
+
+    .relationship-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .relationship-card,
+    .cost-card,
+    .ops-card {
+      border: 1px solid var(--line);
+      background: var(--panel);
+      border-radius: 16px;
+      padding: 16px;
+    }
+
+    .relationship-card {
+      min-height: 170px;
+    }
+
+    .relationship-card h3,
+    .cost-card h3,
+    .ops-card h3 {
+      margin-bottom: 8px;
+    }
+
+    .flow-line {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      align-items: center;
+      margin-top: 12px;
+    }
+
+    .flow-line span {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: var(--soft);
+      padding: 5px 9px;
+      color: var(--muted);
+      font-size: 0.86rem;
+      font-weight: 700;
+    }
+
+    .flow-line b {
+      color: var(--muted);
+    }
+
+    .cost-grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .cost-card {
+      min-height: 238px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cost-card::before {
+      content: "";
+      position: absolute;
+      inset: 0 auto 0 0;
+      width: 6px;
+      background: var(--slate);
+    }
+
+    .cost-card.bedrock::before { background: #74a7ff; }
+    .cost-card.agentcore::before { background: #72d091; }
+    .cost-card.q::before { background: #9d8dff; }
+    .cost-card.sagemaker::before { background: #ffc45f; }
+
+    .cost-card ul,
+    .ops-card ul {
+      margin: 10px 0 0;
+      padding-left: 18px;
+    }
+
+    .cost-card li,
+    .ops-card li {
+      margin: 5px 0;
+      color: var(--muted);
+    }
+
+    .cost-note {
+      margin-top: 12px;
+      border: 1px dashed var(--line);
+      border-radius: 14px;
+      padding: 12px;
+      background: #fbfcff;
+      color: var(--muted);
+    }
+
+    .ops-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .ops-card {
+      min-height: 190px;
+    }
+
+    .ecosystem-lab {
+      background:
+        radial-gradient(circle at 18% 12%, rgba(116, 167, 255, 0.18), transparent 28%),
+        radial-gradient(circle at 82% 16%, rgba(114, 208, 145, 0.18), transparent 30%),
+        linear-gradient(135deg, #ffffff, #f9fbff 52%, #f4f7fc);
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      padding: 18px;
+      box-shadow: var(--shadow);
+      margin-bottom: 18px;
+    }
+
+    .ecosystem-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .scenario-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    button.scenario-tab {
+      appearance: none;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.78);
+      color: var(--ink);
+      border-radius: 999px;
+      padding: 9px 13px;
+      font: inherit;
+      font-weight: 800;
+      cursor: pointer;
+      transition: transform 160ms ease, background 160ms ease, color 160ms ease, border-color 160ms ease;
+    }
+
+    button.scenario-tab:hover {
+      transform: translateY(-1px);
+    }
+
+    button.scenario-tab[aria-pressed="true"] {
+      background: #172033;
+      color: #ffffff;
+      border-color: #172033;
+    }
+
+    .ecosystem-stage {
+      display: grid;
+      grid-template-columns: minmax(0, 1.35fr) minmax(280px, 0.65fr);
+      gap: 16px;
+      align-items: stretch;
+    }
+
+    .ecosystem-svg-wrap {
+      min-height: 520px;
+      overflow-x: auto;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background:
+        linear-gradient(rgba(23, 32, 51, 0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(23, 32, 51, 0.035) 1px, transparent 1px),
+        #ffffff;
+      background-size: 28px 28px;
+    }
+
+    .ecosystem-svg {
+      min-width: 850px;
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    .eco-boundary {
+      fill: rgba(255, 255, 255, 0.78);
+      stroke: #d8deeb;
+      stroke-width: 1.2;
+    }
+
+    .eco-lane-title {
+      fill: #435169;
+      font-size: 13px;
+      font-weight: 850;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .eco-node rect {
+      fill: #ffffff;
+      stroke: #d8deeb;
+      stroke-width: 1.25;
+      filter: drop-shadow(0 8px 16px rgba(32, 43, 70, 0.08));
+      transition: opacity 180ms ease, stroke 180ms ease, stroke-width 180ms ease;
+    }
+
+    .eco-node text {
+      fill: #172033;
+      font-size: 13px;
+      font-weight: 800;
+      pointer-events: none;
+    }
+
+    .eco-node .eco-sub {
+      fill: #647084;
+      font-size: 10.5px;
+      font-weight: 650;
+    }
+
+    .eco-node[data-stack="q"] rect { fill: #f0edff; }
+    .eco-node[data-stack="bedrock"] rect { fill: #e7f1ff; }
+    .eco-node[data-stack="agentcore"] rect { fill: #e7f8ed; }
+    .eco-node[data-stack="sagemaker"] rect { fill: #fff4dc; }
+    .eco-node[data-stack="data"] rect { fill: #e5f8f5; }
+    .eco-node[data-stack="runtime"] rect { fill: #eef1f6; }
+    .eco-node[data-stack="ops"] rect { fill: #ffeaf0; }
+
+    .eco-link {
+      fill: none;
+      stroke: #c7cfdd;
+      stroke-width: 2.25;
+      stroke-linecap: round;
+      stroke-dasharray: 7 8;
+      opacity: 0.42;
+      transition: opacity 180ms ease, stroke 180ms ease, stroke-width 180ms ease;
+    }
+
+    .ecosystem-lab[data-scenario="rag"] .eco-node:not([data-rag]) rect,
+    .ecosystem-lab[data-scenario="agent"] .eco-node:not([data-agent]) rect,
+    .ecosystem-lab[data-scenario="ml"] .eco-node:not([data-ml]) rect,
+    .ecosystem-lab[data-scenario="q"] .eco-node:not([data-q]) rect {
+      opacity: 0.34;
+    }
+
+    .ecosystem-lab[data-scenario="rag"] .eco-node[data-rag] rect,
+    .ecosystem-lab[data-scenario="agent"] .eco-node[data-agent] rect,
+    .ecosystem-lab[data-scenario="ml"] .eco-node[data-ml] rect,
+    .ecosystem-lab[data-scenario="q"] .eco-node[data-q] rect {
+      stroke: #172033;
+      stroke-width: 2.4;
+    }
+
+    .ecosystem-lab[data-scenario="rag"] .eco-link[data-rag],
+    .ecosystem-lab[data-scenario="agent"] .eco-link[data-agent],
+    .ecosystem-lab[data-scenario="ml"] .eco-link[data-ml],
+    .ecosystem-lab[data-scenario="q"] .eco-link[data-q] {
+      opacity: 1;
+      stroke-width: 4;
+      stroke-dasharray: 0;
+    }
+
+    .ecosystem-lab[data-scenario="rag"] .eco-link[data-rag] { stroke: #4d8df7; }
+    .ecosystem-lab[data-scenario="agent"] .eco-link[data-agent] { stroke: #42a867; }
+    .ecosystem-lab[data-scenario="ml"] .eco-link[data-ml] { stroke: #d3911a; }
+    .ecosystem-lab[data-scenario="q"] .eco-link[data-q] { stroke: #7d6bf2; }
+
+    .scenario-panel {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.78);
+      padding: 16px;
+      display: grid;
+      align-content: start;
+      gap: 14px;
+    }
+
+    .scenario-panel h3 {
+      margin-bottom: 6px;
+    }
+
+    .scenario-panel dl {
+      display: grid;
+      gap: 10px;
+      margin: 0;
+    }
+
+    .scenario-panel dt {
+      color: var(--ink);
+      font-weight: 850;
+    }
+
+    .scenario-panel dd {
+      margin: 3px 0 0;
+      color: var(--muted);
+    }
+
+    .scenario-chip-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+    }
+
+    .scenario-chip-row span {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--soft);
+      color: var(--muted);
+      padding: 5px 8px;
+      font-size: 0.82rem;
+      font-weight: 800;
+    }
+
     .reference-architecture {
       background: var(--panel);
       border: 1px solid var(--line);
@@ -729,6 +1039,10 @@
       .roadmap,
       .docs-grid,
       .always-on,
+      .relationship-grid,
+      .cost-grid,
+      .ops-grid,
+      .ecosystem-stage,
       .journey-legend,
       .reader-path,
       .diagram-legend,
@@ -773,6 +1087,10 @@
       .roadmap,
       .docs-grid,
       .always-on,
+      .relationship-grid,
+      .cost-grid,
+      .ops-grid,
+      .ecosystem-stage,
       .reader-path,
       .diagram-legend,
       .c4-row,
@@ -1248,7 +1566,308 @@
     <section>
       <div class="section-head">
         <div>
-          <h2>6. Request journey diagram</h2>
+          <h2>6. Quan hệ giữa service, cost và vận hành</h2>
+          <p>Phần này chuyển bản đồ service thành góc nhìn chuẩn bị dự án: service nào đứng ở lớp nào, chi phí phát sinh ở đâu, và production cần control loop nào.</p>
+        </div>
+      </div>
+      <div class="ecosystem-lab" id="ecosystem-lab" data-scenario="rag">
+        <div class="ecosystem-toolbar">
+          <div>
+            <h3>Interactive ecosystem map</h3>
+            <p class="small">Chọn một scenario để thấy request đi qua stack nào, phần nào là app code, phần nào là managed AI platform, và phần nào là control plane.</p>
+          </div>
+          <div class="scenario-tabs" role="group" aria-label="Choose AWS AI scenario">
+            <button class="scenario-tab" type="button" data-scenario="rag" aria-pressed="true">RAG app</button>
+            <button class="scenario-tab" type="button" data-scenario="agent" aria-pressed="false">Agent platform</button>
+            <button class="scenario-tab" type="button" data-scenario="ml" aria-pressed="false">ML lifecycle</button>
+            <button class="scenario-tab" type="button" data-scenario="q" aria-pressed="false">Amazon Q</button>
+          </div>
+        </div>
+        <div class="ecosystem-stage">
+          <div class="ecosystem-svg-wrap">
+            <svg class="ecosystem-svg" viewBox="0 0 860 520" role="img" aria-labelledby="ecosystem-title ecosystem-desc">
+              <title id="ecosystem-title">Interactive AWS AI ecosystem map</title>
+              <desc id="ecosystem-desc">A scenario-driven diagram showing how user channels, app runtime, AI services, data and tool planes, and operations relate across Amazon Q, Bedrock, AgentCore, and SageMaker.</desc>
+
+              <rect x="24" y="34" width="134" height="428" rx="18" class="eco-boundary"></rect>
+              <text x="44" y="62" class="eco-lane-title">Channels</text>
+              <rect x="184" y="34" width="134" height="428" rx="18" class="eco-boundary"></rect>
+              <text x="204" y="62" class="eco-lane-title">App edge</text>
+              <rect x="344" y="34" width="150" height="428" rx="18" class="eco-boundary"></rect>
+              <text x="364" y="62" class="eco-lane-title">AI services</text>
+              <rect x="520" y="34" width="150" height="428" rx="18" class="eco-boundary"></rect>
+              <text x="540" y="62" class="eco-lane-title">Data/tools</text>
+              <rect x="696" y="34" width="134" height="428" rx="18" class="eco-boundary"></rect>
+              <text x="716" y="62" class="eco-lane-title">Ops/control</text>
+
+              <path class="eco-link" data-rag="true" d="M132 130 C184 130 176 164 226 164"></path>
+              <path class="eco-link" data-rag="true" d="M286 164 C328 164 330 164 372 164"></path>
+              <path class="eco-link" data-rag="true" d="M466 164 C504 164 500 164 548 164"></path>
+              <path class="eco-link" data-rag="true" d="M628 164 C692 164 682 198 730 198"></path>
+
+              <path class="eco-link" data-agent="true" d="M132 250 C184 250 176 244 226 244"></path>
+              <path class="eco-link" data-agent="true" d="M286 244 C328 244 330 260 372 260"></path>
+              <path class="eco-link" data-agent="true" d="M466 260 C504 260 500 260 548 260"></path>
+              <path class="eco-link" data-agent="true" d="M628 260 C694 260 680 318 730 318"></path>
+
+              <path class="eco-link" data-ml="true" d="M132 356 C184 356 176 326 226 326"></path>
+              <path class="eco-link" data-ml="true" d="M286 326 C328 326 330 356 372 356"></path>
+              <path class="eco-link" data-ml="true" d="M466 356 C540 356 520 318 548 318"></path>
+              <path class="eco-link" data-ml="true" d="M466 390 C604 420 660 398 730 396"></path>
+
+              <path class="eco-link" data-q="true" d="M132 100 C190 100 300 100 372 100"></path>
+              <path class="eco-link" data-q="true" d="M466 100 C518 100 508 126 548 126"></path>
+              <path class="eco-link" data-q="true" d="M628 126 C700 126 682 118 730 118"></path>
+
+              <g class="eco-node" data-rag="true" data-agent="true" data-ml="true" data-q="true" data-stack="runtime" transform="translate(52 94)">
+                <rect width="80" height="72" rx="12"></rect>
+                <text x="40" y="31" text-anchor="middle">User</text>
+                <text x="40" y="49" text-anchor="middle" class="eco-sub">web/chat/API</text>
+              </g>
+              <g class="eco-node" data-rag="true" data-agent="true" data-ml="true" data-stack="runtime" transform="translate(226 134)">
+                <rect width="60" height="60" rx="12"></rect>
+                <text x="30" y="28" text-anchor="middle">App</text>
+                <text x="30" y="44" text-anchor="middle" class="eco-sub">edge</text>
+              </g>
+              <g class="eco-node" data-agent="true" data-stack="runtime" transform="translate(226 214)">
+                <rect width="60" height="60" rx="12"></rect>
+                <text x="30" y="28" text-anchor="middle">API</text>
+                <text x="30" y="44" text-anchor="middle" class="eco-sub">session</text>
+              </g>
+              <g class="eco-node" data-ml="true" data-stack="runtime" transform="translate(226 296)">
+                <rect width="60" height="60" rx="12"></rect>
+                <text x="30" y="28" text-anchor="middle">Batch</text>
+                <text x="30" y="44" text-anchor="middle" class="eco-sub">features</text>
+              </g>
+
+              <g class="eco-node" data-q="true" data-stack="q" transform="translate(372 70)">
+                <rect width="94" height="60" rx="12"></rect>
+                <text x="47" y="27" text-anchor="middle">Amazon Q</text>
+                <text x="47" y="44" text-anchor="middle" class="eco-sub">managed UX</text>
+              </g>
+              <g class="eco-node" data-rag="true" data-stack="bedrock" transform="translate(372 134)">
+                <rect width="94" height="60" rx="12"></rect>
+                <text x="47" y="27" text-anchor="middle">Bedrock</text>
+                <text x="47" y="44" text-anchor="middle" class="eco-sub">model/RAG</text>
+              </g>
+              <g class="eco-node" data-agent="true" data-stack="agentcore" transform="translate(372 230)">
+                <rect width="94" height="60" rx="12"></rect>
+                <text x="47" y="27" text-anchor="middle">AgentCore</text>
+                <text x="47" y="44" text-anchor="middle" class="eco-sub">runtime loop</text>
+              </g>
+              <g class="eco-node" data-ml="true" data-stack="sagemaker" transform="translate(372 326)">
+                <rect width="94" height="60" rx="12"></rect>
+                <text x="47" y="27" text-anchor="middle">SageMaker</text>
+                <text x="47" y="44" text-anchor="middle" class="eco-sub">model ops</text>
+              </g>
+
+              <g class="eco-node" data-rag="true" data-q="true" data-stack="data" transform="translate(548 96)">
+                <rect width="80" height="60" rx="12"></rect>
+                <text x="40" y="27" text-anchor="middle">Index</text>
+                <text x="40" y="44" text-anchor="middle" class="eco-sub">docs/ACL</text>
+              </g>
+              <g class="eco-node" data-rag="true" data-stack="data" transform="translate(548 164)">
+                <rect width="80" height="60" rx="12"></rect>
+                <text x="40" y="27" text-anchor="middle">KB</text>
+                <text x="40" y="44" text-anchor="middle" class="eco-sub">retrieve</text>
+              </g>
+              <g class="eco-node" data-agent="true" data-stack="data" transform="translate(548 230)">
+                <rect width="80" height="60" rx="12"></rect>
+                <text x="40" y="27" text-anchor="middle">Gateway</text>
+                <text x="40" y="44" text-anchor="middle" class="eco-sub">tools/MCP</text>
+              </g>
+              <g class="eco-node" data-agent="true" data-ml="true" data-stack="data" transform="translate(548 304)">
+                <rect width="80" height="60" rx="12"></rect>
+                <text x="40" y="27" text-anchor="middle">APIs</text>
+                <text x="40" y="44" text-anchor="middle" class="eco-sub">data/actions</text>
+              </g>
+
+              <g class="eco-node" data-q="true" data-stack="ops" transform="translate(730 88)">
+                <rect width="72" height="60" rx="12"></rect>
+                <text x="36" y="27" text-anchor="middle">Rollout</text>
+                <text x="36" y="44" text-anchor="middle" class="eco-sub">adoption</text>
+              </g>
+              <g class="eco-node" data-rag="true" data-stack="ops" transform="translate(730 168)">
+                <rect width="72" height="60" rx="12"></rect>
+                <text x="36" y="27" text-anchor="middle">Eval</text>
+                <text x="36" y="44" text-anchor="middle" class="eco-sub">quality</text>
+              </g>
+              <g class="eco-node" data-agent="true" data-stack="ops" transform="translate(730 288)">
+                <rect width="72" height="60" rx="12"></rect>
+                <text x="36" y="27" text-anchor="middle">Policy</text>
+                <text x="36" y="44" text-anchor="middle" class="eco-sub">trace</text>
+              </g>
+              <g class="eco-node" data-ml="true" data-stack="ops" transform="translate(730 366)">
+                <rect width="72" height="60" rx="12"></rect>
+                <text x="36" y="27" text-anchor="middle">Monitor</text>
+                <text x="36" y="44" text-anchor="middle" class="eco-sub">drift</text>
+              </g>
+            </svg>
+          </div>
+          <aside class="scenario-panel" aria-live="polite">
+            <div>
+              <h3 id="scenario-title">RAG app trên Bedrock</h3>
+              <p class="small" id="scenario-summary">Custom app dùng Bedrock, Knowledge Base và Guardrails để trả lời dựa trên tài liệu/data có citation.</p>
+            </div>
+            <dl>
+              <div>
+                <dt>Primary stack</dt>
+                <dd id="scenario-primary">Bedrock + Knowledge Bases + Guardrails</dd>
+              </div>
+              <div>
+                <dt>Cost watch</dt>
+                <dd id="scenario-cost">Input/output tokens, retrieval, reranking, guardrail evaluation, app runtime và logs.</dd>
+              </div>
+              <div>
+                <dt>Ops watch</dt>
+                <dd id="scenario-ops">Citation quality, retrieval freshness, prompt versioning, eval set, token/quota alarm.</dd>
+              </div>
+            </dl>
+            <div class="scenario-chip-row" id="scenario-chips">
+              <span>Prompt contract</span>
+              <span>RAG freshness</span>
+              <span>Guardrails</span>
+            </div>
+          </aside>
+        </div>
+      </div>
+      <div class="relationship-grid">
+        <div class="relationship-card">
+          <h3>Amazon Q: managed assistant product</h3>
+          <p class="small">Dùng khi muốn rollout assistant có sẵn cho employee/developer/BI user. Mình chủ yếu quản trị users, connectors, index, ACL, adoption và feedback.</p>
+          <div class="flow-line"><span>Identity Center</span><b>→</b><span>Q index/connectors</span><b>→</b><span>Managed assistant UX</span></div>
+        </div>
+        <div class="relationship-card">
+          <h3>Bedrock: custom genAI app platform</h3>
+          <p class="small">Dùng khi app cần foundation model, prompt contract, Knowledge Base, Guardrails, Flows hoặc model evaluation. Đây là lớp bắt đầu tự nhiên cho RAG/custom LLM app.</p>
+          <div class="flow-line"><span>Prompt</span><b>→</b><span>Retrieve</span><b>→</b><span>Model</span><b>→</b><span>Guardrail</span></div>
+        </div>
+        <div class="relationship-card">
+          <h3>AgentCore: production plumbing cho agent</h3>
+          <p class="small">Dùng khi agent là actor gọi tools nhiều bước. Runtime/Harness chạy agent; Gateway expose tools; Identity/Policy kiểm soát quyền; Memory/Observability/Evaluations giúp operate.</p>
+          <div class="flow-line"><span>Runtime/Harness</span><b>→</b><span>Memory</span><b>→</b><span>Gateway</span><b>→</b><span>Policy/Eval</span></div>
+        </div>
+        <div class="relationship-card">
+          <h3>SageMaker AI: model lifecycle platform</h3>
+          <p class="small">Dùng khi cần train/tune/host custom model, endpoint, Feature Store, Model Monitor, Clarify, Model Card và Pipelines. Bedrock/AgentCore có thể gọi endpoint này như một tool/model service.</p>
+          <div class="flow-line"><span>Dataset</span><b>→</b><span>Train</span><b>→</b><span>Endpoint</span><b>→</b><span>Monitor</span></div>
+        </div>
+      </div>
+
+      <div class="section-head" style="margin-top: 18px;">
+        <div>
+          <h3>Cost drivers cần estimate trước</h3>
+          <p>Đừng chỉ tính token. Với agent, tool/runtime/memory/eval/observability có thể là phần đáng kể.</p>
+        </div>
+      </div>
+      <div class="cost-grid">
+        <div class="cost-card bedrock">
+          <h3>Bedrock RAG</h3>
+          <ul>
+            <li>Input/output tokens.</li>
+            <li>Knowledge Base storage, retrieval, indexing.</li>
+            <li>Embedding/reranking nếu dùng custom model.</li>
+            <li>Guardrails input/output evaluation.</li>
+            <li>App runtime, logs, retries, data transfer.</li>
+          </ul>
+        </div>
+        <div class="cost-card agentcore">
+          <h3>AgentCore</h3>
+          <ul>
+            <li>Runtime CPU/memory active consumption.</li>
+            <li>Gateway list/invoke/search/tool indexing.</li>
+            <li>Policy authorization per tool call.</li>
+            <li>Memory events, records, retrieval.</li>
+            <li>Browser, Code Interpreter, Web Search, Evaluations.</li>
+          </ul>
+        </div>
+        <div class="cost-card q">
+          <h3>Amazon Q</h3>
+          <ul>
+            <li>User subscriptions.</li>
+            <li>Index units per hour.</li>
+            <li>Connector and content processing.</li>
+            <li>Embedded/API consumption nếu dùng.</li>
+            <li>Cost vẫn chạy khi index tồn tại.</li>
+          </ul>
+        </div>
+        <div class="cost-card sagemaker">
+          <h3>SageMaker AI</h3>
+          <ul>
+            <li>Studio/notebook/compute.</li>
+            <li>Training, tuning, processing jobs.</li>
+            <li>Realtime/async/serverless/batch endpoint.</li>
+            <li>Storage, Feature Store, artifacts.</li>
+            <li>Model Monitor, Clarify, CloudWatch.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="cost-note">
+        <strong>Cost control rule:</strong> đặt budget theo request/session, giới hạn max iterations/tool calls/output tokens, sample eval theo risk, và log structured metadata thay vì full prompt/response payload khi không cần.
+      </div>
+
+      <div class="section-head" style="margin-top: 18px;">
+        <div>
+          <h3>Production control loops</h3>
+          <p>Một dự án AI production cần vận hành như distributed system có model/tool không-deterministic, không như một API model call đơn lẻ.</p>
+        </div>
+      </div>
+      <div class="ops-grid">
+        <div class="ops-card">
+          <h3>Release and rollback</h3>
+          <ul>
+            <li>Version prompt, flow, model config, tool schema.</li>
+            <li>Stage/pilot trước khi mở rộng.</li>
+            <li>Rollback path cho prompt/model/tool release.</li>
+          </ul>
+        </div>
+        <div class="ops-card">
+          <h3>Quality and evaluation</h3>
+          <ul>
+            <li>Golden dataset theo use case.</li>
+            <li>Metrics: groundedness, accuracy, refusal, tool success.</li>
+            <li>CI/CD gate + production sampling.</li>
+          </ul>
+        </div>
+        <div class="ops-card">
+          <h3>Security and governance</h3>
+          <ul>
+            <li>Least privilege IAM and resource policies.</li>
+            <li>Tenant/ACL boundary test.</li>
+            <li>Guardrails, Policy, approval for destructive actions.</li>
+          </ul>
+        </div>
+        <div class="ops-card">
+          <h3>Observability</h3>
+          <ul>
+            <li>Correlation id, spans, token count, latency.</li>
+            <li>Retrieval/tool/model error taxonomy.</li>
+            <li>CloudWatch/CloudTrail dashboards and alerts.</li>
+          </ul>
+        </div>
+        <div class="ops-card">
+          <h3>Data and memory</h3>
+          <ul>
+            <li>Source freshness, lineage, citations.</li>
+            <li>Memory namespace by actor/user/project.</li>
+            <li>Retention, delete/export, PII handling.</li>
+          </ul>
+        </div>
+        <div class="ops-card">
+          <h3>Cost and quota</h3>
+          <ul>
+            <li>Budget alarms by tokens, tools, search, runtime.</li>
+            <li>Quota alarms and fallback model strategy.</li>
+            <li>Runbook for cost spike and service throttling.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <div>
+          <h2>7. Request journey diagram</h2>
           <p>Bốn tab dưới đây là bốn kiểu đường đi khác nhau của một request. Chúng trả lời câu hỏi: request này cần “trả lời bằng dữ liệu”, “hành động như agent”, “dự đoán bằng model ML”, hay “dùng assistant có sẵn”.</p>
         </div>
       </div>
@@ -1290,7 +1909,7 @@
     <section>
       <div class="section-head">
         <div>
-          <h2>7. Roadmap triển khai dự án mới</h2>
+          <h2>8. Roadmap triển khai dự án mới</h2>
           <p>Đây là luồng triển khai phù hợp cho dự án mới: đi từ use case, security, data, prototype, production hardening tới pilot.</p>
         </div>
       </div>
@@ -1373,7 +1992,7 @@
     <section>
       <div class="section-head">
         <div>
-          <h2>8. Bộ tài liệu nên chuẩn bị trước khi build</h2>
+          <h2>9. Bộ tài liệu nên chuẩn bị trước khi build</h2>
           <p>Nếu thiếu các tài liệu này, dự án có thể demo được nhưng khó đưa vào production an toàn.</p>
         </div>
       </div>
@@ -1441,6 +2060,12 @@
         <li><a href="https://docs.aws.amazon.com/bedrock/latest/userguide/flows.html">Amazon Bedrock Flows</a></li>
         <li><a href="https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/what-is-bedrock-agentcore.html">Amazon Bedrock AgentCore overview</a></li>
         <li><a href="https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/agentcore-get-started-cli.html">Get started with Amazon Bedrock AgentCore</a></li>
+        <li><a href="https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/harness-vs-runtime.html">AgentCore harness vs Runtime</a></li>
+        <li><a href="https://docs.aws.amazon.com/bedrock/latest/userguide/agents-classic-maintenance-mode.html">Bedrock Agents Classic maintenance mode</a></li>
+        <li><a href="https://aws.amazon.com/bedrock/pricing/">Amazon Bedrock pricing</a></li>
+        <li><a href="https://aws.amazon.com/bedrock/agentcore/pricing/">Amazon Bedrock AgentCore pricing</a></li>
+        <li><a href="https://aws.amazon.com/q/business/pricing/">Amazon Q Business pricing</a></li>
+        <li><a href="https://aws.amazon.com/sagemaker/pricing/">Amazon SageMaker pricing</a></li>
         <li><a href="https://docs.aws.amazon.com/sagemaker/">Amazon SageMaker AI documentation</a></li>
         <li><a href="https://docs.aws.amazon.com/amazonq/">Amazon Q documentation</a></li>
         <li><a href="https://github.com/awslabs/agentcore-samples">awslabs/agentcore-samples</a></li>
@@ -1449,6 +2074,71 @@
   </main>
 
   <script>
+    const scenarios = {
+      rag: {
+        title: "RAG app trên Bedrock",
+        summary: "Custom app dùng Bedrock, Knowledge Base và Guardrails để trả lời dựa trên tài liệu/data có citation.",
+        primary: "Bedrock + Knowledge Bases + Guardrails",
+        cost: "Input/output tokens, retrieval, reranking, guardrail evaluation, app runtime và logs.",
+        ops: "Citation quality, retrieval freshness, prompt versioning, eval set, token/quota alarm.",
+        chips: ["Prompt contract", "RAG freshness", "Guardrails"]
+      },
+      agent: {
+        title: "Production agent trên AgentCore",
+        summary: "Agent là actor gọi nhiều tools nhiều vòng, cần session isolation, memory, identity, policy, traces và evaluation.",
+        primary: "AgentCore Runtime/Harness + Gateway + Memory + Policy",
+        cost: "Runtime CPU/memory, model reasoning steps, Gateway calls, Policy checks, Memory, Web Search/Browser/Code Interpreter.",
+        ops: "Max iterations, tool idempotency, approval boundary, trace spans, eval sampling, memory retention.",
+        chips: ["Tool catalog", "Policy", "Memory", "Trace"]
+      },
+      ml: {
+        title: "Custom ML lifecycle trên SageMaker",
+        summary: "Dùng khi cần ownership model/data science lifecycle: dataset, training, tuning, endpoint, drift monitor và retraining.",
+        primary: "SageMaker AI + pipelines + endpoint monitoring",
+        cost: "Studio/notebook compute, training jobs, endpoint runtime, storage, Feature Store, Model Monitor và CloudWatch.",
+        ops: "Dataset card, model card, drift detection, endpoint scaling, rollback, retraining pipeline.",
+        chips: ["Dataset", "Training", "Endpoint", "Monitor"]
+      },
+      q: {
+        title: "Managed assistant với Amazon Q",
+        summary: "Dùng khi cần assistant có sẵn cho employee/developer, permission-aware và rollout nhanh hơn build custom UX.",
+        primary: "Amazon Q Business / Q Developer + Identity Center",
+        cost: "User subscriptions, index units, connector/content processing, embedded/API usage nếu có.",
+        ops: "ACL mapping, connector sync, index lifecycle, pilot adoption, feedback loop.",
+        chips: ["Identity Center", "Connectors", "ACL", "Rollout"]
+      }
+    };
+
+    const ecosystemLab = document.getElementById("ecosystem-lab");
+    const scenarioTabs = Array.from(document.querySelectorAll("button.scenario-tab"));
+    const scenarioTitle = document.getElementById("scenario-title");
+    const scenarioSummary = document.getElementById("scenario-summary");
+    const scenarioPrimary = document.getElementById("scenario-primary");
+    const scenarioCost = document.getElementById("scenario-cost");
+    const scenarioOps = document.getElementById("scenario-ops");
+    const scenarioChips = document.getElementById("scenario-chips");
+
+    function renderScenario(mode) {
+      const scenario = scenarios[mode];
+      if (!scenario || !ecosystemLab) return;
+      ecosystemLab.dataset.scenario = mode;
+      scenarioTabs.forEach((tab) => tab.setAttribute("aria-pressed", tab.dataset.scenario === mode ? "true" : "false"));
+      scenarioTitle.textContent = scenario.title;
+      scenarioSummary.textContent = scenario.summary;
+      scenarioPrimary.textContent = scenario.primary;
+      scenarioCost.textContent = scenario.cost;
+      scenarioOps.textContent = scenario.ops;
+      scenarioChips.replaceChildren(...scenario.chips.map((chip) => {
+        const el = document.createElement("span");
+        el.textContent = chip;
+        return el;
+      }));
+    }
+
+    scenarioTabs.forEach((tab) => {
+      tab.addEventListener("click", () => renderScenario(tab.dataset.scenario));
+    });
+
     const journeys = {
       rag: [
         ["Channel", "User to app", "Web/mobile/chat request", "CloudFront or API Gateway routes request to Lambda, ECS, EKS, or app backend."],
@@ -1534,6 +2224,7 @@
     });
 
     renderJourney("rag");
+    renderScenario("rag");
   </script>
 </body>
 </html>

@@ -108,6 +108,19 @@ Nhan dinh: voi du an moi, nen xem AgentCore la target production. Agents Classic
 
 ## 6. Cac pattern build agent tren AWS
 
+### Pattern 0: Khong dung agent neu workflow chua can agent
+
+Day la pattern quan trong nhat cho production. Neu request co the mo ta bang state machine ro rang, dung app backend, Step Functions, Bedrock Flows, Lambda va Bedrock model call se de test/operate hon agent autonomous.
+
+Dung non-agent path khi:
+
+- Request chi can mot lan retrieve + mot lan generate.
+- Workflow la cac buoc co thu tu co dinh: validate -> retrieve -> call API -> summarize.
+- Moi action destructive deu can approval ro rang.
+- Team chua co golden dataset/eval rubric cho agent loop.
+
+Chuyen sang AgentCore khi agent that su can tu lap ke hoach, goi tool nhieu vong, giu memory, hoac chay nhu mot actor co identity/policy/observability rieng.
+
 ### Pattern A: Managed harness first
 
 Dung khi can thu nhanh mot agent co tool/memory/browser/code interpreter ma chua muon tu viet agent loop.
@@ -151,6 +164,54 @@ Flow:
 2. Guardrails cho safety.
 3. Flows neu can workflow deterministic/visual node.
 4. AgentCore chi can khi agent phai tu lap ke hoach, goi nhieu tool, giu memory, hoac chay production voi eval/observability.
+
+## 6A. Harness vs Runtime: chon dung boundary
+
+AgentCore co hai duong chinh:
+
+| Cau hoi | Harness | Runtime |
+|---|---|---|
+| Minh muon khai bao agent bang config? | Rat phu hop | Khong phai muc tieu chinh |
+| Minh muon tu giu orchestration loop? | Khong phu hop neu can custom sau | Phu hop |
+| Da co LangGraph/Strands/CrewAI/OpenAI Agents SDK/custom code? | Chi phu hop neu chuyen ve config | Phu hop |
+| Can nhanh co model/tools/memory/observability? | Phu hop | Phu hop nhung minh phai goi primitive tu code |
+| Can graph/workflow/non-agent-loop pattern? | Khong phu hop | Phu hop |
+| Can custom container/dependency/control sau? | Gioi han hon | Phu hop |
+
+Quy tac thuc dung:
+
+- **Start Harness** neu muc tieu la hoc AgentCore hoac prototype agent config-first.
+- **Start Runtime** neu day la production codebase co framework, tool contract, custom state machine, streaming, hoac testing rieng.
+- **Gateway/Memory/Identity/Policy** khong phai chi danh cho Harness. Runtime code co the goi cac primitive nay truc tiep.
+
+## 6B. Cost drivers cua agent production
+
+Agent production khong nen chi estimate token. Can tinh theo session va theo tool behavior:
+
+| Thanh phan | Don vi can estimate | Cach giam rui ro |
+|---|---|---|
+| Model reasoning | Input/output tokens, so reasoning steps | Gioi han max iterations, prompt ngan, routing model theo do kho |
+| Runtime | CPU/memory active consumption, session lifetime | Khong giu process background vo ich; timeout/idle limit ro |
+| Gateway | ListTools/InvokeTool/Search calls, so tools indexed | Cache tool list, gom tool contract, tranh fan-out khong can |
+| Policy | Authorization request moi tool call | Chon tool boundary dung muc, test deny/allow bang case cu the |
+| Identity | Token/API-key request cho non-AWS resource | Reuse token dung cach, scope hep, expire ro |
+| Memory | Short-term events, long-term records, retrieval calls | Dinh nghia what-to-remember, TTL/retention, khong log raw chat qua muc |
+| Browser/Code Interpreter | CPU/memory va thoi gian session | Chi bat khi task that su can; cap file size/runtime/network |
+| Web Search | So query | Dung allowlist/query budget; khong search mac dinh moi turn |
+| Observability | Spans/logs/metrics ingest va retention | Sample hop ly, mask PII, log structured metadata thay vi full payload |
+| Evaluations | Token/evaluation count, sampling rate, batch size | Chay gate tren golden set; production sampling theo risk |
+
+## 6C. Production operating model
+
+Mot agent production nen co cac control loop sau:
+
+1. **Release loop**: prompt/tool schema/model config duoc version; deploy qua stage; rollback duoc.
+2. **Quality loop**: golden dataset, built-in/custom eval, threshold, regression gate.
+3. **Trace loop**: moi session co trace id; moi model/tool call co span, latency, token/cost/error.
+4. **Policy loop**: tool call duoc enforce bang Gateway/Policy/IAM, khong chi bang prompt instruction.
+5. **Memory loop**: memory update co policy, actor/user/project namespace, retention/delete/export.
+6. **Cost loop**: budget/quota alarm theo token, runtime, gateway, web search, browser/code, CloudWatch.
+7. **Incident loop**: runbook cho model outage, tool outage, high latency, bad answer, credential expiry, cost spike.
 
 ## 7. Repo `awslabs/agentcore-samples` nen doc nhu the nao?
 
@@ -252,9 +313,15 @@ Ung vien tot:
 - AWS: [AgentCore Optimization](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/optimization.html)
 - AWS: [AWS Agent Registry](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/registry.html)
 - AWS: [AgentCore Payments](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/payments.html)
+- AWS: [AgentCore harness vs Runtime](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/harness-vs-runtime.html)
+- AWS: [Amazon Bedrock AgentCore pricing](https://aws.amazon.com/bedrock/agentcore/pricing/)
 - AWS: [Amazon Bedrock Documentation](https://docs.aws.amazon.com/bedrock/)
 - AWS: [Amazon Bedrock Agents](https://docs.aws.amazon.com/bedrock/latest/userguide/agents.html)
+- AWS: [Amazon Bedrock Agents Classic maintenance mode](https://docs.aws.amazon.com/bedrock/latest/userguide/agents-classic-maintenance-mode.html)
 - AWS: [Amazon Bedrock Flows](https://docs.aws.amazon.com/bedrock/latest/userguide/flows.html)
 - AWS: [Amazon Bedrock Knowledge Bases](https://docs.aws.amazon.com/bedrock/latest/userguide/knowledge-base.html)
+- AWS: [Build a managed knowledge base](https://docs.aws.amazon.com/bedrock/latest/userguide/kb-build-managed.html)
+- AWS: [Query a knowledge base and retrieve data](https://docs.aws.amazon.com/bedrock/latest/userguide/kb-test-retrieve.html)
+- AWS: [Amazon Bedrock Guardrails pricing behavior](https://docs.aws.amazon.com/bedrock/latest/userguide/guardrails-how.html)
 - AWS Prescriptive Guidance: [Strands Agents](https://docs.aws.amazon.com/prescriptive-guidance/latest/agentic-ai-frameworks/strands-agents.html)
 - GitHub: [awslabs/agentcore-samples](https://github.com/awslabs/agentcore-samples)
