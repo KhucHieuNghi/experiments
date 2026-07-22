@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Product and Business | ETUS</title>
+    <link rel="stylesheet" href="assets/docs-theme.css" />
+    <link rel="stylesheet" href="assets/docs-brand.css" />
+  </head>
+  <body>
+    <div class="docs-shell">
+      <aside class="docs-sidebar" id="docs-sidebar" aria-label="Documentation navigation">
+        <div class="docs-sidebar__label">Product Journey</div>
+        <nav class="docs-nav" aria-label="Page sections">
+          <a href="#overview">Overview</a>
+          <a href="#journey">Journey</a>
+          <a href="#rules">Rules</a>
+          <a href="#evidence">Evidence</a>
+        </nav>
+      </aside>
+      <main class="docs-content">
+        <button class="docs-menu-button" type="button" aria-controls="docs-sidebar" aria-expanded="false" data-docs-sidebar-toggle>Menu</button>
+        <header class="docs-hero">
+          <p class="docs-eyebrow">AQ-J1</p>
+          <h1>Product and Business Onboarding</h1>
+          <p>How ETUS turns natural-language YAML test intent into an executed QA result that humans and coding agents can triage.</p>
+        </header>
+        <section id="overview">
+          <h2>Overview</h2>
+          <div class="docs-card">
+            <p><strong>Readiness:</strong> PASS</p>
+            <p>The primary business value is local, reviewable, agent-assisted QA execution for web and mobile products. The system reduces selector maintenance, records detailed execution evidence, and improves repeated runs through cache and memory.</p>
+          </div>
+        </section>
+        <section id="journey">
+          <h2>Journey</h2>
+          <pre class="mermaid">stateDiagram-v2
+  [*] --&gt; Authored
+  Authored --&gt; Validated
+  Validated --&gt; Queued
+  Queued --&gt; Running
+  Running --&gt; Passed
+  Running --&gt; Failed
+  Running --&gt; Cancelled
+  Running --&gt; Flaky
+  Failed --&gt; Triaged
+  Passed --&gt; MemoryCurated
+  Flaky --&gt; Triaged
+  MemoryCurated --&gt; [*]
+  Triaged --&gt; Authored</pre>
+          <div class="docs-card">
+            <p>The journey starts when a developer or agent authors or selects a YAML test or suite. The CLI, dashboard, or MCP validates and runs it. The core runtime observes UI, plans typed actions, executes through platform adapters, verifies completion, writes artifacts, and exposes results for review.</p>
+          </div>
+        </section>
+        <section id="rules">
+          <h2>Rules</h2>
+          <div class="docs-card">
+            <ul>
+              <li>Tests require canonical IDs, target, name, and at least one step.</li>
+              <li>Global platform selection is rejected; target-level platform resolution owns this boundary.</li>
+              <li>Cache and memory can be disabled per run.</li>
+              <li>Mobile jobs serialize per platform in the dashboard queue.</li>
+              <li>MCP tools delegate run and authoring operations through local dashboard APIs.</li>
+            </ul>
+          </div>
+        </section>
+        <section id="evidence">
+          <h2>Evidence</h2>
+          <aside class="docs-callout">
+            Key sources: AGENTS.md, core schemas, core runner and loop, dashboard queue and DB schema, dashboard UI routes, and MCP tool registration. Product intent beyond implemented source still needs owner confirmation.
+          </aside>
+        </section>
+      </main>
+    </div>
+    <script>
+      if (window.mermaid) {
+        const styles = getComputedStyle(document.documentElement);
+        window.mermaid.initialize({
+          startOnLoad: false,
+          theme: "base",
+          themeVariables: {
+            primaryColor: styles.getPropertyValue("--brand-primary").trim(),
+            primaryTextColor: styles.getPropertyValue("--on-brand-primary").trim(),
+            primaryBorderColor: styles.getPropertyValue("--brand-secondary").trim(),
+            secondaryColor: styles.getPropertyValue("--brand-secondary").trim(),
+            tertiaryColor: styles.getPropertyValue("--brand-accent").trim(),
+            lineColor: styles.getPropertyValue("--text-muted").trim(),
+            background: styles.getPropertyValue("--surface").trim(),
+          },
+        });
+      }
+    </script>
+    <script src="assets/docs-theme.js"></script>
+  </body>
+</html>

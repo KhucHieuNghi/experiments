@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "skills": {
+    "codebase-onboarding-c4": {
+      "source": "KhucHieuNghi/agents-skills",
+      "sourceType": "github",
+      "skillPath": "skills/codebase-onboarding-c4/SKILL.md",
+      "computedHash": "fa6dcb90b97ba933e1ed8f7feb46a92d55286f5079b21067f9e984d20fdc9763"
+    },
+    "hallmark": {
+      "source": "nutlope/hallmark",
+      "sourceType": "github",
+      "skillPath": "skills/hallmark/SKILL.md",
+      "computedHash": "8a8ecafd613f09e701330b5aa4a591ac539abb2605596df4a2394f03628d1d76"
+    },
+    "html-docs-standard": {
+      "source": "KhucHieuNghi/agents-skills",
+      "sourceType": "github",
+      "skillPath": "skills/html-docs-standard/SKILL.md",
+      "computedHash": "ed5b52b14a1b430744e7334cbcc34db823a2b989d8bba5f0897249b5dc60f0a4"
+    }
+  }
+}

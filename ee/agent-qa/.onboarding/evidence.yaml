@@ -1,0 +1,62 @@
+schema_version: 1
+items:
+  - id: "ev-001"
+    label: verified-from-source
+    claim: "ETUS is a monorepo with CLI, core, web, Android, iOS, dashboard, MCP, and ID packages."
+    source: "AGENTS.md"
+    confidence: high
+  - id: "ev-002"
+    label: verified-from-source
+    claim: "Root tooling uses pnpm, Turbo, Node >=24, tsup, Vite, and Vitest."
+    source: "package.json; packages/*/package.json"
+    confidence: high
+  - id: "ev-003"
+    label: verified-from-source
+    claim: "Test YAML requires canonical test-id, name, target, and steps."
+    source: "packages/core/src/schema/test-schema.ts"
+    confidence: high
+  - id: "ev-004"
+    label: verified-from-source
+    claim: "Config schema owns workspace, services, registry, use, plugins, and analytics."
+    source: "packages/core/src/schema/config-schema.ts"
+    confidence: high
+  - id: "ev-005"
+    label: verified-from-source
+    claim: "runTest owns adapter, planner, verifier, cache, memory, hooks, reporters, variables, secrets, screenshots, accessibility, and timeouts."
+    source: "packages/core/src/agent/runner.ts"
+    confidence: high
+  - id: "ev-006"
+    label: verified-from-source
+    claim: "executeStep performs observe, cache or plan, execute, verify, retry, and trace collection."
+    source: "packages/core/src/agent/loop.ts"
+    confidence: high
+  - id: "ev-007"
+    label: verified-from-source
+    claim: "Dashboard DB stores runs, steps, reasoning traces, logs, execution logs, token events, and run artifacts."
+    source: "packages/dashboard-server/src/db/schema.ts"
+    confidence: high
+  - id: "ev-008"
+    label: verified-from-source
+    claim: "Dashboard queue stores pending runs and initial artifacts before execution."
+    source: "packages/dashboard-server/src/queue/job-queue.ts"
+    confidence: high
+  - id: "ev-009"
+    label: verified-from-source
+    claim: "Dashboard UI exposes runs, run detail/live, tests, hooks, memory, insights, config, and suites pages."
+    source: "packages/dashboard-ui/src/app.tsx"
+    confidence: high
+  - id: "ev-010"
+    label: verified-from-source
+    claim: "MCP exposes discovery, schema, ID, tests, suites, hooks, run, logs, artifacts, cancel, and failure classification tools."
+    source: "packages/mcp/src/ETUS-server.ts"
+    confidence: high
+  - id: "ev-011"
+    label: verified-from-source
+    claim: "CodeGraph index is current with 838 files, 10669 nodes, and 25560 edges."
+    source: "codegraph status"
+    confidence: high
+  - id: "ev-012"
+    label: needs-confirmation
+    claim: "Commercial product positioning and roadmap require owner confirmation beyond implemented source."
+    source: "product/business owner"
+    confidence: medium

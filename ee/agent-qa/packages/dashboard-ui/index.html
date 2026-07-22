@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ETUS</title>
+  <link rel="preload" href="/node_modules/@fontsource-variable/geist/files/geist-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="preload" href="/node_modules/@fontsource-variable/geist-mono/files/geist-mono-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <script>
+    (function() {
+      var theme = localStorage.getItem('vite-ui-theme') || 'system';
+      var dark = theme === 'dark' ||
+        (theme === 'system' && matchMedia('(prefers-color-scheme:dark)').matches);
+      if (dark) document.documentElement.classList.add('dark');
+    })();
+  </script>
+  <style>
+    #splash{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:#fff6f6;transition:opacity .3s ease}
+    .dark #splash{background:#1d1d1d}
+    #splash.splash-hide{opacity:0;pointer-events:none}
+    @keyframes splash-in{from{opacity:0;transform:scale(0.96)}to{opacity:1;transform:scale(1)}}
+    #splash svg{height:58px;width:auto;animation:splash-in .5s ease-out both}
+  </style>
+</head>
+<body>
+  <div id="splash">
+    <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="ETUS">
+      <rect x="6" y="6" width="46" height="46" fill="#313331" />
+      <rect x="12" y="12" width="46" height="46" fill="#fff6f6" stroke="#313331" stroke-width="4" />
+      <path d="M24 23H46V29H31V34H44V40H31V47H24V23Z" fill="#cb222a" />
+    </svg>
+  </div>
+  <div id="app"></div>
+  <script type="module" src="/src/main.tsx"></script>
+</body>
+</html>

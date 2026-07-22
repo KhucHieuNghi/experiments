@@ -1,0 +1,43 @@
+schema_version: 1
+run_id: "onboarding-2026-07-22-aq-j1"
+mode: standard
+topology: monorepo
+primary_journey_id: "AQ-J1"
+tracks:
+  - id: "track-product-journey"
+    result: PASS
+  - id: "track-c4-architecture"
+    result: PASS
+  - id: "track-codegraph"
+    result: PASS
+evidence_sources:
+  - "AGENTS.md"
+  - "package.json"
+  - "packages/core/src/agent/runner.ts"
+  - "packages/core/src/agent/loop.ts"
+  - "packages/dashboard-server/src/server/server.ts"
+  - "packages/dashboard-server/src/queue/job-queue.ts"
+  - "packages/dashboard-ui/src/app.tsx"
+  - "packages/mcp/src/ETUS-server.ts"
+gate_results:
+  product_journey: PASS
+  technical_c4: PASS
+  engineering_navigation: PASS
+  evidence_integrity: PASS
+  security_public_boundary: PASS_WITH_GREY_ZONES
+retries: []
+contradictions: []
+grey_zones:
+  - "Brand profile used fallback tokens after insufficient static extraction."
+  - "Package test/build commands were not executed."
+journey_c4_coverage:
+  - journey_id: "AQ-J1"
+    c1: complete
+    c2: complete
+    c3: selective
+    sequence: complete
+final_status: PASS_WITH_GREY_ZONES
+next_investigations:
+  - "Run focused package tests before implementation work."
+  - "Confirm product/business intent with owner before external-facing positioning."
+completed_at: "2026-07-22T16:12:00Z"

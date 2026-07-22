@@ -1,0 +1,7 @@
+version: 1
+brand_name: "ETUS"
+source_origin: https://www.onpoint.vn
+extraction_method: fallback
+extraction_status: fallback
+created_at: 2026-07-22T16:08:17.562Z
+design_path: .onboarding/brand/DESIGN.md

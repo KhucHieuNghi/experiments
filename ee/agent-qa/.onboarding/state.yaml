@@ -1,0 +1,68 @@
+schema_version: 1
+run_id: "onboarding-2026-07-22-aq-j1"
+mode: standard
+status: complete
+repository:
+  fingerprint: "45ea3d84552b6ca023d44619a193ff273b0d2ab76c406984a3cd08997522502e"
+  git_head: "0ee69c168f37299693164c6cd432a8d221628c99"
+topology:
+  kind: monorepo
+  signals:
+    - "pnpm-workspace.yaml lists packages/*"
+    - "root package uses turbo"
+    - "AGENTS.md package map defines CLI, core, adapters, dashboard, MCP, IDs"
+journey:
+  id: "AQ-J1"
+  title: "Run and triage a natural-language QA test"
+  outcome: "A YAML test or suite is executed against a web or mobile target and produces reviewable artifacts for pass/fail/triage."
+tracks:
+  - id: "track-product-journey"
+    status: complete
+    scope: "business operation journey"
+  - id: "track-c4-architecture"
+    status: complete
+    scope: "C1, C2, selective C3 for AQ-J1"
+  - id: "track-codegraph"
+    status: complete
+    scope: "runTest and executeStep structural query"
+evidence_sources:
+  - "AGENTS.md"
+  - "package.json"
+  - "packages/*/package.json"
+  - "packages/cli/src/cli.ts"
+  - "packages/cli/src/commands/run.ts"
+  - "packages/core/src/agent/runner.ts"
+  - "packages/core/src/agent/loop.ts"
+  - "packages/core/src/schema/test-schema.ts"
+  - "packages/core/src/schema/config-schema.ts"
+  - "packages/dashboard-server/src/server/server.ts"
+  - "packages/dashboard-server/src/server/routes.ts"
+  - "packages/dashboard-server/src/queue/job-queue.ts"
+  - "packages/dashboard-server/src/db/schema.ts"
+  - "packages/dashboard-ui/src/app.tsx"
+  - "packages/mcp/src/ETUS-server.ts"
+gates:
+  product_journey: PASS
+  technical_c4: PASS
+  engineering_navigation: PASS
+  evidence_integrity: PASS
+  security_public_boundary: PASS_WITH_GREY_ZONES
+retries: []
+contradictions: []
+grey_zones:
+  - "Product intent beyond source and public README still needs product-owner confirmation."
+  - "Package build/test/typecheck commands were documented from repo instructions but not run during this onboarding pass."
+  - "Brand extraction used fallback tokens because static extraction from the supplied public origin was insufficient."
+artifacts:
+  - "docs/onboarding/index.html"
+  - "docs/onboarding/product-business.md"
+  - "docs/onboarding/product-business.html"
+  - "docs/onboarding/technical-architecture.md"
+  - "docs/onboarding/technical-architecture.html"
+  - "docs/onboarding/assets/docs-theme.css"
+  - "docs/onboarding/assets/docs-brand.css"
+  - "docs/onboarding/assets/docs-theme.js"
+  - ".onboarding/evidence.yaml"
+  - ".onboarding/runs/onboarding-2026-07-22-aq-j1.yaml"
+resume_from: complete
+updated_at: "2026-07-22T16:12:00Z"

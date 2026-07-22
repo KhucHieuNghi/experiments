@@ -1,0 +1,64 @@
+{
+  "name": "@etus/agent-qa-mcp",
+  "version": "0.1.21",
+  "private": false,
+  "description": "Model Context Protocol server and tools for ETUS authoring and triage.",
+  "keywords": [
+    "ETUS",
+    "mcp",
+    "model-context-protocol",
+    "testing",
+    "automation"
+  ],
+  "license": "SEE LICENSE IN LICENSE.md",
+  "homepage": "https://www.onpoint.vn",
+  "bugs": {
+    "url": "https://www.onpoint.vn"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://www.onpoint.vn",
+    "directory": "packages/mcp"
+  },
+  "engines": {
+    "node": ">=24"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "files": [
+    "dist",
+    "LICENSE.md",
+    "NOTICE.md"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist .turbo"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "1.29.0",
+    "@etus/agent-qa-core": "workspace:*",
+    "@etus/agent-qa-ids": "workspace:*",
+    "glob": "13.0.6",
+    "yaml": "2.8.4",
+    "zod": "4.4.2"
+  },
+  "devDependencies": {
+    "@types/node": "~24.12.2",
+    "tsup": "~8.5.1",
+    "typescript": "~6.0.3",
+    "vitest": "~4.1.5"
+  }
+}

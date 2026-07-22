@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Onboarding | ETUS</title>
+    <link rel="stylesheet" href="assets/docs-theme.css" />
+    <link rel="stylesheet" href="assets/docs-brand.css" />
+  </head>
+  <body>
+    <div class="docs-shell">
+      <aside class="docs-sidebar" id="docs-sidebar" aria-label="Documentation navigation">
+        <div class="docs-sidebar__label">ETUS Onboarding</div>
+        <nav class="docs-nav" aria-label="Page sections">
+          <a href="#overview">Overview</a>
+          <a href="#documents">Documents</a>
+          <a href="#quality">Quality Gates</a>
+        </nav>
+      </aside>
+      <main class="docs-content">
+        <button class="docs-menu-button" type="button" aria-controls="docs-sidebar" aria-expanded="false" data-docs-sidebar-toggle>Menu</button>
+        <header class="docs-hero">
+          <p class="docs-eyebrow">Codebase Onboarding C4</p>
+          <h1>ETUS onboarding workspace</h1>
+          <p>Source-backed Product Journey and C4 architecture onboarding for the primary QA execution journey.</p>
+        </header>
+        <section id="overview">
+          <h2>Overview</h2>
+          <div class="docs-card">
+            <p><strong>Primary Journey ID:</strong> AQ-J1</p>
+            <p>A developer or coding agent creates or selects YAML test intent, executes it through ETUS, and uses artifacts, traces, memory, and dashboard views to triage the outcome.</p>
+          </div>
+        </section>
+        <section id="documents">
+          <h2>Documents</h2>
+          <div class="docs-card">
+            <ul>
+              <li><a href="product-business.html">Product and Business Onboarding</a></li>
+              <li><a href="technical-architecture.html">Technical Architecture Onboarding</a></li>
+            </ul>
+          </div>
+        </section>
+        <section id="quality">
+          <h2>Quality Gates</h2>
+          <aside class="docs-callout">
+            Product Journey, Technical C4, Engineering Navigation, and Evidence Integrity passed. Security/Public Boundary passed with grey zones because package test/build commands were not executed and brand extraction used fallback tokens.
+          </aside>
+        </section>
+      </main>
+    </div>
+    <script>
+      if (window.mermaid) {
+        const styles = getComputedStyle(document.documentElement);
+        window.mermaid.initialize({
+          startOnLoad: false,
+          theme: "base",
+          themeVariables: {
+            primaryColor: styles.getPropertyValue("--brand-primary").trim(),
+            primaryTextColor: styles.getPropertyValue("--on-brand-primary").trim(),
+            primaryBorderColor: styles.getPropertyValue("--brand-secondary").trim(),
+            secondaryColor: styles.getPropertyValue("--brand-secondary").trim(),
+            tertiaryColor: styles.getPropertyValue("--brand-accent").trim(),
+            lineColor: styles.getPropertyValue("--text-muted").trim(),
+            background: styles.getPropertyValue("--surface").trim(),
+          },
+        });
+      }
+    </script>
+    <script src="assets/docs-theme.js"></script>
+  </body>
+</html>

@@ -1,0 +1,60 @@
+{
+  "name": "@etus/agent-qa-ios",
+  "version": "0.1.21",
+  "private": false,
+  "description": "ETUS iOS adapter for Appium-backed mobile testing.",
+  "keywords": [
+    "ETUS",
+    "testing",
+    "ios",
+    "appium",
+    "mobile"
+  ],
+  "license": "SEE LICENSE IN LICENSE.md",
+  "homepage": "https://www.onpoint.vn",
+  "bugs": {
+    "url": "https://www.onpoint.vn"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://www.onpoint.vn",
+    "directory": "packages/ios"
+  },
+  "engines": {
+    "node": ">=24"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "files": [
+    "dist",
+    "LICENSE.md",
+    "NOTICE.md"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "test": "vitest run --passWithNoTests",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist .turbo"
+  },
+  "dependencies": {
+    "@etus/agent-qa-core": "workspace:*",
+    "webdriverio": "9.24.0"
+  },
+  "devDependencies": {
+    "@types/node": "~24.12.2",
+    "tsup": "~8.5.1",
+    "typescript": "~6.0.3",
+    "vitest": "~4.1.5"
+  }
+}

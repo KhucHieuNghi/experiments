@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Technical Architecture | ETUS</title>
+    <link rel="stylesheet" href="assets/docs-theme.css" />
+    <link rel="stylesheet" href="assets/docs-brand.css" />
+  </head>
+  <body>
+    <div class="docs-shell">
+      <aside class="docs-sidebar" id="docs-sidebar" aria-label="Documentation navigation">
+        <div class="docs-sidebar__label">Technical C4</div>
+        <nav class="docs-nav" aria-label="Page sections">
+          <a href="#overview">Overview</a>
+          <a href="#architecture">Architecture</a>
+          <a href="#sequence">Sequence</a>
+          <a href="#operations">Operations</a>
+        </nav>
+      </aside>
+      <main class="docs-content">
+        <button class="docs-menu-button" type="button" aria-controls="docs-sidebar" aria-expanded="false" data-docs-sidebar-toggle>Menu</button>
+        <header class="docs-hero">
+          <p class="docs-eyebrow">AQ-J1</p>
+          <h1>Technical Architecture Onboarding</h1>
+          <p>C1, C2, selective C3, runtime, data, auth, messaging, and verification map for the ETUS execution journey.</p>
+        </header>
+        <section id="overview">
+          <h2>Overview</h2>
+          <div class="docs-card">
+            <p><strong>Readiness:</strong> PASS</p>
+            <p>The repository is a TypeScript monorepo. The CLI orchestrates runtime execution, core owns schemas and the agent loop, adapters execute on web/mobile, dashboard owns local control-plane APIs and UI, and MCP exposes local tools for coding agents.</p>
+          </div>
+        </section>
+        <section id="architecture">
+          <h2>Architecture</h2>
+          <pre class="mermaid">flowchart TD
+  CLI[packages/cli] --&gt; Core[packages/core]
+  CLI --&gt; Web[packages/web]
+  CLI --&gt; Android[packages/android]
+  CLI --&gt; IOS[packages/ios]
+  CLI --&gt; DashboardServer[packages/dashboard-server]
+  DashboardServer --&gt; Core
+  DashboardServer --&gt; MCP[packages/mcp]
+  DashboardServer --&gt; DashboardUI[packages/dashboard-ui assets]
+  DashboardUI --&gt; DashboardServer
+  MCP --&gt; Core
+  MCP --&gt; IDs[packages/ids]
+  Core --&gt; IDs
+  Web --&gt; Core
+  Android --&gt; Core
+  IOS --&gt; Core</pre>
+        </section>
+        <section id="sequence">
+          <h2>Sequence</h2>
+          <pre class="mermaid">sequenceDiagram
+  actor User as Developer or Agent
+  participant CLI as CLI or MCP/Dashboard
+  participant Core as Core Runner
+  participant Adapter as Platform Adapter
+  participant LLM as Planner and Verifier LLM
+  participant Store as Cache, Memory, SQLite, Artifacts
+  participant UI as Dashboard UI
+  User-&gt;&gt;CLI: Select or create YAML test
+  CLI-&gt;&gt;Core: Resolve config, target, model, variables
+  Core-&gt;&gt;Adapter: setup and navigate
+  loop each step
+    Core-&gt;&gt;Adapter: observe UI
+    Core-&gt;&gt;Store: read sub-action cache
+    Core-&gt;&gt;LLM: plan typed action on cache miss
+    Core-&gt;&gt;Adapter: execute action
+    Core-&gt;&gt;LLM: verify if stepComplete
+    Core-&gt;&gt;Store: write trace/cache/logs/screenshots
+  end
+  Core-&gt;&gt;Store: finalize run artifact and memory
+  UI-&gt;&gt;Store: query runs, steps, logs, artifacts
+  User-&gt;&gt;UI: triage result</pre>
+        </section>
+        <section id="operations">
+          <h2>Operations</h2>
+          <aside class="docs-callout">
+            Use package-focused checks while iterating. Root commands include pnpm build, pnpm test, pnpm typecheck, validate:skills, and validate:publish. CodeGraph is indexed and confirms the runTest and executeStep structural paths used by AQ-J1.
+          </aside>
+        </section>
+      </main>
+    </div>
+    <script>
+      if (window.mermaid) {
+        const styles = getComputedStyle(document.documentElement);
+        window.mermaid.initialize({
+          startOnLoad: false,
+          theme: "base",
+          themeVariables: {
+            primaryColor: styles.getPropertyValue("--brand-primary").trim(),
+            primaryTextColor: styles.getPropertyValue("--on-brand-primary").trim(),
+            primaryBorderColor: styles.getPropertyValue("--brand-secondary").trim(),
+            secondaryColor: styles.getPropertyValue("--brand-secondary").trim(),
+            tertiaryColor: styles.getPropertyValue("--brand-accent").trim(),
+            lineColor: styles.getPropertyValue("--text-muted").trim(),
+            background: styles.getPropertyValue("--surface").trim(),
+          },
+        });
+      }
+    </script>
+    <script src="assets/docs-theme.js"></script>
+  </body>
+</html>
