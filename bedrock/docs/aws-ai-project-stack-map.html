@@ -1,0 +1,1539 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AWS AI Project Stack Map</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f6f7fb;
+      --panel: #ffffff;
+      --ink: #172033;
+      --muted: #647084;
+      --line: #d9dfeb;
+      --soft: #eef2f8;
+      --blue: #dfeeff;
+      --green: #e4f7ec;
+      --amber: #fff2d8;
+      --violet: #ece8ff;
+      --rose: #ffe8ed;
+      --teal: #def7f4;
+      --slate: #e9edf4;
+      --shadow: 0 18px 45px rgba(32, 43, 70, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.5;
+    }
+
+    a {
+      color: #1d5fd6;
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    .page {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 28px 0 64px;
+    }
+
+    .hero {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 28px;
+      box-shadow: var(--shadow);
+    }
+
+    .eyebrow {
+      margin: 0 0 8px;
+      color: var(--muted);
+      font-size: 0.92rem;
+      font-weight: 650;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+    }
+
+    h1,
+    h2,
+    h3 {
+      margin: 0;
+      line-height: 1.12;
+      letter-spacing: -0.01em;
+    }
+
+    h1 {
+      font-size: clamp(2rem, 5vw, 4.6rem);
+      max-width: 980px;
+    }
+
+    h2 {
+      font-size: clamp(1.45rem, 2.6vw, 2.25rem);
+      margin-bottom: 12px;
+    }
+
+    h3 {
+      font-size: 1.05rem;
+      margin-bottom: 6px;
+    }
+
+    .lead {
+      max-width: 820px;
+      margin: 18px 0 0;
+      color: var(--muted);
+      font-size: 1.08rem;
+    }
+
+    .quick-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 24px;
+    }
+
+    .quick-card,
+    .panel,
+    .stack-row,
+    .doc-card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+    }
+
+    .quick-card {
+      padding: 16px;
+    }
+
+    .reader-path {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .reader-card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 14px;
+      min-height: 142px;
+    }
+
+    .reader-card small {
+      display: inline-flex;
+      margin-bottom: 8px;
+      color: var(--muted);
+      font-weight: 800;
+    }
+
+    .quick-card strong,
+    .label,
+    .reader-card strong {
+      display: block;
+      font-weight: 750;
+      margin-bottom: 4px;
+    }
+
+    .quick-card span,
+    .muted,
+    .small {
+      color: var(--muted);
+    }
+
+    section {
+      margin-top: 26px;
+    }
+
+    .section-head {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 12px;
+    }
+
+    .section-head p {
+      margin: 0;
+      color: var(--muted);
+      max-width: 720px;
+    }
+
+    .stack-map {
+      display: grid;
+      gap: 10px;
+    }
+
+    .stack-row {
+      display: grid;
+      grid-template-columns: 52px 1.1fr 1.25fr 1.25fr;
+      gap: 14px;
+      padding: 14px;
+      align-items: center;
+    }
+
+    .stack-row:nth-child(1) { background: linear-gradient(90deg, var(--blue), var(--panel)); }
+    .stack-row:nth-child(2) { background: linear-gradient(90deg, var(--green), var(--panel)); }
+    .stack-row:nth-child(3) { background: linear-gradient(90deg, var(--violet), var(--panel)); }
+    .stack-row:nth-child(4) { background: linear-gradient(90deg, var(--amber), var(--panel)); }
+    .stack-row:nth-child(5) { background: linear-gradient(90deg, var(--rose), var(--panel)); }
+    .stack-row:nth-child(6) { background: linear-gradient(90deg, var(--teal), var(--panel)); }
+    .stack-row:nth-child(7) { background: linear-gradient(90deg, var(--slate), var(--panel)); }
+    .stack-row:nth-child(8) { background: linear-gradient(90deg, #edf0ff, var(--panel)); }
+
+    .num {
+      width: 36px;
+      height: 36px;
+      display: grid;
+      place-items: center;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.72);
+      border: 1px solid var(--line);
+      font-weight: 800;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .stack-title {
+      font-weight: 800;
+      margin-bottom: 4px;
+    }
+
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 8px;
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.72);
+      border-radius: 999px;
+      padding: 4px 8px;
+      color: var(--muted);
+      font-size: 0.86rem;
+      white-space: nowrap;
+    }
+
+    .decision-grid {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .decision {
+      padding: 14px;
+      border: 1px solid var(--line);
+      background: var(--panel);
+      border-radius: 14px;
+      min-height: 152px;
+    }
+
+    .decision .answer {
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+    }
+
+    .reference-architecture {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 18px;
+      box-shadow: var(--shadow);
+    }
+
+    .diagram-frame {
+      width: 100%;
+      overflow-x: auto;
+      padding-bottom: 6px;
+    }
+
+    .architecture-svg {
+      width: 100%;
+      min-width: 980px;
+      height: auto;
+      display: block;
+    }
+
+    .architecture-svg text {
+      fill: var(--ink);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    .architecture-svg .label-muted {
+      fill: var(--muted);
+    }
+
+    .architecture-svg .box {
+      fill: #ffffff;
+      stroke: #cfd7e6;
+      stroke-width: 1.4;
+    }
+
+    .architecture-svg .aws-boundary {
+      fill: #fbfcff;
+      stroke: #6b7280;
+      stroke-width: 1.5;
+    }
+
+    .architecture-svg .region-boundary {
+      fill: rgba(223, 238, 255, 0.28);
+      stroke: #1593d1;
+      stroke-width: 1.8;
+      stroke-dasharray: 7 5;
+    }
+
+    .architecture-svg .lane-boundary {
+      fill: rgba(246, 247, 251, 0.7);
+      stroke: #d9dfeb;
+      stroke-width: 1.2;
+    }
+
+    .architecture-svg .arrow {
+      stroke: #374151;
+      stroke-width: 1.8;
+      fill: none;
+      marker-end: url(#arrowhead);
+    }
+
+    .architecture-svg .arrow-soft {
+      stroke: #647084;
+      stroke-width: 1.5;
+      stroke-dasharray: 6 5;
+      fill: none;
+      marker-end: url(#arrowhead-muted);
+    }
+
+    .architecture-svg .service-blue { fill: #dfeeff; }
+    .architecture-svg .service-green { fill: #e4f7ec; }
+    .architecture-svg .service-amber { fill: #fff2d8; }
+    .architecture-svg .service-violet { fill: #ece8ff; }
+    .architecture-svg .service-rose { fill: #ffe8ed; }
+    .architecture-svg .service-teal { fill: #def7f4; }
+    .architecture-svg .service-slate { fill: #e9edf4; }
+
+    .diagram-legend {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .legend-item {
+      border: 1px solid var(--line);
+      background: #fbfcff;
+      border-radius: 12px;
+      padding: 12px;
+    }
+
+    .legend-item strong {
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .c4-shell {
+      display: grid;
+      gap: 12px;
+    }
+
+    .c4-level {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 16px;
+      box-shadow: var(--shadow);
+    }
+
+    .c4-level-head {
+      display: grid;
+      grid-template-columns: 84px minmax(0, 1fr);
+      gap: 12px;
+      align-items: start;
+      margin-bottom: 12px;
+    }
+
+    .c4-badge {
+      border-radius: 999px;
+      background: #172033;
+      color: #ffffff;
+      display: inline-flex;
+      justify-content: center;
+      padding: 6px 10px;
+      font-weight: 850;
+      white-space: nowrap;
+    }
+
+    .c4-diagram {
+      display: grid;
+      gap: 10px;
+    }
+
+    .c4-row {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+      align-items: stretch;
+    }
+
+    .c4-row.three {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .c4-box {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 13px;
+      background: #fbfcff;
+      min-height: 126px;
+    }
+
+    .c4-box.blue { background: var(--blue); }
+    .c4-box.green { background: var(--green); }
+    .c4-box.amber { background: var(--amber); }
+    .c4-box.violet { background: var(--violet); }
+    .c4-box.rose { background: var(--rose); }
+    .c4-box.teal { background: var(--teal); }
+    .c4-box.slate { background: var(--slate); }
+
+    .c4-box strong {
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    .c4-arrow-row {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+      color: var(--muted);
+      text-align: center;
+      font-weight: 850;
+    }
+
+    .c4-flow {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 8px;
+      align-items: stretch;
+    }
+
+    .c4-flow-step {
+      border-top: 3px solid var(--line);
+      padding-top: 8px;
+    }
+
+    .c4-component-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .arch-shell {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 16px;
+      box-shadow: var(--shadow);
+    }
+
+    .arch-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 0.9fr) minmax(0, 1fr) minmax(0, 1.15fr) minmax(0, 1.15fr) minmax(0, 1fr);
+      gap: 10px;
+      align-items: stretch;
+    }
+
+    .arch-column {
+      min-width: 0;
+      display: grid;
+      gap: 8px;
+      align-content: start;
+    }
+
+    .arch-column-title {
+      font-weight: 800;
+      color: var(--muted);
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+      min-height: 38px;
+      display: flex;
+      align-items: end;
+    }
+
+    .arch-box {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 12px;
+      background: #fbfcff;
+      min-height: 96px;
+      position: relative;
+    }
+
+    .arch-box.blue { background: var(--blue); }
+    .arch-box.green { background: var(--green); }
+    .arch-box.amber { background: var(--amber); }
+    .arch-box.violet { background: var(--violet); }
+    .arch-box.rose { background: var(--rose); }
+    .arch-box.teal { background: var(--teal); }
+    .arch-box.slate { background: var(--slate); }
+
+    .arch-box strong {
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .arch-arrow {
+      min-height: 22px;
+      display: grid;
+      place-items: center;
+      color: var(--muted);
+      font-weight: 900;
+    }
+
+    .arch-loop {
+      margin-top: 14px;
+      border-top: 1px solid var(--line);
+      padding-top: 14px;
+      display: grid;
+      grid-template-columns: 1.2fr repeat(4, minmax(0, 1fr));
+      gap: 10px;
+      align-items: stretch;
+    }
+
+    .arch-loop .loop-label {
+      display: flex;
+      align-items: center;
+      color: var(--muted);
+      font-weight: 800;
+    }
+
+    .journey-legend {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .journey-legend-card {
+      border: 1px solid var(--line);
+      background: #fbfcff;
+      border-radius: 12px;
+      padding: 12px;
+    }
+
+    .journey-legend-card strong {
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .journey-shell {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 16px;
+      box-shadow: var(--shadow);
+    }
+
+    .mode-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    button.tab {
+      appearance: none;
+      border: 1px solid var(--line);
+      background: var(--soft);
+      color: var(--ink);
+      border-radius: 999px;
+      padding: 9px 13px;
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    button.tab[aria-pressed="true"] {
+      background: #172033;
+      color: #ffffff;
+      border-color: #172033;
+    }
+
+    .journey {
+      display: grid;
+      gap: 8px;
+    }
+
+    .stage {
+      display: grid;
+      grid-template-columns: 148px minmax(0, 1fr);
+      gap: 12px;
+      align-items: stretch;
+    }
+
+    .lane {
+      border-left: 4px solid #1f70d1;
+      padding: 10px 0 10px 12px;
+      color: var(--muted);
+    }
+
+    .lane strong {
+      display: block;
+      color: var(--ink);
+      margin-bottom: 2px;
+    }
+
+    .node {
+      display: grid;
+      grid-template-columns: 34px minmax(0, 1fr);
+      gap: 10px;
+      align-items: center;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 12px;
+      background: #fbfcff;
+    }
+
+    .journey[data-mode="rag"] .node { background: var(--blue); }
+    .journey[data-mode="agent"] .node { background: var(--green); }
+    .journey[data-mode="ml"] .node { background: var(--amber); }
+    .journey[data-mode="q"] .node { background: var(--violet); }
+
+    .node-index {
+      width: 30px;
+      height: 30px;
+      display: grid;
+      place-items: center;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.72);
+      font-weight: 800;
+    }
+
+    .node strong {
+      display: block;
+      margin-bottom: 2px;
+    }
+
+    .arrow {
+      display: grid;
+      grid-template-columns: 148px minmax(0, 1fr);
+      gap: 12px;
+      min-height: 18px;
+    }
+
+    .arrow span:last-child {
+      width: 2px;
+      background: var(--line);
+      margin-left: 16px;
+    }
+
+    .always-on {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px solid var(--line);
+    }
+
+    .always-on > div {
+      background: var(--soft);
+      border-radius: 12px;
+      padding: 12px;
+    }
+
+    .roadmap {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .phase {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 14px;
+      min-height: 210px;
+    }
+
+    .phase small {
+      display: inline-flex;
+      margin-bottom: 8px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      background: var(--soft);
+      color: var(--muted);
+      font-weight: 800;
+    }
+
+    .phase ul,
+    .doc-card ul {
+      margin: 8px 0 0;
+      padding-left: 18px;
+    }
+
+    .phase li,
+    .doc-card li {
+      margin: 5px 0;
+    }
+
+    .docs-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .doc-card {
+      padding: 14px;
+    }
+
+    .sources {
+      background: #111827;
+      color: #dce3f0;
+      border-radius: 18px;
+      padding: 20px;
+    }
+
+    .sources h2 {
+      color: #ffffff;
+    }
+
+    .sources a {
+      color: #9ec5ff;
+    }
+
+    .sources ul {
+      columns: 2;
+      margin-bottom: 0;
+    }
+
+    @media (max-width: 960px) {
+      .quick-grid,
+      .decision-grid,
+      .roadmap,
+      .docs-grid,
+      .always-on,
+      .journey-legend,
+      .reader-path,
+      .diagram-legend,
+      .c4-row,
+      .c4-row.three,
+      .c4-flow,
+      .c4-component-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .arch-grid,
+      .arch-loop {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .arch-loop .loop-label {
+        grid-column: 1 / -1;
+      }
+
+      .stack-row {
+        grid-template-columns: 42px minmax(0, 1fr);
+      }
+
+      .stack-row > div:nth-child(3),
+      .stack-row > div:nth-child(4) {
+        grid-column: 2;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .page {
+        width: min(100% - 20px, 1180px);
+        padding-top: 10px;
+      }
+
+      .hero {
+        padding: 18px;
+      }
+
+      .quick-grid,
+      .decision-grid,
+      .roadmap,
+      .docs-grid,
+      .always-on,
+      .reader-path,
+      .diagram-legend,
+      .c4-row,
+      .c4-row.three,
+      .c4-flow,
+      .c4-component-grid,
+      .arch-grid,
+      .arch-loop,
+      .journey-legend,
+      .stage,
+      .arrow {
+        grid-template-columns: 1fr;
+      }
+
+      .c4-level-head {
+        grid-template-columns: 1fr;
+      }
+
+      .arrow span:last-child {
+        height: 16px;
+      }
+
+      .sources ul {
+        columns: 1;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header class="hero">
+      <p class="eyebrow">AWS AI ecosystem project map</p>
+      <h1>Chọn đúng stack AWS AI cho dự án mới</h1>
+      <p class="lead">
+        Trang này gom lại Bedrock, AgentCore, SageMaker, Amazon Q, data/RAG/search, runtime và security/ops thành một bản đồ triển khai. Mục tiêu là giúp một human nhìn vào và biết request đi qua đâu, stack nào nên dùng, và cần chuẩn bị tài liệu gì trước khi build.
+      </p>
+      <div class="quick-grid">
+        <div class="quick-card">
+          <strong>Muốn dùng ngay</strong>
+          <span>Ưu tiên Amazon Q hoặc Applied AI APIs nếu bài toán khớp sản phẩm AWS có sẵn.</span>
+        </div>
+        <div class="quick-card">
+          <strong>Muốn build genAI app</strong>
+          <span>Ưu tiên Bedrock khi cần model, prompt, RAG, guardrails, flows.</span>
+        </div>
+        <div class="quick-card">
+          <strong>Muốn agent production</strong>
+          <span>Ưu tiên AgentCore khi agent cần tools, memory, identity, observability, evaluation và policy.</span>
+        </div>
+      </div>
+    </header>
+
+    <section>
+      <div class="section-head">
+        <div>
+          <h2>1. Cách đọc tài liệu này</h2>
+          <p>Đọc theo thứ tự này nếu anh đang chuẩn bị một dự án mới. C4 giúp nhìn architecture, stack map giúp chọn service, request journey giúp hiểu runtime flow.</p>
+        </div>
+      </div>
+      <div class="reader-path">
+        <div class="reader-card">
+          <small>Step 1</small>
+          <strong>Nhìn overview architecture</strong>
+          <span class="small">Xác định request đi qua edge, security, orchestration, AI layer, data/tools và ops loop.</span>
+        </div>
+        <div class="reader-card">
+          <small>Step 2</small>
+          <strong>Drill-down bằng C4</strong>
+          <span class="small">Xác định system context, containers, components và implementation entry points.</span>
+        </div>
+        <div class="reader-card">
+          <small>Step 3</small>
+          <strong>Chọn stack AWS</strong>
+          <span class="small">Amazon Q, Bedrock, AgentCore, SageMaker, AI APIs, data/search, runtime, ops.</span>
+        </div>
+        <div class="reader-card">
+          <small>Step 4</small>
+          <strong>Map journey và roadmap</strong>
+          <span class="small">Chọn kiểu request rồi triển khai theo phase: prototype, production, evaluation, pilot.</span>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <div>
+          <h2>2. Architecture overview: request đi qua AWS như thế nào?</h2>
+          <p>Diagram này đọc theo hướng trái sang phải. Đường liền là data plane của request; đường nét đứt là control plane/observability chạy song song để deploy, govern và cải thiện hệ thống.</p>
+        </div>
+      </div>
+      <div class="reference-architecture">
+        <div class="diagram-frame">
+          <svg class="architecture-svg" viewBox="0 0 1200 720" role="img" aria-labelledby="architecture-title architecture-desc">
+            <title id="architecture-title">AWS AI project reference architecture overview</title>
+            <desc id="architecture-desc">A request flows from users and systems through app edge, identity, orchestration, AI decision layer, data and tools, then response and observability governance.</desc>
+            <defs>
+              <marker id="arrowhead" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
+                <path d="M0,0 L10,4 L0,8 Z" fill="#374151"></path>
+              </marker>
+              <marker id="arrowhead-muted" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
+                <path d="M0,0 L10,4 L0,8 Z" fill="#647084"></path>
+              </marker>
+            </defs>
+
+            <rect x="18" y="48" width="150" height="540" rx="10" class="box service-slate"></rect>
+            <text x="42" y="80" font-size="17" font-weight="800">Outside AWS</text>
+            <rect x="42" y="112" width="102" height="74" rx="10" class="box service-blue"></rect>
+            <text x="93" y="142" text-anchor="middle" font-size="14" font-weight="800">Users</text>
+            <text x="93" y="162" text-anchor="middle" font-size="12" class="label-muted">Web / Chat / IDE</text>
+            <rect x="42" y="254" width="102" height="84" rx="10" class="box service-teal"></rect>
+            <text x="93" y="282" text-anchor="middle" font-size="14" font-weight="800">Systems</text>
+            <text x="93" y="302" text-anchor="middle" font-size="12" class="label-muted">CRM / ERP / APIs</text>
+            <text x="93" y="320" text-anchor="middle" font-size="12" class="label-muted">Documents</text>
+            <rect x="42" y="406" width="102" height="84" rx="10" class="box service-rose"></rect>
+            <text x="93" y="434" text-anchor="middle" font-size="14" font-weight="800">Teams</text>
+            <text x="93" y="454" text-anchor="middle" font-size="12" class="label-muted">Security / Ops</text>
+            <text x="93" y="472" text-anchor="middle" font-size="12" class="label-muted">Platform</text>
+
+            <rect x="205" y="36" width="952" height="590" rx="12" class="aws-boundary"></rect>
+            <text x="224" y="66" font-size="19" font-weight="900">AWS Cloud account</text>
+            <rect x="230" y="86" width="902" height="430" rx="10" class="region-boundary"></rect>
+            <text x="250" y="116" font-size="15" font-weight="900" fill="#047ab1">Primary Region</text>
+
+            <rect x="250" y="142" width="174" height="118" rx="12" class="lane-boundary"></rect>
+            <text x="267" y="168" font-size="14" font-weight="900">Channel / edge</text>
+            <rect x="270" y="188" width="62" height="48" rx="8" class="box service-blue"></rect>
+            <text x="301" y="217" text-anchor="middle" font-size="12" font-weight="800">CloudFront</text>
+            <rect x="345" y="188" width="62" height="48" rx="8" class="box service-blue"></rect>
+            <text x="376" y="210" text-anchor="middle" font-size="12" font-weight="800">API</text>
+            <text x="376" y="226" text-anchor="middle" font-size="12" font-weight="800">Gateway</text>
+
+            <rect x="456" y="142" width="174" height="118" rx="12" class="lane-boundary"></rect>
+            <text x="473" y="168" font-size="14" font-weight="900">Security context</text>
+            <rect x="476" y="188" width="62" height="48" rx="8" class="box service-rose"></rect>
+            <text x="507" y="210" text-anchor="middle" font-size="12" font-weight="800">IAM /</text>
+            <text x="507" y="226" text-anchor="middle" font-size="12" font-weight="800">Cognito</text>
+            <rect x="551" y="188" width="62" height="48" rx="8" class="box service-rose"></rect>
+            <text x="582" y="210" text-anchor="middle" font-size="12" font-weight="800">Guardrails</text>
+            <text x="582" y="226" text-anchor="middle" font-size="12" font-weight="800">Policy</text>
+
+            <rect x="662" y="142" width="174" height="118" rx="12" class="lane-boundary"></rect>
+            <text x="679" y="168" font-size="14" font-weight="900">Orchestration</text>
+            <rect x="682" y="188" width="62" height="48" rx="8" class="box service-amber"></rect>
+            <text x="713" y="210" text-anchor="middle" font-size="12" font-weight="800">Lambda</text>
+            <text x="713" y="226" text-anchor="middle" font-size="12" font-weight="800">ECS/EKS</text>
+            <rect x="757" y="188" width="62" height="48" rx="8" class="box service-amber"></rect>
+            <text x="788" y="210" text-anchor="middle" font-size="12" font-weight="800">StepFn</text>
+            <text x="788" y="226" text-anchor="middle" font-size="12" font-weight="800">Flows</text>
+
+            <rect x="868" y="116" width="238" height="170" rx="12" class="lane-boundary"></rect>
+            <text x="886" y="143" font-size="14" font-weight="900">AI decision layer</text>
+            <rect x="888" y="162" width="88" height="46" rx="8" class="box service-green"></rect>
+            <text x="932" y="190" text-anchor="middle" font-size="12" font-weight="800">Bedrock</text>
+            <rect x="994" y="162" width="88" height="46" rx="8" class="box service-violet"></rect>
+            <text x="1038" y="190" text-anchor="middle" font-size="12" font-weight="800">AgentCore</text>
+            <rect x="888" y="222" width="88" height="46" rx="8" class="box service-amber"></rect>
+            <text x="932" y="250" text-anchor="middle" font-size="12" font-weight="800">SageMaker</text>
+            <rect x="994" y="222" width="88" height="46" rx="8" class="box service-blue"></rect>
+            <text x="1038" y="250" text-anchor="middle" font-size="12" font-weight="800">Amazon Q</text>
+
+            <rect x="250" y="320" width="366" height="162" rx="12" class="lane-boundary"></rect>
+            <text x="267" y="348" font-size="14" font-weight="900">Data and knowledge layer</text>
+            <rect x="274" y="372" width="92" height="52" rx="8" class="box service-teal"></rect>
+            <text x="320" y="394" text-anchor="middle" font-size="12" font-weight="800">S3</text>
+            <text x="320" y="410" text-anchor="middle" font-size="12" font-weight="800">Data lake</text>
+            <rect x="386" y="372" width="92" height="52" rx="8" class="box service-teal"></rect>
+            <text x="432" y="394" text-anchor="middle" font-size="12" font-weight="800">Vector</text>
+            <text x="432" y="410" text-anchor="middle" font-size="12" font-weight="800">Search</text>
+            <rect x="498" y="372" width="92" height="52" rx="8" class="box service-teal"></rect>
+            <text x="544" y="394" text-anchor="middle" font-size="12" font-weight="800">Knowledge</text>
+            <text x="544" y="410" text-anchor="middle" font-size="12" font-weight="800">Bases</text>
+            <text x="432" y="454" text-anchor="middle" font-size="12" class="label-muted">Glue / Lake Formation / Redshift / Athena / OpenSearch / Aurora vector</text>
+
+            <rect x="662" y="320" width="444" height="162" rx="12" class="lane-boundary"></rect>
+            <text x="679" y="348" font-size="14" font-weight="900">Tools and action layer</text>
+            <rect x="686" y="372" width="92" height="52" rx="8" class="box service-violet"></rect>
+            <text x="732" y="394" text-anchor="middle" font-size="12" font-weight="800">Gateway</text>
+            <text x="732" y="410" text-anchor="middle" font-size="12" font-weight="800">MCP</text>
+            <rect x="798" y="372" width="92" height="52" rx="8" class="box service-amber"></rect>
+            <text x="844" y="394" text-anchor="middle" font-size="12" font-weight="800">Lambda</text>
+            <text x="844" y="410" text-anchor="middle" font-size="12" font-weight="800">APIs</text>
+            <rect x="910" y="372" width="92" height="52" rx="8" class="box service-rose"></rect>
+            <text x="956" y="394" text-anchor="middle" font-size="12" font-weight="800">Applied</text>
+            <text x="956" y="410" text-anchor="middle" font-size="12" font-weight="800">AI APIs</text>
+            <rect x="1022" y="372" width="62" height="52" rx="8" class="box service-slate"></rect>
+            <text x="1053" y="394" text-anchor="middle" font-size="12" font-weight="800">3rd</text>
+            <text x="1053" y="410" text-anchor="middle" font-size="12" font-weight="800">party</text>
+            <text x="884" y="454" text-anchor="middle" font-size="12" class="label-muted">Internal APIs / SaaS / Browser / Code Interpreter / Web Search</text>
+
+            <rect x="230" y="540" width="902" height="66" rx="10" class="lane-boundary"></rect>
+            <text x="250" y="568" font-size="14" font-weight="900">Control plane and feedback loop</text>
+            <text x="250" y="590" font-size="12" class="label-muted">CloudWatch traces/logs/metrics · CloudTrail audit · Evaluations · Model Monitor · Cost/Quota · CDK/CloudFormation/Terraform · Runbooks</text>
+
+            <rect x="1042" y="44" width="92" height="44" rx="8" class="box service-green"></rect>
+            <text x="1088" y="70" text-anchor="middle" font-size="12" font-weight="800">Response</text>
+            <text x="1088" y="102" text-anchor="middle" font-size="11" class="label-muted">answer / action / prediction</text>
+
+            <path d="M144 149 H270" class="arrow"></path>
+            <path d="M407 212 H476" class="arrow"></path>
+            <path d="M613 212 H682" class="arrow"></path>
+            <path d="M819 212 H888" class="arrow"></path>
+            <path d="M987 286 V320" class="arrow"></path>
+            <path d="M616 400 H662" class="arrow"></path>
+            <path d="M884 320 V286" class="arrow"></path>
+            <path d="M1106 202 H1130 V66 H1134" class="arrow"></path>
+
+            <path d="M144 296 H270 V372" class="arrow-soft"></path>
+            <path d="M144 448 H230 V572" class="arrow-soft"></path>
+            <path d="M987 482 V540" class="arrow-soft"></path>
+            <path d="M732 372 V296 H1038 V268" class="arrow-soft"></path>
+            <path d="M1088 88 V134" class="arrow"></path>
+          </svg>
+        </div>
+        <div class="diagram-legend">
+          <div class="legend-item">
+            <strong>Data plane</strong>
+            <span class="small">Luồng request thật: user → app edge → security → orchestration → AI/data/tools → response.</span>
+          </div>
+          <div class="legend-item">
+            <strong>AI decision layer</strong>
+            <span class="small">Điểm chọn Bedrock, AgentCore, SageMaker hoặc Amazon Q theo bản chất request.</span>
+          </div>
+          <div class="legend-item">
+            <strong>Data/tool layer</strong>
+            <span class="small">Nơi agent/RAG/model lấy knowledge, gọi Lambda/API/MCP, hoặc dùng AI API có sẵn.</span>
+          </div>
+          <div class="legend-item">
+            <strong>Control plane</strong>
+            <span class="small">Deploy, observe, evaluate, govern và cải thiện hệ thống liên tục.</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <div>
+          <h2>3. C4 drill-down cho AWS AI project</h2>
+          <p>C4 giúp đi sâu từ bối cảnh hệ thống tới containers, components và implementation entry points. Phần này bổ sung cho architecture overview ở trên, không thay thế nó.</p>
+        </div>
+      </div>
+      <div class="c4-shell">
+        <div class="c4-level">
+          <div class="c4-level-head">
+            <span class="c4-badge">C4-L1</span>
+            <div>
+              <h3>System Context: ai tương tác với AI project?</h3>
+              <p class="muted">Level này trả lời: system AI nằm giữa người dùng, enterprise data, tools nội bộ và đội vận hành như thế nào.</p>
+            </div>
+          </div>
+          <div class="c4-row">
+            <div class="c4-box blue">
+              <strong>Users / Employees</strong>
+              <span class="small">Hỏi đáp, yêu cầu hành động, upload tài liệu, dùng assistant trong app, IDE hoặc chat.</span>
+            </div>
+            <div class="c4-box green">
+              <strong>AWS AI Project System</strong>
+              <span class="small">Boundary của dự án: UI/API, orchestration, AI decision layer, data/tool layer, governance.</span>
+            </div>
+            <div class="c4-box teal">
+              <strong>Enterprise systems</strong>
+              <span class="small">Documents, databases, APIs, ticketing, CRM, ERP, data lake, MCP servers, Lambda tools.</span>
+            </div>
+            <div class="c4-box rose">
+              <strong>Platform / Security teams</strong>
+              <span class="small">IAM, network, KMS, audit, evaluation gates, incident response, cost and quota controls.</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="c4-level">
+          <div class="c4-level-head">
+            <span class="c4-badge">C4-L2</span>
+            <div>
+              <h3>Container View: runtime containers trong AWS</h3>
+              <p class="muted">Level này giúp chọn nơi request chạy: app edge, workflow/orchestration, AI work zone, data/tool plane và observability/governance.</p>
+            </div>
+          </div>
+          <div class="c4-flow">
+            <div class="c4-flow-step">
+              <strong>Channel / edge</strong>
+              <span class="small">CloudFront, API Gateway, ALB, Amazon Connect, web/mobile/chat/IDE.</span>
+            </div>
+            <div class="c4-flow-step">
+              <strong>App and workflow</strong>
+              <span class="small">Lambda, ECS/EKS, Step Functions, EventBridge, AppSync, Bedrock Flows.</span>
+            </div>
+            <div class="c4-flow-step">
+              <strong>AI decision layer</strong>
+              <span class="small">Bedrock, AgentCore Runtime/Harness, SageMaker endpoint, Amazon Q.</span>
+            </div>
+            <div class="c4-flow-step">
+              <strong>Data and tools</strong>
+              <span class="small">Knowledge Bases, S3, vector/search, Gateway, MCP, Lambda, internal APIs.</span>
+            </div>
+            <div class="c4-flow-step">
+              <strong>Ops and governance</strong>
+              <span class="small">IAM, KMS, VPC, CloudWatch, CloudTrail, evaluations, IaC, runbooks.</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="c4-level">
+          <div class="c4-level-head">
+            <span class="c4-badge">C4-L3</span>
+            <div>
+              <h3>Component View: các component cần thiết trong AI decision layer</h3>
+              <p class="muted">Level này trả lời: bên trong AI layer cần component nào để request không chỉ demo được mà còn operate được.</p>
+            </div>
+          </div>
+          <div class="c4-component-grid">
+            <div class="c4-box blue"><strong>Request router</strong><span class="small">Phân loại request: Q assistant, RAG answer, agent action, ML prediction, applied AI API.</span></div>
+            <div class="c4-box green"><strong>Prompt / flow manager</strong><span class="small">Prompt contract, Bedrock Prompt Management, Bedrock Flow, input/output schema.</span></div>
+            <div class="c4-box teal"><strong>Retriever</strong><span class="small">Knowledge Bases, vector/search, ACL-aware retrieval, citations, reranking.</span></div>
+            <div class="c4-box violet"><strong>Agent runtime</strong><span class="small">AgentCore Runtime/Harness, session isolation, memory lookup, planning loop.</span></div>
+            <div class="c4-box amber"><strong>Tool gateway</strong><span class="small">AgentCore Gateway, MCP servers, Lambda tools, policy checks, outbound credentials.</span></div>
+            <div class="c4-box rose"><strong>Quality and ops collector</strong><span class="small">Traces, evaluations, model/tool metrics, audit logs, cost tracking, release gates.</span></div>
+          </div>
+        </div>
+
+        <div class="c4-level">
+          <div class="c4-level-head">
+            <span class="c4-badge">C4-L4</span>
+            <div>
+              <h3>Implementation Entry Points: bắt đầu build ở đâu?</h3>
+              <p class="muted">Level 4 thường là code-level; với tài liệu định hướng này, nó được diễn giải thành các entry points triển khai thực tế.</p>
+            </div>
+          </div>
+          <div class="c4-row">
+            <div class="c4-box green">
+              <strong>Bedrock RAG app</strong>
+              <span class="small">Bắt đầu với model access, prompt contract, Knowledge Base, Guardrails, evaluation set.</span>
+            </div>
+            <div class="c4-box violet">
+              <strong>AgentCore project</strong>
+              <span class="small">Bắt đầu bằng AgentCore CLI, deploy Runtime/Harness, rồi thêm Memory, Gateway, Identity, Policy.</span>
+            </div>
+            <div class="c4-box amber">
+              <strong>SageMaker ML endpoint</strong>
+              <span class="small">Bắt đầu với dataset, experiment, training/notebook, endpoint, Model Monitor và Model Card.</span>
+            </div>
+            <div class="c4-box blue">
+              <strong>Amazon Q rollout</strong>
+              <span class="small">Bắt đầu với application, data connectors, ACL mapping, pilot group và feedback loop.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <div>
+          <h2>4. Stack map tổng thể</h2>
+          <p>Tám cụm chính trong hệ sinh thái AI của AWS. Đọc từ trên xuống: từ sản phẩm AI có sẵn tới nền tảng build, data, runtime và lớp kiểm soát production.</p>
+        </div>
+      </div>
+      <div class="stack-map">
+        <div class="stack-row">
+          <div class="num">1</div>
+          <div>
+            <div class="stack-title">Ready-made AI assistants</div>
+            <div class="small">Dùng khi muốn assistant có sẵn cho employee/developer.</div>
+            <div class="chips"><span class="chip">Amazon Q Business</span><span class="chip">Q Developer</span><span class="chip">Q in QuickSight</span></div>
+          </div>
+          <div><span class="label">AWS cho</span><span class="small">Enterprise assistant, IDE assistant, permission-aware answers, citations.</span></div>
+          <div><span class="label">Mình chuẩn bị</span><span class="small">Data connectors, access policy, rollout, adoption và feedback loop.</span></div>
+        </div>
+        <div class="stack-row">
+          <div class="num">2</div>
+          <div>
+            <div class="stack-title">Generative AI platform</div>
+            <div class="small">Dùng khi build app genAI bằng foundation model.</div>
+            <div class="chips"><span class="chip">Bedrock</span><span class="chip">Prompt Management</span><span class="chip">Guardrails</span><span class="chip">Knowledge Bases</span><span class="chip">Flows</span></div>
+          </div>
+          <div><span class="label">AWS cho</span><span class="small">Model access, inference, prompt, RAG, guardrail, flow, evaluation/customization.</span></div>
+          <div><span class="label">Mình chuẩn bị</span><span class="small">Prompt contract, model choice, cost/latency target, eval và data boundary.</span></div>
+        </div>
+        <div class="stack-row">
+          <div class="num">3</div>
+          <div>
+            <div class="stack-title">Agent production platform</div>
+            <div class="small">Dùng khi agent cần chạy production và gọi tools an toàn.</div>
+            <div class="chips"><span class="chip">AgentCore Runtime</span><span class="chip">Harness</span><span class="chip">Gateway</span><span class="chip">Memory</span><span class="chip">Identity</span><span class="chip">Evaluations</span></div>
+          </div>
+          <div><span class="label">AWS cho</span><span class="small">Runtime, memory, gateway, identity, built-in tools, observability, policy.</span></div>
+          <div><span class="label">Mình chuẩn bị</span><span class="small">Agent boundary, tool catalog, permission model, memory policy, quality loop.</span></div>
+        </div>
+        <div class="stack-row">
+          <div class="num">4</div>
+          <div>
+            <div class="stack-title">ML and model lifecycle</div>
+            <div class="small">Dùng khi cần custom ML/FM lifecycle.</div>
+            <div class="chips"><span class="chip">SageMaker AI</span><span class="chip">Studio</span><span class="chip">Training</span><span class="chip">Inference</span><span class="chip">Pipelines</span><span class="chip">MLflow</span></div>
+          </div>
+          <div><span class="label">AWS cho</span><span class="small">Studio, training, tuning, endpoints, MLOps, feature store, monitoring.</span></div>
+          <div><span class="label">Mình chuẩn bị</span><span class="small">Dataset, features, experiment plan, model card, deployment and rollback.</span></div>
+        </div>
+        <div class="stack-row">
+          <div class="num">5</div>
+          <div>
+            <div class="stack-title">Applied AI APIs</div>
+            <div class="small">Dùng khi cần OCR, speech, NLP, vision, chatbot API sẵn.</div>
+            <div class="chips"><span class="chip">Textract</span><span class="chip">Transcribe</span><span class="chip">Polly</span><span class="chip">Translate</span><span class="chip">Comprehend</span><span class="chip">Rekognition</span><span class="chip">Lex</span></div>
+          </div>
+          <div><span class="label">AWS cho</span><span class="small">Ready-made API blocks cho document, audio, language, image và conversation.</span></div>
+          <div><span class="label">Mình chuẩn bị</span><span class="small">Input quality, confidence threshold, human review và compliance.</span></div>
+        </div>
+        <div class="stack-row">
+          <div class="num">6</div>
+          <div>
+            <div class="stack-title">Data, RAG and search</div>
+            <div class="small">Dùng khi giá trị AI nằm ở enterprise data.</div>
+            <div class="chips"><span class="chip">S3</span><span class="chip">S3 Vectors</span><span class="chip">Glue</span><span class="chip">Lake Formation</span><span class="chip">Athena</span><span class="chip">Redshift</span><span class="chip">OpenSearch</span><span class="chip">Kendra</span></div>
+          </div>
+          <div><span class="label">AWS cho</span><span class="small">Storage, catalog, governed access, vector/search layer, knowledge ingestion.</span></div>
+          <div><span class="label">Mình chuẩn bị</span><span class="small">Source-of-truth, ACL, freshness, chunking, lineage, tenant boundary.</span></div>
+        </div>
+        <div class="stack-row">
+          <div class="num">7</div>
+          <div>
+            <div class="stack-title">App integration runtime</div>
+            <div class="small">Dùng để gắn AI vào workflow thật của product.</div>
+            <div class="chips"><span class="chip">Lambda</span><span class="chip">Step Functions</span><span class="chip">EventBridge</span><span class="chip">API Gateway</span><span class="chip">ECS/EKS</span><span class="chip">AppSync</span><span class="chip">SNS/SQS</span></div>
+          </div>
+          <div><span class="label">AWS cho</span><span class="small">Events, APIs, orchestration, containers, queues và async pipelines.</span></div>
+          <div><span class="label">Mình chuẩn bị</span><span class="small">Failure handling, retries, approvals, idempotency, rollback UX.</span></div>
+        </div>
+        <div class="stack-row">
+          <div class="num">8</div>
+          <div>
+            <div class="stack-title">Security, governance and operations</div>
+            <div class="small">Lớp phải đi cùng từ đầu nếu chạm enterprise data/action.</div>
+            <div class="chips"><span class="chip">IAM</span><span class="chip">Identity Center</span><span class="chip">KMS</span><span class="chip">VPC/PrivateLink</span><span class="chip">CloudWatch</span><span class="chip">CloudTrail</span><span class="chip">CDK/Terraform</span></div>
+          </div>
+          <div><span class="label">AWS cho</span><span class="small">Identity, encryption, network boundary, logs, audit, deployment IaC.</span></div>
+          <div><span class="label">Mình chuẩn bị</span><span class="small">Least privilege, SLO, incident runbook, data retention, budget and quota control.</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <div>
+          <h2>5. Chọn stack theo câu hỏi triển khai</h2>
+          <p>Đừng bắt đầu bằng tên service. Bắt đầu bằng loại request và mức tự động hóa cần có.</p>
+        </div>
+      </div>
+      <div class="decision-grid">
+        <div class="decision">
+          <h3>Người dùng chỉ cần assistant nội bộ?</h3>
+          <div class="answer">Chọn <strong>Amazon Q Business</strong>. Ưu tiên nếu cần permission-aware enterprise search nhanh.</div>
+        </div>
+        <div class="decision">
+          <h3>App cần hỏi đáp trên tài liệu?</h3>
+          <div class="answer">Chọn <strong>Bedrock + Knowledge Bases + Guardrails</strong>. Agent chưa cần thiết nếu workflow còn tuyến tính.</div>
+        </div>
+        <div class="decision">
+          <h3>Agent phải gọi tool nhiều bước?</h3>
+          <div class="answer">Chọn <strong>AgentCore</strong>. Gateway, Identity, Memory, Policy, Observability là trục production.</div>
+        </div>
+        <div class="decision">
+          <h3>Cần train/custom model?</h3>
+          <div class="answer">Chọn <strong>SageMaker AI</strong>. Dùng cho data science, training, endpoints, MLOps và governance.</div>
+        </div>
+        <div class="decision">
+          <h3>Task là OCR/speech/translate/vision?</h3>
+          <div class="answer">Chọn <strong>Applied AI APIs</strong>. Sau đó đưa kết quả vào Bedrock/AgentCore nếu cần reasoning tiếp.</div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <div>
+          <h2>6. Request journey diagram</h2>
+          <p>Bốn tab dưới đây là bốn kiểu đường đi khác nhau của một request. Chúng trả lời câu hỏi: request này cần “trả lời bằng dữ liệu”, “hành động như agent”, “dự đoán bằng model ML”, hay “dùng assistant có sẵn”.</p>
+        </div>
+      </div>
+      <div class="journey-shell">
+        <div class="journey-legend">
+          <div class="journey-legend-card">
+            <strong>RAG answer</strong>
+            <span class="small">Request cần câu trả lời dựa trên tài liệu/data. Trục chính là Bedrock + Knowledge Bases + Guardrails.</span>
+          </div>
+          <div class="journey-legend-card">
+            <strong>Agent action</strong>
+            <span class="small">Request cần agent lập kế hoạch và gọi tools nhiều bước. Trục chính là AgentCore Runtime/Harness + Gateway + Identity.</span>
+          </div>
+          <div class="journey-legend-card">
+            <strong>ML prediction</strong>
+            <span class="small">Request cần score/classification/ranking từ custom model. Trục chính là SageMaker endpoint và MLOps loop.</span>
+          </div>
+          <div class="journey-legend-card">
+            <strong>Amazon Q</strong>
+            <span class="small">Request phù hợp assistant có sẵn cho employee/developer. Trục chính là Amazon Q + enterprise permission connectors.</span>
+          </div>
+        </div>
+        <div class="mode-tabs" role="group" aria-label="Choose request journey">
+          <button class="tab" type="button" data-mode="rag" aria-pressed="true">RAG answer</button>
+          <button class="tab" type="button" data-mode="agent" aria-pressed="false">Agent action</button>
+          <button class="tab" type="button" data-mode="ml" aria-pressed="false">ML prediction</button>
+          <button class="tab" type="button" data-mode="q" aria-pressed="false">Amazon Q</button>
+        </div>
+        <div class="journey" id="journey" data-mode="rag" aria-live="polite"></div>
+        <div class="always-on">
+          <div><strong>Trace</strong><br><span class="small">Request id, spans, model/tool latency, errors.</span></div>
+          <div><strong>Evaluate</strong><br><span class="small">Golden set, online sampling, quality thresholds.</span></div>
+          <div><strong>Govern</strong><br><span class="small">IAM, guardrails, policy, audit, approval flow.</span></div>
+          <div><strong>Improve</strong><br><span class="small">Prompt, data, tool schema, memory, model retraining.</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <div>
+          <h2>7. Roadmap triển khai dự án mới</h2>
+          <p>Đây là luồng triển khai phù hợp cho dự án mới: đi từ use case, security, data, prototype, production hardening tới pilot.</p>
+        </div>
+      </div>
+      <div class="roadmap">
+        <div class="phase">
+          <small>Phase 0</small>
+          <h3>Scope and decision</h3>
+          <ul>
+            <li>Viết use-case brief.</li>
+            <li>Chọn Amazon Q, Bedrock, AgentCore, SageMaker hay API AI.</li>
+            <li>Chốt success criteria, budget, latency.</li>
+          </ul>
+        </div>
+        <div class="phase">
+          <small>Phase 1</small>
+          <h3>Security baseline</h3>
+          <ul>
+            <li>Account, region, IAM, KMS, VPC.</li>
+            <li>Tenant boundary, data residency.</li>
+            <li>CloudTrail, CloudWatch, quota alerts.</li>
+          </ul>
+        </div>
+        <div class="phase">
+          <small>Phase 2</small>
+          <h3>Data and tool contract</h3>
+          <ul>
+            <li>Source inventory, owner, ACL.</li>
+            <li>RAG chunking/vector/search design.</li>
+            <li>Tool schemas, idempotency, rate limit.</li>
+          </ul>
+        </div>
+        <div class="phase">
+          <small>Phase 3</small>
+          <h3>Prototype</h3>
+          <ul>
+            <li>Bedrock prompt/RAG or AgentCore CLI spike.</li>
+            <li>SageMaker notebook/training if ML.</li>
+            <li>Local tests with representative requests.</li>
+          </ul>
+        </div>
+        <div class="phase">
+          <small>Phase 4</small>
+          <h3>Production path</h3>
+          <ul>
+            <li>Runtime: Lambda/ECS/EKS/AgentCore/SageMaker endpoint.</li>
+            <li>Gateway, Identity, Memory, Policy where needed.</li>
+            <li>IaC with CDK, CloudFormation or Terraform.</li>
+          </ul>
+        </div>
+        <div class="phase">
+          <small>Phase 5</small>
+          <h3>Quality loop</h3>
+          <ul>
+            <li>Golden dataset and evaluator rubric.</li>
+            <li>Online sampling, traces, dashboards.</li>
+            <li>Regression gate before rollout.</li>
+          </ul>
+        </div>
+        <div class="phase">
+          <small>Phase 6</small>
+          <h3>Pilot</h3>
+          <ul>
+            <li>Small user group, feedback loop.</li>
+            <li>Incident, cost spike, quota runbook.</li>
+            <li>Rollback and escalation path.</li>
+          </ul>
+        </div>
+        <div class="phase">
+          <small>Phase 7</small>
+          <h3>Scale</h3>
+          <ul>
+            <li>Tool registry and ownership.</li>
+            <li>Memory/data retention governance.</li>
+            <li>Optimization, A/B testing, retraining.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <div>
+          <h2>8. Bộ tài liệu nên chuẩn bị trước khi build</h2>
+          <p>Nếu thiếu các tài liệu này, dự án có thể demo được nhưng khó đưa vào production an toàn.</p>
+        </div>
+      </div>
+      <div class="docs-grid">
+        <div class="doc-card">
+          <h3>Product and workflow</h3>
+          <ul>
+            <li>Use-case brief.</li>
+            <li>User journey and approval flow.</li>
+            <li>Failure, fallback, escalation.</li>
+          </ul>
+        </div>
+        <div class="doc-card">
+          <h3>Data and knowledge</h3>
+          <ul>
+            <li>Data source inventory and ACL.</li>
+            <li>RAG design: chunking, vector, rerank, citations.</li>
+            <li>Freshness, lineage, retention.</li>
+          </ul>
+        </div>
+        <div class="doc-card">
+          <h3>Agent and tools</h3>
+          <ul>
+            <li>Agent boundary spec.</li>
+            <li>Tool catalog and schemas.</li>
+            <li>Identity, policy, idempotency.</li>
+          </ul>
+        </div>
+        <div class="doc-card">
+          <h3>Prompt and model</h3>
+          <ul>
+            <li>Prompt contract and examples.</li>
+            <li>Model choice, latency, cost.</li>
+            <li>Guardrail policy.</li>
+          </ul>
+        </div>
+        <div class="doc-card">
+          <h3>Quality and evaluation</h3>
+          <ul>
+            <li>Golden set and rubrics.</li>
+            <li>Session/trace/span evaluators.</li>
+            <li>Release threshold and regression policy.</li>
+          </ul>
+        </div>
+        <div class="doc-card">
+          <h3>Operations</h3>
+          <ul>
+            <li>CloudWatch/CloudTrail dashboards.</li>
+            <li>Incident, quota, cost runbook.</li>
+            <li>IaC and environment promotion.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="sources">
+      <h2>Nguồn chính</h2>
+      <ul>
+        <li><a href="https://docs.aws.amazon.com/generative-ai-on-aws-how-to-choose/">Choosing an AWS generative AI service</a></li>
+        <li><a href="https://docs.aws.amazon.com/decision-guides/latest/machine-learning-on-aws-how-to-choose/guide.html">Choosing an AWS machine learning service</a></li>
+        <li><a href="https://docs.aws.amazon.com/bedrock/">Amazon Bedrock documentation</a></li>
+        <li><a href="https://docs.aws.amazon.com/bedrock/latest/userguide/getting-started.html">Amazon Bedrock quickstart</a></li>
+        <li><a href="https://docs.aws.amazon.com/bedrock/latest/userguide/knowledge-base.html">Amazon Bedrock Knowledge Bases</a></li>
+        <li><a href="https://docs.aws.amazon.com/bedrock/latest/userguide/guardrails.html">Amazon Bedrock Guardrails</a></li>
+        <li><a href="https://docs.aws.amazon.com/bedrock/latest/userguide/flows.html">Amazon Bedrock Flows</a></li>
+        <li><a href="https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/what-is-bedrock-agentcore.html">Amazon Bedrock AgentCore overview</a></li>
+        <li><a href="https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/agentcore-get-started-cli.html">Get started with Amazon Bedrock AgentCore</a></li>
+        <li><a href="https://docs.aws.amazon.com/sagemaker/">Amazon SageMaker AI documentation</a></li>
+        <li><a href="https://docs.aws.amazon.com/amazonq/">Amazon Q documentation</a></li>
+        <li><a href="https://github.com/awslabs/agentcore-samples">awslabs/agentcore-samples</a></li>
+      </ul>
+    </section>
+  </main>
+
+  <script>
+    const journeys = {
+      rag: [
+        ["Channel", "User to app", "Web/mobile/chat request", "CloudFront or API Gateway routes request to Lambda, ECS, EKS, or app backend."],
+        ["Security", "Context and guardrail", "Auth, tenant, input checks", "Cognito, IAM, IAM Identity Center, KMS/VPC context, optional Bedrock Guardrails."],
+        ["Knowledge", "Data retrieval", "Retrieve context", "Bedrock Knowledge Bases searches S3, S3 Vectors, OpenSearch, Aurora vector, Redshift, or other source."],
+        ["Reasoning", "Model or workflow", "Generate answer", "Prompt contract plus retrieved context goes to Bedrock Converse, InvokeModel, or Bedrock Flow."],
+        ["Return", "Answer and audit", "Response with citations", "Output guardrail, citations, app response, CloudWatch metrics, CloudTrail/app audit, cost tracking."]
+      ],
+      agent: [
+        ["Channel", "User to agent", "Product/API request", "App routes a task request to AgentCore Runtime or Harness with session/user context."],
+        ["Security", "Identity and policy", "Authorize action boundary", "AgentCore Identity validates inbound context and prepares outbound credentials for approved tools."],
+        ["AgentCore", "Session and memory", "Plan in isolated runtime", "Runtime or Harness loads instruction, memory, model, and session isolation before planning."],
+        ["Tools", "Gateway and actions", "Call tools through Gateway", "Gateway enforces policy, then calls Lambda, internal APIs, MCP servers, Browser, Code Interpreter, or Web Search."],
+        ["Return", "Result and learning", "Final answer or action result", "Observability records traces; Evaluations score sessions; Memory updates only what policy allows."]
+      ],
+      ml: [
+        ["Channel", "App to model", "Prediction request", "Backend receives request through API Gateway, Lambda, ECS, EKS, or batch pipeline."],
+        ["Security", "Input and features", "Validate and transform", "IAM/KMS/VPC controls apply; app builds features from request, S3, database, or Feature Store."],
+        ["SageMaker", "Hosted inference", "Invoke endpoint", "SageMaker realtime, async, serverless, or batch endpoint loads model container and artifacts."],
+        ["Decision", "Business rule", "Apply threshold", "App combines prediction with rules, confidence threshold, or human review for high-risk cases."],
+        ["Operate", "Monitor and retrain", "Track drift and quality", "CloudWatch, Model Monitor, Clarify, Model Cards, and Pipelines support governance and retraining."]
+      ],
+      q: [
+        ["Channel", "Employee assistant", "User asks Amazon Q", "Employee asks Q Business in web experience, or developer asks Q Developer in IDE/CLI/console."],
+        ["Security", "Workforce identity", "Resolve user and groups", "IAM Identity Center or IdP establishes who the user is and what enterprise data they may access."],
+        ["Knowledge", "Permission-aware retrieval", "Search connected sources", "Amazon Q maps ACLs and retrieves only documents the user can access."],
+        ["Reasoning", "Managed assistant", "Generate grounded answer", "Q generates an answer with citations or developer guidance based on available context."],
+        ["Operate", "Admin loop", "Improve connectors and policy", "Admins monitor sync, feedback, document enrichment, access policy, and adoption."]
+      ]
+    };
+
+    const journey = document.getElementById("journey");
+    const tabs = Array.from(document.querySelectorAll("button.tab"));
+
+    function renderJourney(mode) {
+      const rows = journeys[mode];
+      if (!rows) return;
+      tabs.forEach((tab) => tab.setAttribute("aria-pressed", tab.dataset.mode === mode ? "true" : "false"));
+      journey.dataset.mode = mode;
+      journey.replaceChildren();
+      rows.forEach((row, index) => {
+        const stage = document.createElement("div");
+        stage.className = "stage";
+
+        const lane = document.createElement("div");
+        lane.className = "lane";
+        const laneTitle = document.createElement("strong");
+        laneTitle.textContent = row[0];
+        const laneSub = document.createElement("span");
+        laneSub.textContent = row[1];
+        lane.append(laneTitle, laneSub);
+
+        const node = document.createElement("div");
+        node.className = "node";
+        const nodeIndex = document.createElement("div");
+        nodeIndex.className = "node-index";
+        nodeIndex.textContent = String(index + 1);
+        const body = document.createElement("div");
+        const title = document.createElement("strong");
+        title.textContent = row[2];
+        const text = document.createElement("span");
+        text.className = "small";
+        text.textContent = row[3];
+        body.append(title, text);
+        node.append(nodeIndex, body);
+
+        stage.append(lane, node);
+        journey.appendChild(stage);
+
+        if (index < rows.length - 1) {
+          const arrow = document.createElement("div");
+          arrow.className = "arrow";
+          const empty = document.createElement("span");
+          const line = document.createElement("span");
+          arrow.append(empty, line);
+          journey.appendChild(arrow);
+        }
+      });
+    }
+
+    tabs.forEach((tab) => {
+      tab.addEventListener("click", () => renderJourney(tab.dataset.mode));
+    });
+
+    renderJourney("rag");
+  </script>
+</body>
+</html>
