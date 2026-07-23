@@ -1,0 +1,845 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>QA-Agents AWS Business Proposal</title>
+    <link rel="stylesheet" href="docs-theme.css" />
+    <link rel="stylesheet" href="docs-brand.css" />
+    <style>
+      :root {
+        --proposal-good: color-mix(in srgb, var(--brand-primary) 12%, var(--surface));
+        --proposal-warn: color-mix(in srgb, var(--brand-accent) 14%, var(--surface));
+        --proposal-line: color-mix(in srgb, var(--text-muted) 65%, var(--surface));
+      }
+
+      html,
+      body {
+        overflow-x: clip;
+      }
+
+      .docs-content {
+        max-width: 88rem;
+      }
+
+      .docs-hero p {
+        max-width: 58rem;
+      }
+
+      .section-kicker {
+        color: var(--text-muted);
+        margin-top: -0.75rem;
+        max-width: 62rem;
+      }
+
+      .grid {
+        display: grid;
+        gap: 1rem;
+      }
+
+      .grid.two {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .grid.three {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .grid.four {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+
+      .tile {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-md);
+        box-shadow: var(--shadow);
+        min-width: 0;
+        padding: 1rem;
+      }
+
+      .tile h3,
+      .tile h4 {
+        margin-top: 0;
+      }
+
+      .tile p,
+      .tile li {
+        color: var(--text-muted);
+      }
+
+      .decision {
+        background: var(--proposal-good);
+        border-left: 0.35rem solid var(--brand-primary);
+      }
+
+      .risk {
+        background: var(--proposal-warn);
+        border-left: 0.35rem solid var(--brand-accent);
+      }
+
+      .tag-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.45rem;
+        padding: 0;
+      }
+
+      .tag-list li {
+        background: var(--brand-primary-soft);
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        color: var(--brand-primary);
+        list-style: none;
+        padding: 0.25rem 0.65rem;
+      }
+
+      .stack-map {
+        display: grid;
+        gap: 0.85rem;
+      }
+
+      .stack-layer {
+        align-items: stretch;
+        display: grid;
+        gap: 0.75rem;
+        grid-template-columns: 12rem minmax(0, 1fr);
+      }
+
+      .layer-label {
+        align-items: center;
+        background: var(--brand-primary);
+        border-radius: var(--radius-md);
+        color: var(--on-brand-primary);
+        display: flex;
+        font-weight: 800;
+        justify-content: center;
+        padding: 0.85rem;
+        text-align: center;
+      }
+
+      .layer-items {
+        display: grid;
+        gap: 0.75rem;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+
+      .service-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-sm);
+        min-height: 7rem;
+        padding: 0.75rem;
+      }
+
+      .service-card strong {
+        color: var(--text);
+        display: block;
+        margin-bottom: 0.25rem;
+      }
+
+      .service-card span {
+        color: var(--text-muted);
+        display: block;
+        font-size: 0.92rem;
+      }
+
+      .diagram {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-md);
+        box-shadow: var(--shadow);
+        overflow: auto;
+        padding: 1rem;
+      }
+
+      .diagram svg {
+        display: block;
+        height: auto;
+        min-width: 860px;
+        width: 100%;
+      }
+
+      .box {
+        fill: var(--surface);
+        stroke: var(--border);
+        stroke-width: 1.5;
+      }
+
+      .box.primary {
+        fill: var(--brand-primary);
+        stroke: var(--brand-primary);
+      }
+
+      .box.soft {
+        fill: var(--brand-primary-soft);
+      }
+
+      .box.warn {
+        fill: var(--proposal-warn);
+      }
+
+      .label {
+        fill: var(--text);
+        font-family: var(--font-body);
+        font-size: 13px;
+      }
+
+      .label.small {
+        fill: var(--text-muted);
+        font-size: 11px;
+      }
+
+      .label.light {
+        fill: var(--on-brand-primary);
+        font-weight: 700;
+      }
+
+      .arrow {
+        fill: none;
+        marker-end: url(#arrowhead);
+        stroke: var(--proposal-line);
+        stroke-width: 2;
+      }
+
+      .arrow.dashed {
+        stroke-dasharray: 6 6;
+      }
+
+      .phase-table td:first-child,
+      .phase-table th:first-child {
+        width: 9rem;
+      }
+
+      .source-list li {
+        margin-bottom: 0.45rem;
+      }
+
+      @media (max-width: 900px) {
+        .grid.two,
+        .grid.three,
+        .grid.four,
+        .layer-items,
+        .stack-layer {
+          grid-template-columns: 1fr;
+        }
+
+        .layer-label {
+          justify-content: flex-start;
+          text-align: left;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="docs-shell">
+      <aside class="docs-sidebar" id="docs-sidebar" aria-label="Documentation navigation">
+        <div class="docs-sidebar__label">QA-Agents Proposal</div>
+        <nav class="docs-nav" aria-label="Page sections">
+          <a href="#summary">Tóm tắt</a>
+          <a href="#business">Business problem</a>
+          <a href="#decisions">Options & rationale</a>
+          <a href="#aws-stack">AWS stack</a>
+          <a href="#architecture">Architecture</a>
+          <a href="#journey">Request journey</a>
+          <a href="#roadmap">Roadmap</a>
+          <a href="#sources">Nguồn</a>
+        </nav>
+      </aside>
+
+      <main class="docs-content">
+        <button
+          class="docs-menu-button"
+          type="button"
+          aria-controls="docs-sidebar"
+          aria-expanded="false"
+          data-docs-sidebar-toggle
+        >
+          Menu
+        </button>
+
+        <header class="docs-hero">
+          <p class="docs-eyebrow">Business and AWS architecture proposal</p>
+          <h1>QA-Agents: Shared Verification Context trên AWS</h1>
+          <p>
+            Proposal này chuyển nội dung RFC thành một tài liệu dễ review: đang giải quyết vấn đề gì,
+            cho ai, vì sao chọn hướng MVP hiện tại, các lựa chọn khác là gì, và AWS stack nên được
+            dùng như thế nào khi triển khai từ Phase 1 đến Phase 2.
+          </p>
+        </header>
+
+        <section id="summary">
+          <h2>Tóm tắt quyết định</h2>
+          <p class="section-kicker">
+            Mục tiêu không phải là tạo một agent tự động test thay QA. Mục tiêu là tạo một
+            shared verification context để QA, Product và Engineer cùng nhìn thấy intent, risk,
+            ambiguity, plan và evidence trước khi QA sign-off.
+          </p>
+
+          <div class="grid four">
+            <article class="tile decision">
+              <h3>User chính</h3>
+              <p><strong>QA</strong> là primary user. Product và Engineer là context contributors khi cần xác nhận business rule, expected behavior hoặc implementation scope.</p>
+            </article>
+            <article class="tile decision">
+              <h3>MVP artifact</h3>
+              <p><strong>Ready-for-QA Verification Context Record</strong>: artifact dùng trước khi QA execute để giảm sai scope và thiếu evidence.</p>
+            </article>
+            <article class="tile decision">
+              <h3>AWS fit Phase 1</h3>
+              <p><strong>Bedrock/RAG + AgentCore Runtime/Harness boundary</strong>. AgentCore dùng đơn giản để có runtime, endpoint, session và trace.</p>
+            </article>
+            <article class="tile decision">
+              <h3>Không làm ở MVP</h3>
+              <p>Không auto pass/fail, không write ticket/doc tự động, không bắt buộc PR/source-code analysis, không triển khai full multi-tool agent.</p>
+            </article>
+          </div>
+        </section>
+
+        <section id="business">
+          <h2>Business problem đang giải quyết</h2>
+          <p class="section-kicker">
+            QA không chỉ test. QA đang tổng hợp intent, business rule, current behavior, impact,
+            test coverage, evidence và release memory từ nhiều nguồn rời rạc. Khi các nguồn này
+            không cùng ngữ cảnh, QA dễ hiểu sai ticket, verify sai scope hoặc miss regression.
+          </p>
+
+          <div class="diagram" aria-label="Business context fragmentation diagram">
+            <svg viewBox="0 0 1040 470" role="img">
+              <defs>
+                <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+                  <path d="M0,0 L0,6 L9,3 z" fill="currentColor"></path>
+                </marker>
+              </defs>
+              <rect class="box soft" x="30" y="35" width="220" height="72" rx="8"></rect>
+              <text class="label" x="55" y="68">Ticket intent</text>
+              <text class="label small" x="55" y="88">Requirement, acceptance criteria</text>
+
+              <rect class="box soft" x="30" y="135" width="220" height="72" rx="8"></rect>
+              <text class="label" x="55" y="168">Business history</text>
+              <text class="label small" x="55" y="188">Rules, decisions, exceptions</text>
+
+              <rect class="box soft" x="30" y="235" width="220" height="72" rx="8"></rect>
+              <text class="label" x="55" y="268">Current behavior</text>
+              <text class="label small" x="55" y="288">What product does today</text>
+
+              <rect class="box soft" x="30" y="335" width="220" height="72" rx="8"></rect>
+              <text class="label" x="55" y="368">Evidence and tests</text>
+              <text class="label small" x="55" y="388">Manual, CI, screenshots, logs</text>
+
+              <path class="arrow" d="M260 71 C330 71 350 220 420 220"></path>
+              <path class="arrow" d="M260 171 C330 171 350 225 420 225"></path>
+              <path class="arrow" d="M260 271 C330 271 350 235 420 235"></path>
+              <path class="arrow" d="M260 371 C330 371 350 245 420 245"></path>
+
+              <rect class="box primary" x="420" y="165" width="250" height="130" rx="10"></rect>
+              <text class="label light" x="450" y="205">Ready-for-QA</text>
+              <text class="label light" x="450" y="228">Verification Context Record</text>
+              <text class="label light" x="450" y="255">shared context before QA executes</text>
+
+              <path class="arrow" d="M680 230 C735 230 765 100 820 100"></path>
+              <path class="arrow" d="M680 230 C735 230 765 210 820 210"></path>
+              <path class="arrow" d="M680 230 C735 230 765 320 820 320"></path>
+
+              <rect class="box" x="820" y="58" width="185" height="78" rx="8"></rect>
+              <text class="label" x="845" y="88">Risk summary</text>
+              <text class="label small" x="845" y="108">Ambiguity, mismatch, impact</text>
+
+              <rect class="box" x="820" y="168" width="185" height="78" rx="8"></rect>
+              <text class="label" x="845" y="198">QA test direction</text>
+              <text class="label small" x="845" y="218">Matrix, priority, evidence</text>
+
+              <rect class="box" x="820" y="278" width="185" height="78" rx="8"></rect>
+              <text class="label" x="845" y="308">Release confidence</text>
+              <text class="label small" x="845" y="328">Sign-off note, known risks</text>
+            </svg>
+          </div>
+
+          <div class="grid three">
+            <article class="tile">
+              <h3>Pain cần xử lý</h3>
+              <ul>
+                <li>QA mất thời gian hiểu ticket.</li>
+                <li>QA verify sai scope vì ticket thiếu context.</li>
+                <li>Product, Engineer và QA không cùng một context.</li>
+                <li>Evidence sau QA thiếu hoặc viết muộn.</li>
+                <li>Regression bị miss do impact analysis yếu.</li>
+              </ul>
+            </article>
+            <article class="tile">
+              <h3>Business outputs</h3>
+              <ul>
+                <li>Shared verification context.</li>
+                <li>Risk summary.</li>
+                <li>QA sign-off note.</li>
+                <li>Release confidence record.</li>
+                <li>Defect-quality improvement.</li>
+              </ul>
+            </article>
+            <article class="tile">
+              <h3>Success metrics</h3>
+              <ul>
+                <li>Time-to-understand ticket.</li>
+                <li>Shared-context alignment.</li>
+                <li>Mismatch detection before testing.</li>
+                <li>Test coverage usefulness.</li>
+                <li>Evidence completeness and release confidence.</li>
+              </ul>
+            </article>
+          </div>
+        </section>
+
+        <section id="decisions">
+          <h2>Options và rationale</h2>
+          <p class="section-kicker">
+            RFC cần cho reviewer thấy không chỉ chọn gì, mà còn vì sao không chọn các hướng khác.
+            Đây là phần đại diện cho business/product decision making.
+          </p>
+
+          <table>
+            <thead>
+              <tr>
+                <th>Decision</th>
+                <th>Options đã cân nhắc</th>
+                <th>Option chọn</th>
+                <th>Lý do chọn</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Root problem</td>
+                <td>Generate test cases, chatbot, shared context, autonomous QA agent</td>
+                <td>Shared verification context</td>
+                <td>Giải quyết root gap trước execution: ticket, business history, current behavior, impact và evidence bị phân tán.</td>
+              </tr>
+              <tr>
+                <td>Primary user</td>
+                <td>QA-first, Product-first, Engineer-first, multi-role ngang nhau</td>
+                <td>QA-first</td>
+                <td>QA là người trực tiếp verify và tạo record; Product/Engineer contribute context khi cần.</td>
+              </tr>
+              <tr>
+                <td>MVP artifact</td>
+                <td>Test matrix, clarification block, sign-off note, context record</td>
+                <td>Ready-for-QA Verification Context Record</td>
+                <td>Làm base cho test matrix, clarification, risk summary và final note.</td>
+              </tr>
+              <tr>
+                <td>Minimum context</td>
+                <td>Ticket only, ticket + QA input, PR/source required, full RAG</td>
+                <td>Ticket + QA input</td>
+                <td>Đủ nhẹ để pilot; vẫn bắt QA nhập current behavior/history hoặc mark unknown để tránh AI bịa.</td>
+              </tr>
+              <tr>
+                <td>AWS fit</td>
+                <td>Bedrock only, Bedrock + RAG, AgentCore boundary, full AgentCore agent</td>
+                <td>Bedrock/RAG + AgentCore Runtime/Harness</td>
+                <td>Dùng AgentCore đơn giản để có production-shaped boundary, chưa overbuild Gateway/write tools.</td>
+              </tr>
+              <tr>
+                <td>AI authority</td>
+                <td>AI chỉ hỏi, AI trả lời có boundary, AI quyết định final</td>
+                <td>AI trả lời có boundary</td>
+                <td>Giảm clarification loop nhưng vẫn giữ human authority cho business rule, implementation và release risk.</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <aside class="docs-callout">
+            Rule quan trọng: AI được trả lời khi có source/context rõ và phải gắn nhãn
+            <code>source-backed</code>, <code>inferred</code>, hoặc <code>unknown</code>.
+            AI không được pass/fail thay QA, không override Product/Engineer, và không biến inference thành fact.
+          </aside>
+        </section>
+
+        <section id="aws-stack">
+          <h2>AWS stack đề xuất</h2>
+          <p class="section-kicker">
+            Phase 1 vẫn sử dụng AgentCore, nhưng ở mức đơn giản: runtime/harness boundary cho QA Assistant.
+            Các stack như Lambda, SQS, EventBridge, Step Functions, DynamoDB, S3, CloudWatch và KMS xử lý phần app,
+            async workflow, evidence, audit và vận hành.
+          </p>
+
+          <div class="stack-map">
+            <div class="stack-layer">
+              <div class="layer-label">Experience & auth</div>
+              <div class="layer-items">
+                <div class="service-card"><strong>QA Workbench UI</strong><span>Form nhập ticket + QA context; review/edit context record.</span></div>
+                <div class="service-card"><strong>CloudFront + AWS WAF</strong><span>Serve UI, edge protection, request filtering.</span></div>
+                <div class="service-card"><strong>Amazon Cognito</strong><span>User pool/OIDC cho QA, Product, Engineer.</span></div>
+                <div class="service-card"><strong>API Gateway</strong><span>Public API boundary đến backend Lambda.</span></div>
+              </div>
+            </div>
+
+            <div class="stack-layer">
+              <div class="layer-label">Application runtime</div>
+              <div class="layer-items">
+                <div class="service-card"><strong>AWS Lambda</strong><span>Request validation, prompt assembly, record generation API.</span></div>
+                <div class="service-card"><strong>AgentCore Runtime/Harness</strong><span>Host/wrap QA Assistant with endpoint, session and trace discipline.</span></div>
+                <div class="service-card"><strong>AWS Step Functions</strong><span>Orchestrate longer workflows: create record, review, evidence, publish.</span></div>
+                <div class="service-card"><strong>Amazon SQS</strong><span>Durable async queue for ingestion, exports, retryable jobs.</span></div>
+              </div>
+            </div>
+
+            <div class="stack-layer">
+              <div class="layer-label">AI & retrieval</div>
+              <div class="layer-items">
+                <div class="service-card"><strong>Amazon Bedrock Converse</strong><span>Model inference for summaries, risk, test direction, final note draft.</span></div>
+                <div class="service-card"><strong>Bedrock Guardrails</strong><span>PII/sensitive filters, denied topics, contextual grounding checks.</span></div>
+                <div class="service-card"><strong>Bedrock Knowledge Bases</strong><span>Managed retrieval over approved QA guidelines/source-of-truth docs.</span></div>
+                <div class="service-card"><strong>Vector store</strong><span>S3 Vectors or OpenSearch Serverless depending scale/search needs.</span></div>
+              </div>
+            </div>
+
+            <div class="stack-layer">
+              <div class="layer-label">Data & events</div>
+              <div class="layer-items">
+                <div class="service-card"><strong>DynamoDB</strong><span>Verification sessions, status, metadata, TTL for drafts.</span></div>
+                <div class="service-card"><strong>Amazon S3</strong><span>Evidence, exported markdown/html, ingestion documents.</span></div>
+                <div class="service-card"><strong>EventBridge</strong><span>Domain events: record created, clarification needed, sign-off ready.</span></div>
+                <div class="service-card"><strong>Secrets Manager</strong><span>Store external API tokens for future integrations.</span></div>
+              </div>
+            </div>
+
+            <div class="stack-layer">
+              <div class="layer-label">Security & ops</div>
+              <div class="layer-items">
+                <div class="service-card"><strong>IAM + KMS</strong><span>Least privilege roles, encryption keys, service access boundaries.</span></div>
+                <div class="service-card"><strong>CloudWatch</strong><span>Logs, metrics, traces, alarms, token/latency dashboard.</span></div>
+                <div class="service-card"><strong>CloudTrail</strong><span>Audit control-plane actions and future Gateway activity.</span></div>
+                <div class="service-card"><strong>AgentCore Evaluations</strong><span>Phase 2 quality checks for agent/tool performance.</span></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="architecture">
+          <h2>Architecture overview</h2>
+          <p class="section-kicker">
+            Diagram này thể hiện Phase 1 production-shaped architecture. AgentCore có mặt nhưng được giới hạn:
+            host/wrap QA Assistant, không mở Gateway/write tools cho đến Phase 2.
+          </p>
+
+          <div class="diagram" aria-label="AWS architecture overview diagram">
+            <svg viewBox="0 0 1180 720" role="img">
+              <defs>
+                <marker id="arrowhead-arch" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+                  <path d="M0,0 L0,6 L9,3 z" fill="currentColor"></path>
+                </marker>
+              </defs>
+
+              <rect class="box soft" x="24" y="30" width="1132" height="640" rx="14"></rect>
+              <text class="label" x="48" y="62">AWS account boundary</text>
+
+              <rect class="box" x="60" y="100" width="170" height="90" rx="8"></rect>
+              <text class="label" x="82" y="132">QA Workbench</text>
+              <text class="label small" x="82" y="154">ticket + QA input</text>
+
+              <rect class="box" x="280" y="85" width="170" height="120" rx="8"></rect>
+              <text class="label" x="305" y="117">Edge/Auth</text>
+              <text class="label small" x="305" y="140">CloudFront, WAF</text>
+              <text class="label small" x="305" y="160">Cognito/OIDC</text>
+              <text class="label small" x="305" y="180">API Gateway</text>
+
+              <rect class="box" x="500" y="85" width="190" height="120" rx="8"></rect>
+              <text class="label" x="525" y="117">Lambda app API</text>
+              <text class="label small" x="525" y="140">validate request</text>
+              <text class="label small" x="525" y="160">assemble prompt</text>
+              <text class="label small" x="525" y="180">persist session</text>
+
+              <rect class="box primary" x="740" y="80" width="205" height="130" rx="10"></rect>
+              <text class="label light" x="765" y="115">AgentCore</text>
+              <text class="label light" x="765" y="138">Runtime/Harness</text>
+              <text class="label light" x="765" y="163">simple Phase 1 boundary</text>
+              <text class="label light" x="765" y="187">endpoint, session, trace</text>
+
+              <rect class="box" x="990" y="70" width="140" height="150" rx="8"></rect>
+              <text class="label" x="1012" y="105">Amazon Bedrock</text>
+              <text class="label small" x="1012" y="130">Converse API</text>
+              <text class="label small" x="1012" y="150">Guardrails</text>
+              <text class="label small" x="1012" y="170">Knowledge Bases</text>
+              <text class="label small" x="1012" y="190">FM response</text>
+
+              <path class="arrow" marker-end="url(#arrowhead-arch)" d="M230 145 H280"></path>
+              <path class="arrow" marker-end="url(#arrowhead-arch)" d="M450 145 H500"></path>
+              <path class="arrow" marker-end="url(#arrowhead-arch)" d="M690 145 H740"></path>
+              <path class="arrow" marker-end="url(#arrowhead-arch)" d="M945 145 H990"></path>
+
+              <rect class="box" x="90" y="300" width="220" height="110" rx="8"></rect>
+              <text class="label" x="115" y="333">DynamoDB</text>
+              <text class="label small" x="115" y="356">session, record status</text>
+              <text class="label small" x="115" y="376">draft TTL, metadata</text>
+
+              <rect class="box" x="350" y="300" width="220" height="110" rx="8"></rect>
+              <text class="label" x="375" y="333">S3</text>
+              <text class="label small" x="375" y="356">evidence files</text>
+              <text class="label small" x="375" y="376">exported records</text>
+
+              <rect class="box" x="610" y="300" width="220" height="110" rx="8"></rect>
+              <text class="label" x="635" y="333">SQS + EventBridge</text>
+              <text class="label small" x="635" y="356">async jobs, domain events</text>
+              <text class="label small" x="635" y="376">retry and fan-out</text>
+
+              <rect class="box" x="870" y="300" width="220" height="110" rx="8"></rect>
+              <text class="label" x="895" y="333">Step Functions</text>
+              <text class="label small" x="895" y="356">longer workflow</text>
+              <text class="label small" x="895" y="376">review and publish states</text>
+
+              <path class="arrow dashed" marker-end="url(#arrowhead-arch)" d="M595 205 C555 260 355 270 220 300"></path>
+              <path class="arrow dashed" marker-end="url(#arrowhead-arch)" d="M595 205 C560 260 480 270 460 300"></path>
+              <path class="arrow dashed" marker-end="url(#arrowhead-arch)" d="M595 205 C620 260 700 270 720 300"></path>
+              <path class="arrow dashed" marker-end="url(#arrowhead-arch)" d="M595 205 C710 260 900 270 980 300"></path>
+
+              <rect class="box" x="100" y="500" width="250" height="100" rx="8"></rect>
+              <text class="label" x="125" y="532">CloudWatch</text>
+              <text class="label small" x="125" y="555">logs, metrics, traces, alarms</text>
+              <text class="label small" x="125" y="575">latency, token, quality dashboard</text>
+
+              <rect class="box" x="400" y="500" width="250" height="100" rx="8"></rect>
+              <text class="label" x="425" y="532">IAM, KMS, Secrets Manager</text>
+              <text class="label small" x="425" y="555">least privilege, encryption</text>
+              <text class="label small" x="425" y="575">API secrets for Phase 2 integrations</text>
+
+              <rect class="box warn" x="700" y="500" width="340" height="100" rx="8"></rect>
+              <text class="label" x="725" y="532">Phase 2 expansion</text>
+              <text class="label small" x="725" y="555">AgentCore Gateway, Identity, Policy, Memory</text>
+              <text class="label small" x="725" y="575">ticket/PR/evidence tools with human approval</text>
+            </svg>
+          </div>
+
+          <div class="grid two">
+            <article class="tile">
+              <h3>Phase 1 boundary</h3>
+              <p>
+                Request vẫn đi qua AgentCore Runtime/Harness, nhưng agent chỉ tạo draft artifact.
+                Tool calling được giới hạn ở retrieval đã được duyệt, không write external systems.
+              </p>
+            </article>
+            <article class="tile">
+              <h3>Phase 2 boundary</h3>
+              <p>
+                Khi product value được validate, thêm AgentCore Gateway, Identity, Policy và Memory
+                để agent gọi ticketing, PR, CI, evidence storage và source-of-truth tools có approval.
+              </p>
+            </article>
+          </div>
+        </section>
+
+        <section id="journey">
+          <h2>Request journey trong Phase 1</h2>
+          <p class="section-kicker">
+            Journey này giữ MVP gọn: input chỉ cần ticket + QA input. Retrieval là optional enrichment,
+            không phải dependency bắt buộc.
+          </p>
+
+          <div class="diagram" aria-label="Request journey diagram">
+            <svg viewBox="0 0 1100 520" role="img">
+              <defs>
+                <marker id="arrowhead-journey" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+                  <path d="M0,0 L0,6 L9,3 z" fill="currentColor"></path>
+                </marker>
+              </defs>
+              <rect class="box" x="40" y="70" width="160" height="80" rx="8"></rect>
+              <text class="label" x="62" y="103">1. QA input</text>
+              <text class="label small" x="62" y="125">ticket + context</text>
+
+              <rect class="box" x="250" y="70" width="170" height="80" rx="8"></rect>
+              <text class="label" x="275" y="103">2. API validation</text>
+              <text class="label small" x="275" y="125">auth, schema, policy</text>
+
+              <rect class="box primary" x="470" y="70" width="190" height="80" rx="8"></rect>
+              <text class="label light" x="492" y="103">3. AgentCore session</text>
+              <text class="label light" x="492" y="125">runtime boundary</text>
+
+              <rect class="box" x="710" y="70" width="170" height="80" rx="8"></rect>
+              <text class="label" x="735" y="103">4. Bedrock call</text>
+              <text class="label small" x="735" y="125">prompt + guardrails</text>
+
+              <rect class="box" x="930" y="70" width="140" height="80" rx="8"></rect>
+              <text class="label" x="950" y="103">5. Draft record</text>
+              <text class="label small" x="950" y="125">source labels</text>
+
+              <path class="arrow" marker-end="url(#arrowhead-journey)" d="M200 110 H250"></path>
+              <path class="arrow" marker-end="url(#arrowhead-journey)" d="M420 110 H470"></path>
+              <path class="arrow" marker-end="url(#arrowhead-journey)" d="M660 110 H710"></path>
+              <path class="arrow" marker-end="url(#arrowhead-journey)" d="M880 110 H930"></path>
+
+              <rect class="box soft" x="235" y="240" width="210" height="88" rx="8"></rect>
+              <text class="label" x="260" y="274">Optional retrieval</text>
+              <text class="label small" x="260" y="296">Knowledge Bases over approved docs</text>
+
+              <rect class="box soft" x="490" y="240" width="210" height="88" rx="8"></rect>
+              <text class="label" x="515" y="274">Record persistence</text>
+              <text class="label small" x="515" y="296">DynamoDB metadata, S3 export</text>
+
+              <rect class="box soft" x="745" y="240" width="210" height="88" rx="8"></rect>
+              <text class="label" x="770" y="274">Observability</text>
+              <text class="label small" x="770" y="296">CloudWatch, AgentCore trace</text>
+
+              <path class="arrow dashed" marker-end="url(#arrowhead-journey)" d="M565 150 C540 205 420 215 340 240"></path>
+              <path class="arrow dashed" marker-end="url(#arrowhead-journey)" d="M565 150 C570 205 585 215 595 240"></path>
+              <path class="arrow dashed" marker-end="url(#arrowhead-journey)" d="M565 150 C640 205 780 215 850 240"></path>
+
+              <rect class="box warn" x="120" y="405" width="260" height="72" rx="8"></rect>
+              <text class="label" x="145" y="435">If context is missing</text>
+              <text class="label small" x="145" y="455">AI creates Clarification Block</text>
+
+              <rect class="box warn" x="420" y="405" width="260" height="72" rx="8"></rect>
+              <text class="label" x="445" y="435">If answer is inferred</text>
+              <text class="label small" x="445" y="455">Label inferred + confidence/risk</text>
+
+              <rect class="box warn" x="720" y="405" width="260" height="72" rx="8"></rect>
+              <text class="label" x="745" y="435">If risk is high</text>
+              <text class="label small" x="745" y="455">Human confirmation required</text>
+            </svg>
+          </div>
+
+          <table>
+            <thead>
+              <tr>
+                <th>Step</th>
+                <th>Owner</th>
+                <th>AWS stack</th>
+                <th>Output</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Input</td>
+                <td>QA</td>
+                <td>UI, Cognito, API Gateway</td>
+                <td>Ticket + QA-entered current behavior/history/clarification.</td>
+              </tr>
+              <tr>
+                <td>Session</td>
+                <td>System</td>
+                <td>Lambda, AgentCore Runtime/Harness</td>
+                <td>Validated request, runtime session, correlation id.</td>
+              </tr>
+              <tr>
+                <td>AI synthesis</td>
+                <td>AI assistant</td>
+                <td>Bedrock Converse, Guardrails, optional Knowledge Bases</td>
+                <td>Context record with source-backed/inferred/unknown labels.</td>
+              </tr>
+              <tr>
+                <td>Review</td>
+                <td>QA</td>
+                <td>DynamoDB, S3, CloudWatch</td>
+                <td>Approved record, clarification block, evidence checklist.</td>
+              </tr>
+              <tr>
+                <td>Escalation</td>
+                <td>QA + Product/Engineer</td>
+                <td>Manual in Phase 1; EventBridge/Gateway later</td>
+                <td>Human confirmation for business/implementation/release risk.</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section id="roadmap">
+          <h2>Roadmap triển khai</h2>
+          <div class="grid three">
+            <article class="tile">
+              <h3>Phase 0: RFC alignment</h3>
+              <ul>
+                <li>Chốt target user, pain, artifact, AWS fit.</li>
+                <li>Chốt data policy: PII, customer data, logs, secrets.</li>
+                <li>Chốt leading indicator cho pilot dashboard.</li>
+              </ul>
+            </article>
+            <article class="tile">
+              <h3>Phase 1: Simple AgentCore MVP</h3>
+              <ul>
+                <li>QA Workbench hoặc manual form.</li>
+                <li>AgentCore Runtime/Harness wraps assistant.</li>
+                <li>Bedrock prompt contracts + Guardrails.</li>
+                <li>DynamoDB/S3/CloudWatch for record and telemetry.</li>
+              </ul>
+            </article>
+            <article class="tile">
+              <h3>Phase 2: Tool-integrated agent</h3>
+              <ul>
+                <li>AgentCore Gateway exposes ticket/PR/evidence tools.</li>
+                <li>Identity/Policy control outbound access.</li>
+                <li>SQS/EventBridge/Step Functions handle async workflows.</li>
+                <li>AgentCore Evaluations measure agent/tool quality.</li>
+              </ul>
+            </article>
+          </div>
+
+          <table class="phase-table">
+            <thead>
+              <tr>
+                <th>Layer</th>
+                <th>Phase 1 scope</th>
+                <th>Phase 2 expansion</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>AgentCore</td>
+                <td>Runtime/Harness only; endpoint, session, trace discipline.</td>
+                <td>Gateway, Memory, Identity, Policy, tool registry.</td>
+              </tr>
+              <tr>
+                <td>Bedrock</td>
+                <td>Converse, prompt contracts, Guardrails, optional Knowledge Bases.</td>
+                <td>Evaluation datasets, grounding checks, richer retrieval strategy.</td>
+              </tr>
+              <tr>
+                <td>Workflow</td>
+                <td>Lambda sync request path; optional SQS for background export.</td>
+                <td>Step Functions state machine for publish/review/escalation.</td>
+              </tr>
+              <tr>
+                <td>Integrations</td>
+                <td>Manual copy/paste clarification, optional links only.</td>
+                <td>Ticket comments, PR read tools, CI/test result tools, evidence uploader.</td>
+              </tr>
+              <tr>
+                <td>Governance</td>
+                <td>Human review, labels, confidence/risk, no auto-write.</td>
+                <td>Policy enforcement, approval UX, CloudTrail audit, custom KMS keys.</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section id="sources">
+          <h2>Nguồn tham khảo chính</h2>
+          <p class="section-kicker">
+            Nguồn được kiểm tra ngày 2026-07-23. Các chi tiết AWS service có thể thay đổi,
+            nên cần refresh trước khi dùng làm implementation plan cuối cùng.
+          </p>
+          <ul class="source-list">
+            <li><a href="https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/what-is-bedrock-agentcore.html">Amazon Bedrock AgentCore overview</a></li>
+            <li><a href="https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/harness-vs-runtime.html">AgentCore harness vs Runtime</a></li>
+            <li><a href="https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/agents-tools-runtime.html">Host agent or tools with AgentCore Runtime</a></li>
+            <li><a href="https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/harness.html">AgentCore Harness</a></li>
+            <li><a href="https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/gateway.html">AgentCore Gateway</a></li>
+            <li><a href="https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/identity.html">AgentCore Identity</a></li>
+            <li><a href="https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/policy.html">AgentCore Policy</a></li>
+            <li><a href="https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/observability.html">AgentCore Observability</a></li>
+            <li><a href="https://docs.aws.amazon.com/bedrock/latest/userguide/what-is-bedrock.html">Amazon Bedrock overview</a></li>
+            <li><a href="https://docs.aws.amazon.com/bedrock/latest/userguide/guardrails.html">Amazon Bedrock Guardrails</a></li>
+            <li><a href="https://docs.aws.amazon.com/bedrock/latest/userguide/knowledge-base.html">Amazon Bedrock Knowledge Bases</a></li>
+            <li><a href="https://docs.aws.amazon.com/apigateway/latest/developerguide/welcome.html">Amazon API Gateway</a></li>
+            <li><a href="https://docs.aws.amazon.com/lambda/latest/dg/concepts-event-driven-architectures.html">Lambda event-driven architectures</a></li>
+            <li><a href="https://docs.aws.amazon.com/lambda/latest/dg/with-sqs.html">Using Lambda with Amazon SQS</a></li>
+            <li><a href="https://docs.aws.amazon.com/step-functions/latest/dg/welcome.html">AWS Step Functions</a></li>
+            <li><a href="https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-what-is.html">Amazon EventBridge</a></li>
+            <li><a href="https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/TTL.html">DynamoDB TTL</a></li>
+            <li><a href="https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools.html">Amazon Cognito user pools</a></li>
+            <li><a href="https://docs.aws.amazon.com/waf/latest/developerguide/waf-chapter.html">AWS WAF</a></li>
+            <li><a href="https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/WhatIsCloudWatch.html">Amazon CloudWatch</a></li>
+            <li><a href="https://docs.aws.amazon.com/secretsmanager/latest/userguide/intro.html">AWS Secrets Manager</a></li>
+            <li><a href="https://docs.aws.amazon.com/kms/latest/developerguide/concepts.html">AWS KMS keys</a></li>
+          </ul>
+        </section>
+      </main>
+    </div>
+    <script src="docs-theme.js"></script>
+  </body>
+</html>

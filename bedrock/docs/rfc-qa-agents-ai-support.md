@@ -120,6 +120,19 @@ Day la problem can solve. Khong phai:
 - "Can QA hoi chatbot ve ticket."
 - "Can AI doc codebase thay QA."
 
+Decision 2026-07-23: root problem cua QA-Agents la **shared verification context**.
+
+Dieu nay co nghia MVP khong nen duoc dinh vi nhu "AI generate test case" hay "agent tu verify thay QA". MVP nen tao mot artifact chung de QA, Product va Engineer cung nhin vao:
+
+- ticket intent;
+- current behavior;
+- business rules/history;
+- implementation/codebase signals neu co;
+- impacted flows;
+- ambiguity/mismatch;
+- verification plan;
+- evidence va final decision.
+
 Nhung solution co the bat dau tu cac viec nho hon:
 
 - tao ticket brief;
@@ -177,14 +190,32 @@ Product opportunity khong phai "AI test everything". Product opportunity la:
 - Tao knowledge base cho QA regression sau nay.
 - Lam product/engineer/QA noi cung mot source-of-truth.
 
+Decision 2026-07-23: business/product scope cua MVP:
+
+- **Primary user**: QA.
+- **Context contributors**: Product va Engineer bo sung ngu canh khi QA/AI phat hien ambiguity, mismatch, missing business rule, missing implementation hint, hoac risk can confirm.
+- **Root value**: shared verification context, khong phai AI automation.
+- **Pain set can solve**:
+  - QA mat thoi gian hieu ticket.
+  - QA verify sai scope.
+  - Product/Engineer/QA khong cung context.
+  - Evidence/documentation sau QA bi thieu.
+  - Regression bi miss.
+- **Business outputs can tao**:
+  - Shared verification context.
+  - Risk summary.
+  - QA sign-off note.
+  - Release confidence record.
+  - Defect-quality improvement.
+
 ### 2.9 Personas
 
 | Persona | Job | Pain hien tai | AI ho tro nen lam gi | AI khong nen lam gi |
 |---|---|---|---|---|
-| QA Engineer | Verify ticket/build | Context phan tan, khong ro current behavior/code coverage, test case thieu, evidence viet thu cong | Summarize scope, surface current-state mismatch, suggest test matrix, nhac evidence, draft final note | Tu pass/fail thay QA |
+| QA Engineer | Primary user: verify ticket/build | Context phan tan, khong ro current behavior/code coverage, test case thieu, evidence viet thu cong | Summarize scope, surface current-state mismatch, suggest test matrix, nhac evidence, draft final note | Tu pass/fail thay QA |
 | QA Lead | Quan ly quality/risk | Kho biet ticket nao risk cao, coverage ra sao, impact lan den dau | Highlight risk, impact surface, coverage gaps, blocked reasons, trend | Tao metric ao khong co evidence |
-| Engineer | Ship code dung scope | Feedback QA thieu context hoac den muon | Nhan checklist ro, defect wording co repro/evidence, biet QA dang test impact nao | Ep engineer theo AI neu ticket/spec sai |
-| Product/PM | Xac nhan dung user intent | Kho doc technical evidence, missing product risk, ticket co the khong phan anh current behavior | Tao product-facing summary, unresolved mismatch, risk, demo checklist | Thay Product sign-off |
+| Engineer | Context contributor: confirm implementation/current behavior khi can | Feedback QA thieu context hoac den muon | Nhan checklist ro, defect wording co repro/evidence, biet QA dang test impact nao | Ep engineer theo AI neu ticket/spec sai |
+| Product/PM | Context contributor: confirm business intent/rule khi can | Kho doc technical evidence, missing product risk, ticket co the khong phan anh current behavior | Tao product-facing summary, unresolved mismatch, risk, demo checklist | Thay Product sign-off |
 | Tech Lead/EM | Dieu phoi delivery | Quality gate khong nhat quan | Xem status/risk/evidence theo ticket | Bien AI thanh gate quan lieu |
 
 ### 2.10 Jobs-to-be-done
@@ -315,17 +346,21 @@ Noi cach khac:
 
 ### Business/product metrics
 
+Decision 2026-07-23: MVP success khong chi do mot metric duy nhat. MVP nen do ca bo metric sau de xem QA-Agents co tao duoc business value that hay khong.
+
 | Metric | Vi sao quan trong | Cach do |
 |---|---|---|
 | QA time-to-understand ticket | Do AI co giam thoi gian doc/spec khong | QA self-report + time from open to approved brief |
+| Shared-context alignment | Product/Engineer/QA co cung nhin mot context khong | % ticket co approved Verification Context Record truoc khi QA execute |
 | Current-state mismatch detection | Do AI co giup phat hien ticket sai/thieu so voi hien trang khong | So mismatch/ambiguity duoc flag truoc khi verify |
 | Impact analysis usefulness | Do AI co tim dung flow/module/role bi anh huong khong | QA/Engineer rate useful/partial/not useful |
 | Test coverage usefulness | Do AI co de xuat dung cases khong | QA rate useful/partial/not useful tren test cases |
+| Regression risk reduction signal | Do AI co giup QA nho impacted flow/regression candidate khong | So regression candidates duoc them vao plan va duoc QA confirm useful |
 | Evidence completeness | Do output co dung source-of-truth khong | % final notes co build/env/status/evidence/defects |
 | Defect communication quality | Engineer co reproduce nhanh hon khong | Engineer rating hoac reopen/clarification count |
 | Product sign-off clarity | Product co hieu risk va scope khong | PM rating, so cau hoi follow-up |
+| Release confidence record completeness | Ticket co record du de dung lai khi release/regression khong | % record co scope, risk, evidence, known limitations, sign-off status |
 | Documentation reuse | Source-of-truth co duoc dung lai khong | Link/reference count, regression reuse |
-| Shared context creation | QA/Engineer/Product co cung nhin mot context brief khong | % tickets co reviewed context brief truoc verify |
 | Clarification before testing | Ambiguity/mismatch co duoc resolve truoc khi QA test khong | So clarification raised before verification begins |
 
 ### Guardrail metrics
@@ -354,7 +389,7 @@ Phase hien tai nen dung o Level 0-1. Chua nen di thang vao Level 4-5.
 
 ## 6. Business questions can chot truoc technical
 
-1. Root problem minh muon solve la gi: QA speed, QA quality, shared context, source-of-truth, hay release confidence?
+1. Root problem minh muon solve la gi: **shared verification context**. QA speed, QA quality, source-of-truth va release confidence la downstream outcomes, khong phai root positioning.
 2. Ai dang chiu trach nhiem tao shared verification context hom nay: Product, Engineer, QA, hay khong ai ro?
 3. Ticket thieu context la exception hay la normal workflow?
 4. QA hien dang lay business history tu dau: docs, ticket cu, chat, con nguoi, hay memory ca nhan?
@@ -401,6 +436,17 @@ MVP khong can quyet dinh ngay record se luu o dau. Ban dau record co the la Mark
 
 ### Ready-for-QA intake model
 
+Decision 2026-07-23: **Phase 1 minimum context = ticket + QA input**.
+
+Trong MVP, system khong bat buoc doc PR diff, source code, build artifact, historical docs hay test management tool. Cac source do co the duoc paste/link thu cong neu QA co san, nhung khong la dependency de pilot chay duoc.
+
+Ly do:
+
+- Giam integration scope de validate product value truoc.
+- Ep artifact tap trung vao shared verification context, khong bien MVP thanh code-analysis platform.
+- Cho phep QA dung ngay voi ticket that va context QA dang co.
+- Lam ro chat luong dau ra phu thuoc vao ticket + QA input; neu context thieu, AI phai tao Clarification Block thay vi suy dien.
+
 MVP nen dung **hybrid intake**:
 
 ```text
@@ -419,6 +465,7 @@ Ly do:
 
 | Field | Cau hoi | Gia tri hop le |
 |---|---|---|
+| Ticket | Ticket/spec can verify la gi? | Text/link/paste tu ticketing system |
 | Current behavior | Theo hieu biet hien tai, product dang behave nhu the nao? | Text hoac `unknown` |
 | Business rule/history | Co rule, exception, decision, ticket cu nao lien quan khong? | Text/link hoac `unknown` |
 | Clarification needed | QA dang nghi ngo/can clarify dieu gi truoc khi verify? | Text hoac `none` |
@@ -430,6 +477,7 @@ Ly do:
 | Source links | Source nao dang duoc dung de hieu context? | Ticket cu, doc, chat, PR, release note |
 | Suspected impacted flows | QA nghi flow nao co the bi anh huong? | Web, mobile, admin, API, permission, report, payment |
 | Engineer implementation hint | Neu engineer da de lai note, change nam o dau? | UI, API, DB, config, job, permission, unknown |
+| PR/build/test artifacts | Co PR/build/test output nao QA muon dua vao khong? | PR link, branch, build id, CI output, test run |
 
 #### AI follow-up rules
 
@@ -482,6 +530,38 @@ Rule:
 - Product-facing question nen noi bang ngon ngu behavior/business.
 - Engineer-facing question co the hoi implementation hint, code path, build scope, regression area.
 - Neu cau hoi khong can block QA, mark la `non-blocking`.
+
+#### AI answer authority
+
+Decision 2026-07-23: **AI cung co quyen tra loi**, nhung chi trong boundary cua assistant draft/source-backed.
+
+AI khong chi dat cau hoi. Neu ticket + QA input + approved retrieval context du de tra loi, AI nen tu de xuat cau tra loi de giam clarification loop.
+
+Quyen tra loi cua AI:
+
+- Duoc answer khi cau tra loi co source/context ro tu ticket, QA input, approved docs, historical record, hoac retrieval result.
+- Phai gan nhan: `source-backed`, `inferred`, hoac `unknown`.
+- Phai ghi confidence/risk: high, medium, low.
+- Phai neu ro assumption neu co.
+- Phai de xuat owner confirm neu cau tra loi co impact den business rule, expected behavior, implementation scope, release risk, hoac customer impact.
+
+AI khong duoc:
+
+- Tu quyet dinh expected behavior khi ticket/source khong du.
+- Tu override Product/Engineer/QA confirmation.
+- Tu pass/fail ticket thay QA.
+- Bien inference thanh fact.
+
+Ownership model:
+
+| Area | AI co the tra loi? | Human authority |
+|---|---|---|
+| Ticket summary | Co, neu dua tren ticket | QA review |
+| Current behavior | Co, neu QA input/source ro; neu khong thi `unknown` | QA, Engineer confirm khi mismatch/risk cao |
+| Business rule/history | Co, neu co approved docs/history | Product confirm khi rule/intent chua ro |
+| Implementation hint | Co, neu co engineer note/PR/source duoc cung cap | Engineer confirm |
+| Impact/risk | Co, dang risk hypothesis | QA/QA Lead/Product confirm theo scope |
+| Final sign-off | Chi draft note | QA |
 
 #### Blocking vs non-blocking rule
 
@@ -780,7 +860,22 @@ evidence:
 
 ## 12. AWS AI ecosystem fit
 
-Phase 1 co the ap dung AWS AI ecosystem theo huong sau:
+Decision 2026-07-23 revised: Phase 1 dung **Bedrock + retrieval/RAG don gian + AgentCore runtime boundary**.
+
+Ly do:
+
+- Phase 1 output la artifact draft/review, khong phai autonomous agent action.
+- Core value la tong hop shared verification context co citation, khong phai tool orchestration nhieu buoc.
+- Team can validate prompt contract, source quality, QA review workflow va evaluation truoc.
+- Tuy nhien van nen dua AgentCore vao Phase 1 neu muc tieu la pilot theo production shape: co runtime boundary, session isolation, endpoint, trace/observability va duong nang cap len tool-integrated agent.
+- AgentCore Gateway/Identity/Policy/write tools van de Phase 2 khi agent can goi ticketing/PR/test/evidence tools nhieu buoc.
+
+Can phan biet ro:
+
+- **AgentCore Phase 1**: host/wrap QA Assistant nhu mot agent runtime co contract ro; dung cho invoke/session/trace/deploy discipline.
+- **AgentCore Phase 2**: them Gateway, Memory, Identity, Policy, tool calling va write actions.
+
+Phase 1 ap dung AWS AI ecosystem theo huong sau:
 
 | Need | AWS layer phu hop | Ghi chu |
 |---|---|---|
@@ -789,27 +884,29 @@ Phase 1 co the ap dung AWS AI ecosystem theo huong sau:
 | Doi chieu ticket voi business history/current behavior | Bedrock + Knowledge Bases + code/doc retrieval | Day la core value: ticket is not the truth |
 | Tim codebase signals: component/API/routes/tests/config | Code search/repo index + Bedrock reasoning | Can cite file/path/test va khong suy dien qua muc |
 | Guardrail cho PII, prompt attack, noi dung khong duoc luu | Bedrock Guardrails | Apply input/output theo policy |
-| Agent goi ticketing/PR/test/evidence tools nhieu buoc | AgentCore Runtime/Harness + Gateway | Phase 2 neu can multi-tool agent production |
-| Memory theo QA/project/domain | AgentCore Memory | Chi luu thong tin duoc phep nho |
-| Tool policy va outbound auth | AgentCore Gateway + Identity + Policy | Can khi agent co the tao/update ticket/document |
+| Runtime boundary cho QA Assistant | AgentCore Runtime/Harness | Phase 1 neu muon pilot gan voi production deployment |
+| Agent goi ticketing/PR/test/evidence tools nhieu buoc | AgentCore Gateway + Runtime/Harness | Phase 2 neu can multi-tool agent production |
+| Memory theo QA/project/domain | AgentCore Memory | Phase 2; chi luu thong tin duoc phep nho |
+| Tool policy va outbound auth | AgentCore Gateway + Identity + Policy | Phase 2; can khi agent co the tao/update ticket/document |
 | Observability/evaluation | CloudWatch + AgentCore Evaluations/Bedrock eval | Can trace, token, tool latency, quality score |
 | Evidence/file storage | S3/Drive/Docs tuy stack hien co | Can retention va permission boundary |
 
-Phase 1 pragmatic path:
+Phase 1 pragmatic path: AgentCore-wrapped Bedrock/RAG draft-only
 
 ```text
 QA-Agents app
   -> auth/user context
-  -> ticket/PR/doc fetchers
-  -> business history + codebase signal retrieval
-  -> Bedrock prompt contracts
-  -> optional Knowledge Base retrieval
+  -> AgentCore Runtime/Harness endpoint
+  -> ticket + QA input
+  -> optional retrieval/RAG from approved docs
+  -> Bedrock prompt contracts + Guardrails
+  -> Ready-for-QA Verification Context Record
   -> QA review/edit/confirm
   -> source-of-truth document generator
   -> audit log + metrics
 ```
 
-Phase 2 agent path:
+Phase 2 agent path: AgentCore tool-integrated QA Agent
 
 ```text
 QA-Agents app
@@ -1025,6 +1122,9 @@ Ops controls:
 ### Phase 1: QA Assistant draft-only
 
 - Ready-for-QA Verification Context Record.
+- Minimum context: ticket + QA input.
+- AWS fit: Bedrock + retrieval/RAG don gian, wrapped/hosted qua AgentCore Runtime/Harness neu pilot can production-shaped deployment.
+- Khong dung AgentCore Gateway/write tools trong MVP neu chua co tool action nhieu buoc.
 - Ticket intent + current behavior + business history draft.
 - Test matrix generator based on approved context.
 - Verification checklist.
@@ -1048,34 +1148,225 @@ Ops controls:
 - Observability/Evaluations.
 - Cost/quota guardrails.
 
-## 18. Open questions
+## 18. Decision records: options va rationale
+
+Section nay ghi ro cac option da can nhac de RFC khong chi la danh sach quyet dinh. Moi quyet dinh can co rationale de Product/QA/Engineer co the challenge, accept, hoac doi huong.
+
+### DR1. Root problem
+
+| Option | Mo ta | Danh gia |
+|---|---|---|
+| A. AI generate test cases | Tap trung tao test cases tu ticket | De demo, nhung de bien thanh feature nho; khong giai quyet ticket thieu context hoac verify sai scope |
+| B. AI chatbot cho QA | QA hoi gi thi AI tra loi | Linh hoat, nhung output kho chuan hoa va kho tao source-of-truth |
+| C. Shared verification context | Tao context chung giua QA/Product/Engineer truoc khi verify | Chon, vi giai quyet root gap: ticket, business history, current behavior, impact va evidence bi phan tan |
+| D. Autonomous QA agent | Agent tu verify va update ticket | Qua som cho MVP; risk cao ve trust, permission va false confidence |
+
+Decision: chon **C. Shared verification context**.
+
+Why this option:
+
+- Day la pain nam truoc test execution: neu QA hieu sai context, test cases va evidence sau do deu co the sai.
+- Tao duoc artifact co the review, edit, trace, va dung lai.
+- Phu hop voi Phase 1 draft-only va human-controlled workflow.
+
+Why not others:
+
+- Generate test cases chi la output con, khong du la product position.
+- Chatbot khong dam bao workflow va evidence.
+- Autonomous QA agent can integration, permissions, environment access va eval mature hon.
+
+### DR2. Primary user va contributors
+
+| Option | Mo ta | Danh gia |
+|---|---|---|
+| A. QA la primary user | QA dung tool de hieu va verify ticket | Chon, vi QA la nguoi truc tiep gap pain va tao verification record |
+| B. Product la primary user | Product dung tool de tao better spec | Co gia tri, nhung khong nam o verification moment |
+| C. Engineer la primary user | Engineer dung tool de viet implementation/test checklist | Co gia tri, nhung khong giai quyet QA evidence/sign-off gap dau tien |
+| D. Multi-role ngang nhau | QA/Product/Engineer cung la user chinh | De lam scope mo va UX phuc tap trong MVP |
+
+Decision: chon **QA la primary user**; Product va Engineer la **context contributors**.
+
+Why this option:
+
+- QA la nguoi can shared context de verify dung scope.
+- Product va Engineer van quan trong, nhung nen tham gia khi can confirm business rule, expected behavior, implementation scope hoac release risk.
+- Giu MVP workflow co owner ro, tranh bien tool thanh meeting platform.
+
+Why not others:
+
+- Product-first se thanh spec assistant.
+- Engineer-first se thanh code/review assistant.
+- Multi-role ngang nhau lam MVP kho do value va kho thiet ke ownership.
+
+### DR3. MVP artifact
+
+| Option | Mo ta | Danh gia |
+|---|---|---|
+| A. Test matrix | Danh sach test cases/edge cases | Can co, nhung khong du de ghi business context va decision |
+| B. Clarification Block | Cau hoi de QA gui Product/Engineer | Huu ich, nhung chi xu ly missing context |
+| C. QA sign-off note | Final note sau verify | Quan trong, nhung sinh ra qua muon neu khong co context tu dau |
+| D. Ready-for-QA Verification Context Record | Artifact gom ticket intent, QA input, risk, ambiguity, impact, test direction va evidence expectation | Chon, vi dung lam shared context truoc khi QA execute |
+
+Decision: chon **Ready-for-QA Verification Context Record**.
+
+Why this option:
+
+- Tao context tai dung thoi diem: khi ticket vao ready-for-QA.
+- Lam base cho test matrix, clarification, risk summary va final sign-off note.
+- Co the bat dau bang Markdown/manual artifact, chua can integration phuc tap.
+
+Why not others:
+
+- Test matrix va sign-off note la section/output ben trong record, khong nen la artifact goc.
+- Clarification Block la co che escalation, khong phai artifact chinh.
+
+### DR4. Minimum context cho Phase 1
+
+| Option | Mo ta | Danh gia |
+|---|---|---|
+| A. Ticket only | Chi dua ticket cho AI | Qua yeu; ticket thuong khong phan anh current behavior/business history |
+| B. Ticket + QA input | Ticket cong current behavior/business history/clarification tu QA | Chon, vi du nhe de pilot va van capture human context |
+| C. Ticket + PR/build/source code | Them implementation context bat buoc | Co gia tri, nhung day MVP vao integration/code analysis qua som |
+| D. Full enterprise RAG | Ticket + docs + historical tickets + source-of-truth + code index | Target sau, nhung qua nang cho Phase 1 |
+
+Decision: chon **ticket + QA input**.
+
+Why this option:
+
+- Giam dependency integration de pilot nhanh.
+- Buoc QA dua vao current context hoac mark `unknown`, giup AI khong bia.
+- Neu thieu context, system tao Clarification Block hoac AI answer co nhan `unknown/inferred`.
+
+Why not others:
+
+- Ticket only qua de sinh hallucination hoac output chung chung.
+- PR/build/source code bat buoc lam MVP phu thuoc engineering integration.
+- Full RAG can data governance, freshness, ACL va citation policy chua chac san sang.
+
+### DR5. AWS fit cho Phase 1
+
+| Option | Mo ta | Danh gia |
+|---|---|---|
+| A. Bedrock only | App goi Bedrock truc tiep | Don gian nhat, nhung thieu production-shaped agent boundary |
+| B. Bedrock + RAG | Them retrieval tu approved docs | Can cho source-backed context, nhung van chua co agent runtime discipline |
+| C. Bedrock/RAG + AgentCore Runtime/Harness boundary | AgentCore host/wrap QA Assistant, Bedrock lam reasoning/generation | Chon, vi giu production direction nhung chua day vao tool automation |
+| D. Full AgentCore multi-tool agent | Runtime + Gateway + Memory + Identity + write tools ngay tu MVP | Qua som; tang risk permission, tool correctness, eval va ops |
+
+Decision: chon **Bedrock/RAG + AgentCore Runtime/Harness boundary** cho Phase 1.
+
+Why this option:
+
+- Phu hop voi quan diem van dung AgentCore, nhung o muc don gian.
+- AgentCore tao endpoint/runtime/session/trace/deploy discipline cho QA Assistant.
+- Bedrock/RAG van la core cho synthesis va citation.
+- Cho duong nang cap sach len Gateway/Memory/Identity/Policy o Phase 2.
+
+Why not others:
+
+- Bedrock only/Bedrock + RAG only co the nhanh hon, nhung khong hoc duoc AgentCore production shape.
+- Full AgentCore multi-tool agent la overbuild cho MVP draft-only.
+
+### DR6. AI answer authority
+
+| Option | Mo ta | Danh gia |
+|---|---|---|
+| A. AI chi dat cau hoi | AI khong tra loi ambiguity | An toan, nhung lam workflow cham va giam value cua assistant |
+| B. AI tra loi co boundary | AI tra loi neu co source/context, gan nhan source-backed/inferred/unknown va confidence/risk | Chon, vi giam clarification loop nhung van giu human authority |
+| C. AI tu quyet dinh expected behavior | AI coi cau tra loi la final | Khong chap nhan cho QA/business workflow |
+
+Decision: chon **AI tra loi co boundary**.
+
+Why this option:
+
+- AI co the giam thoi gian hieu ticket neu source/context da du.
+- Gan nhan confidence/risk giup QA biet diem nao dung duoc, diem nao can confirm.
+- Van giu Product/Engineer/QA la authority cuoi cho business rule, implementation scope, release risk va final sign-off.
+
+Why not others:
+
+- AI chi hoi se bien tool thanh question generator.
+- AI final authority tao false confidence va risk verify sai scope.
+
+### DR7. Write actions va escalation
+
+| Option | Mo ta | Danh gia |
+|---|---|---|
+| A. Manual copy/paste Clarification Block | AI tao block, QA copy/gui | Chon cho MVP vi giu draft-only va giam permission/integration risk |
+| B. AI tao comment/ticket draft trong tool | AI draft vao ticket system, cho QA approve | Phase 2 tot, nhung can integration va approval UX |
+| C. AI tu write/update ticket/doc | Agent tu dong ghi vao system | Qua som va rui ro cao |
+
+Decision: chon **manual Clarification Block** cho Phase 1.
+
+Why this option:
+
+- Giu AI la assistant, khong phai actor co quyen write.
+- Van giam friction cho QA vi cau hoi da duoc structure.
+- De pilot ma chua can ticketing integration.
+
+Why not others:
+
+- Draft/comment truc tiep can OAuth, permissions, audit va undo.
+- Auto-write can trust/eval/approval policy mature hon.
+
+### DR8. MVP success metrics
+
+| Option | Mo ta | Danh gia |
+|---|---|---|
+| A. Chon mot metric duy nhat | Vi du time saved | De report, nhung de optimize sai neu bo qua quality/risk |
+| B. Do toan bo metric set | Speed, alignment, mismatch, coverage, regression, evidence, defect quality, release confidence | Chon, vi MVP can validate value da chieu |
+| C. Chi do qualitative feedback | Nhanh, nhung kho defend business case |
+
+Decision: chon **metric set day du**.
+
+Why this option:
+
+- QA-Agents khong chi tiet kiem thoi gian; no can tang quality va shared context.
+- Cac metric giup phan biet output dep voi business value that.
+- Van co the chon leading indicator cho pilot dashboard sau.
+
+Why not others:
+
+- Time saved khong du neu QA van miss regression.
+- Qualitative-only khong du de ra quyet dinh dau tu tiep.
+
+## 19. Open questions
 
 1. Ticket source la gi: Jira, Linear, GitHub Issues, ClickUp, hay system noi bo?
 2. Test cases hien dang o dau: spreadsheet, test management tool, Markdown, repo, hay tribal knowledge?
 3. Source-of-truth document nen publish o dau: Git repo, Notion, Confluence, Google Docs, hay ticket comment?
 4. QA evidence hien dang luu o dau: Drive, S3, CI artifacts, test tool, hay attachment trong ticket?
-5. Phase 1 co can doc PR diff/source code khong, hay chi doc ticket + QA input?
+5. PR/build/source code/historical docs nen duoc dua vao optional enrichment theo rule nao, va khi nao moi nang len dependency?
 6. AI duoc phep tao defect/ticket draft truc tiep khong, hay chi generate text de QA copy?
 7. Data nao bi cam dua vao model: PII, customer data, secrets, logs production?
-8. Success metric dau tien la gi: time saved, test coverage, defect quality, hay documentation consistency?
+8. Trong cac metric MVP da chot, metric nao la leading indicator cho pilot dau tien: time-to-understand, shared-context alignment, mismatch detection, hay evidence completeness?
 
-## 19. Discussion proposal
+## 20. Discussion proposal
 
-De bat dau trao doi, nen chot 3 quyet dinh truoc:
+De tiep tuc trao doi, nen review cac quyet dinh sau:
 
-1. **MVP artifact**: Ready-for-QA Verification Context Record co dung la artifact dau tien khong?
+1. **MVP artifact**: Ready-for-QA Verification Context Record.
 2. **Trigger point**: record duoc tao khi ticket chuyen sang ready for QA.
 3. **Intake model**: hybrid intake = structured form + AI follow-up khi thieu/mau thuan.
 4. **Current behavior ownership**: QA-first, conditional Engineer/Product confirmation.
 5. **Escalation model**: AI tao Clarification Block de QA copy gui Product/Engineer.
-6. **Minimum context**: ticket + QA input co du cho pilot, hay can optional PR/build/historical docs?
+6. **AI answer authority**: AI co quyen tra loi trong boundary draft/source-backed; human authority van confirm cac diem risk cao.
+7. **AWS fit**: Phase 1 dung Bedrock/RAG don gian + AgentCore runtime boundary; Gateway/write tools danh cho Phase 2 khi co multi-tool agent.
+8. **Minimum context**: ticket + QA input.
 
 Recommendation hien tai:
 
+- Root problem da chot: **shared verification context**.
+- Primary user da chot: **QA**. Product va Engineer la **context contributors** khi can bo sung business/implementation context.
+- Pain set da chot: QA mat thoi gian hieu ticket, verify sai scope, team khong cung context, evidence/documentation thieu, regression bi miss.
+- Business outputs da chot: shared verification context, risk summary, QA sign-off note, release confidence record, defect-quality improvement.
+- MVP success da chot: do toan bo nhom metric ve speed, alignment, mismatch detection, test coverage, regression risk, evidence completeness, defect quality va release confidence.
 - Phase 1 nen la **QA Assistant draft-only** tai ready-for-QA.
-- MVP artifact nen la **Ready-for-QA Verification Context Record**.
+- MVP artifact da chot: **Ready-for-QA Verification Context Record**.
+- AWS fit da chot: **Bedrock + retrieval/RAG don gian + AgentCore Runtime/Harness boundary cho Phase 1**. AgentCore Gateway/Identity/Policy/write tools danh cho Phase 2 neu can tool-integrated QA Agent.
+- Minimum context da chot: **ticket + QA input**. PR/build/source code/historical docs la optional inputs, khong phai MVP dependency.
 - Intake nen la **hybrid**: 3 field bat buoc + optional links/impacted flows + AI follow-up co dieu kien.
 - Current behavior ownership nen la **QA-first, conditional confirmation**.
+- AI answer authority da chot: **AI duoc tra loi neu co source/context ro, phai gan nhan source-backed/inferred/unknown va confidence/risk; human confirm cac diem business/implementation/release risk cao**.
 - Escalation nen la **Clarification Block manual copy**, chua tao comment/message truc tiep.
-- Input minimum: **ticket + QA-entered current behavior/business history + optional PR/build link**.
+- Input minimum: **ticket + QA-entered current behavior/business history/clarification**. PR/build/source code/historical docs chi la optional enrichment.
 - Storage/publish channel de danh gia sau; ban dau co the dung Markdown/manual artifact de validate product value.
