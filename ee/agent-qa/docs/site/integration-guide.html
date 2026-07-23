@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Partner Integration Guide - ETUS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/style.css" />
+</head>
+<body>
+<div class="docs-layout">
+  <aside class="docs-sidebar">
+    <div class="docs-logo">ETUS <span>integration</span></div>
+    <nav class="docs-nav">
+      <div class="docs-nav-group">
+        <div class="docs-nav-label">Overview</div>
+        <a href="#introduction">Introduction</a>
+        <a href="#capabilities">Capabilities</a>
+        <a href="#architecture">Architecture</a>
+      </div>
+      <div class="docs-nav-group">
+        <div class="docs-nav-label">Integration Points</div>
+        <a href="#mcp-api">MCP API (33 Tools)</a>
+        <a href="#dashboard-api">Dashboard REST API</a>
+        <a href="#cli">CLI Integration</a>
+        <a href="#docker">Docker Deployment</a>
+      </div>
+      <div class="docs-nav-group">
+        <div class="docs-nav-label">Features</div>
+        <a href="#test-execution">Test Execution</a>
+        <a href="#memory-system">Memory System</a>
+        <a href="#caching">Smart Caching</a>
+        <a href="#hooks">Hook System</a>
+        <a href="#accessibility">Accessibility</a>
+        <a href="#llm-providers">LLM Providers</a>
+      </div>
+      <div class="docs-nav-group">
+        <div class="docs-nav-label">Reference</div>
+        <a href="#mcp-tools-reference">MCP Tools Reference</a>
+        <a href="#config-schema">Config Schema</a>
+        <a href="#env-vars">Environment Variables</a>
+        <a href="#roadmap">Roadmap</a>
+      </div>
+    </nav>
+  </aside>
+  <main class="docs-main">
+    <button class="docs-menu-btn" type="button">Menu</button>
+
+
+    <h1 id="introduction">ETUS Partner Integration Guide</h1>
+    <p class="docs-subtitle">Technical reference for partners integrating ETUS into their workflow, CI/CD pipeline, or product. This document covers all available integration points, APIs, and deployment options.</p>
+
+    <div class="docs-callout">
+      <strong>Version</strong><br>
+      ETUS v0.1.21 — July 2026. All APIs documented here are stable and production-ready.
+    </div>
+
+    <hr>
+
+    <h2 id="capabilities">Platform Capabilities</h2>
+    <p>ETUS is an AI-powered end-to-end testing platform. Partners can integrate it for automated QA, regression testing, and continuous quality monitoring.</p>
+
+    <table>
+      <thead><tr><th>Capability</th><th>Description</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr><td>Natural-language test authoring</td><td>Write test steps in plain English (YAML format)</td><td>Available</td></tr>
+        <tr><td>AI-driven execution</td><td>LLM observes screen, plans actions, executes, verifies</td><td>Available</td></tr>
+        <tr><td>Self-healing</td><td>Automatically retries with alternative paths on failure</td><td>Available</td></tr>
+        <tr><td>Web testing (Playwright)</td><td>Chromium, Firefox, WebKit — headless or headed</td><td>Available</td></tr>
+        <tr><td>Sub-action caching</td><td>5x faster reruns, 3x fewer LLM tokens</td><td>Available</td></tr>
+        <tr><td>Memory system</td><td>Cross-run learning from observations</td><td>Available</td></tr>
+        <tr><td>WCAG accessibility auditing</td><td>Axe-core checks per step (AA/AAA)</td><td>Available</td></tr>
+        <tr><td>Docker-sandboxed hooks</td><td>Node, Bun, Python, Bash in isolated containers</td><td>Available</td></tr>
+        <tr><td>MCP server (33 tools)</td><td>Model Context Protocol for IDE/agent integration</td><td>Available</td></tr>
+        <tr><td>Dashboard with live view</td><td>Real-time execution monitoring + step replay</td><td>Available</td></tr>
+        <tr><td>Multi-LLM support</td><td>OpenAI, Anthropic, Gemini, OpenRouter, local models</td><td>Available</td></tr>
+        <tr><td>Auth state management</td><td>Capture login once, reuse across runs</td><td>Available</td></tr>
+        <tr><td>Video recording</td><td>Per-run Playwright video capture</td><td>Available</td></tr>
+        <tr><td>Console + network logs</td><td>Captured per step for debugging</td><td>Available</td></tr>
+      </tbody>
+    </table>
+
+    <hr>
+
+    <h2 id="architecture">Integration Architecture</h2>
+    <p>ETUS exposes three integration surfaces:</p>
+    <pre><code>┌─────────────────────────────────────────────────────────────┐
+│                    Partner System                             │
+├─────────────┬──────────────────┬────────────────────────────┤
+│  Option A   │    Option B      │        Option C            │
+│  MCP API    │  Dashboard API   │    CLI (subprocess)        │
+│  (33 tools) │  (REST HTTP)     │    (shell commands)        │
+└──────┬──────┴────────┬─────────┴────────────┬───────────────┘
+       │               │                      │
+       ▼               ▼                      ▼
+┌─────────────────────────────────────────────────────────────┐
+│                     ETUS Runtime                              │
+├─────────────────────────────────────────────────────────────┤
+│  Core Engine → Playwright → Target App                       │
+│  Cache │ Memory │ Hooks │ Reporter │ SQLite                  │
+└─────────────────────────────────────────────────────────────┘</code></pre>
+
+    <hr>
+
+
+    <h2 id="mcp-api">Integration Option A: MCP API (Recommended)</h2>
+    <p>The MCP (Model Context Protocol) server exposes 33 tools over HTTP or stdio. This is the richest integration surface — supports test authoring, execution, result inspection, memory, and config management.</p>
+
+    <h3>Connection</h3>
+    <table>
+      <thead><tr><th>Transport</th><th>Endpoint</th><th>Use Case</th></tr></thead>
+      <tbody>
+        <tr><td>HTTP (Streamable)</td><td><code>http://127.0.0.1:3471/mcp</code></td><td>Remote clients, CI, partner APIs</td></tr>
+        <tr><td>stdio</td><td><code>etus-agent mcp</code></td><td>IDE plugins, local agents</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Protocol</h3>
+    <ul>
+      <li>JSON-RPC 2.0 over Server-Sent Events (SSE)</li>
+      <li>Protocol version: <code>2024-11-05</code></li>
+      <li>Headers: <code>Content-Type: application/json</code>, <code>Accept: application/json, text/event-stream</code></li>
+    </ul>
+
+    <h3>Quick Start</h3>
+    <pre><code># Initialize MCP session
+curl -N -X POST http://127.0.0.1:3471/mcp \
+  -H "Content-Type: application/json" \
+  -H "Accept: application/json, text/event-stream" \
+  -d '{
+    "jsonrpc": "2.0",
+    "id": 1,
+    "method": "initialize",
+    "params": {
+      "protocolVersion": "2024-11-05",
+      "capabilities": {},
+      "clientInfo": {"name": "partner-system", "version": "1.0"}
+    }
+  }'
+
+# Response (SSE):
+# event: message
+# data: {"result":{"protocolVersion":"2024-11-05",
+#   "capabilities":{"tools":{"listChanged":true}},
+#   "serverInfo":{"name":"etus-agent","version":"0.1.21"}},...}</code></pre>
+
+    <h3>List Available Tools</h3>
+    <pre><code>{"jsonrpc":"2.0","id":2,"method":"tools/list","params":{}}</code></pre>
+
+    <h3>Call a Tool (Example: Run a Test)</h3>
+    <pre><code>{"jsonrpc":"2.0","id":3,"method":"tools/call","params":{
+  "name": "etus_agent_enqueue_test_run",
+  "arguments": {
+    "testId": "t_alpha-bravo-charlie-delta-echo-foxtrot-golf-hotel-india-juliet",
+    "target": "my-app"
+  }
+}}</code></pre>
+
+    <hr>
+
+    <h2 id="dashboard-api">Integration Option B: Dashboard REST API</h2>
+    <p>The dashboard exposes a comprehensive HTTP API on the same port as the UI (default: 3100). All endpoints are JSON.</p>
+
+    <h3>Base URL</h3>
+    <pre><code>http://127.0.0.1:3100/api</code></pre>
+
+    <h3>Key Endpoints</h3>
+    <table>
+      <thead><tr><th>Method</th><th>Endpoint</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td>GET</td><td><code>/api/config</code></td><td>Get current configuration</td></tr>
+        <tr><td>GET</td><td><code>/api/tests</code></td><td>List all test files</td></tr>
+        <tr><td>GET</td><td><code>/api/suites</code></td><td>List all suite files</td></tr>
+        <tr><td>GET</td><td><code>/api/hooks</code></td><td>List all hooks</td></tr>
+        <tr><td>GET</td><td><code>/api/runs</code></td><td>List run history</td></tr>
+        <tr><td>GET</td><td><code>/api/runs/:id</code></td><td>Get run detail with steps</td></tr>
+        <tr><td>POST</td><td><code>/api/runs/trigger</code></td><td>Trigger a new test/suite run</td></tr>
+        <tr><td>POST</td><td><code>/api/runs/:id/cancel</code></td><td>Cancel a running test</td></tr>
+        <tr><td>GET</td><td><code>/api/memory</code></td><td>List memory observations</td></tr>
+        <tr><td>POST</td><td><code>/api/cache/purge</code></td><td>Purge action cache</td></tr>
+        <tr><td>GET</td><td><code>/api/variables</code></td><td>List runtime variables</td></tr>
+        <tr><td>GET</td><td><code>/api/execution/active</code></td><td>Get currently running tests</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Trigger a Run</h3>
+    <pre><code>POST /api/runs/trigger
+Content-Type: application/json
+
+{
+  "file": "tests/login.yaml",
+  "noCache": false,
+  "noMemory": false,
+  "local": true
+}
+
+# Response:
+{"runId": "r_kilo-lima-mike-...", "status": "queued"}</code></pre>
+
+    <h3>Get Run Results</h3>
+    <pre><code>GET /api/runs/r_kilo-lima-mike-...
+
+# Response:
+{
+  "run": {
+    "id": "r_kilo-lima-mike-...",
+    "status": "passed",
+    "platform": "web",
+    "duration": 12400,
+    "steps": [
+      {
+        "name": "Navigate to login page",
+        "status": "passed",
+        "duration": 2100,
+        "action": {"type": "navigate", "url": "..."},
+        "trace": {"observation": "...", "reasoning": "...", "confidence": 0.95}
+      }
+    ]
+  }
+}</code></pre>
+
+    <hr>
+
+
+    <h2 id="cli">Integration Option C: CLI (Subprocess)</h2>
+    <p>For simple integrations, spawn ETUS as a subprocess. Best for CI/CD pipelines and shell-based automation.</p>
+
+    <h3>Installation</h3>
+    <pre><code>npm install -D etus-agent</code></pre>
+
+    <h3>Key Commands</h3>
+    <pre><code># Run a test (exits 0 on pass, 1 on fail)
+npx etus-agent run tests/login.yaml
+
+# Run a suite
+npx etus-agent run suites/smoke.suite.yaml
+
+# Run all discovered tests
+npx etus-agent run
+
+# Run with options
+npx etus-agent run --no-cache --headless tests/checkout.yaml
+
+# Start dashboard (background)
+npx etus-agent dashboard &
+
+# Check environment
+npx etus-agent doctor
+
+# Auth management
+npx etus-agent auth set --config default --type api-key
+npx etus-agent auth test --config default</code></pre>
+
+    <h3>CI/CD Integration (GitHub Actions)</h3>
+    <pre><code>name: E2E Tests
+on: [push]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '24' }
+      - run: npm ci
+      - run: npx etus-agent install-browsers --chromium
+      - run: npx etus-agent auth set --config default --type api-key "$LLM_KEY"
+        env: { LLM_KEY: "${{ secrets.LLM_API_KEY }}" }
+      - run: npx etus-agent run
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with: { name: test-results, path: .etus-agent/artifacts/ }</code></pre>
+
+    <h3>Exit Codes</h3>
+    <table>
+      <thead><tr><th>Code</th><th>Meaning</th></tr></thead>
+      <tbody>
+        <tr><td>0</td><td>All tests passed</td></tr>
+        <tr><td>1</td><td>One or more tests failed</td></tr>
+        <tr><td>2</td><td>Configuration error (missing config, invalid schema)</td></tr>
+      </tbody>
+    </table>
+
+    <hr>
+
+    <h2 id="docker">Docker Deployment</h2>
+    <p>For containerized environments, ETUS ships pre-built Docker images with browsers pre-installed.</p>
+
+    <h3>Images</h3>
+    <table>
+      <thead><tr><th>Image</th><th>Contents</th><th>Size</th></tr></thead>
+      <tbody>
+        <tr><td><code>etus/etus-agent-web</code></td><td>Full ETUS + Chromium + Firefox + WebKit</td><td>~1.5 GB</td></tr>
+        <tr><td><code>etus/etus-agent-hook-node</code></td><td>Node 24 hook sandbox</td><td>~180 MB</td></tr>
+        <tr><td><code>etus/etus-agent-hook-bun</code></td><td>Bun hook sandbox</td><td>~120 MB</td></tr>
+        <tr><td><code>etus/etus-agent-hook-python</code></td><td>Python 3.12 hook sandbox</td><td>~150 MB</td></tr>
+        <tr><td><code>etus/etus-agent-hook-bash</code></td><td>Alpine + bash/curl/jq hook sandbox</td><td>~15 MB</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Run Tests in Docker</h3>
+    <pre><code># Mount project, inject API key, run tests
+docker run --rm \
+  -v $(pwd):/tests \
+  -e LLM_API_KEY=sk-... \
+  etus/etus-agent-web \
+  run tests/login.yaml
+
+# Start dashboard in Docker
+docker run --rm -p 3100:3100 \
+  -v $(pwd):/tests \
+  etus/etus-agent-web \
+  dashboard --host 0.0.0.0</code></pre>
+
+    <hr>
+
+
+    <h2 id="test-execution">Feature: Test Execution Engine</h2>
+    <p>The core agent loop processes each test step through an Observe → Plan → Execute → Verify cycle with multi-action support.</p>
+
+    <h3>How It Works</h3>
+    <div class="docs-steps">
+      <div class="docs-step">
+        <h3>Observe</h3>
+        <p>The agent captures the current screen state: DOM tree, accessibility tree, URL, viewport metadata, and a compressed screenshot.</p>
+      </div>
+      <div class="docs-step">
+        <h3>Plan</h3>
+        <p>The LLM receives the observation + step instruction and returns an action plan (click, fill, navigate, scroll, assert, etc.) with confidence score and reasoning.</p>
+      </div>
+      <div class="docs-step">
+        <h3>Execute</h3>
+        <p>The platform adapter (Playwright) executes the planned action on the browser.</p>
+      </div>
+      <div class="docs-step">
+        <h3>Verify</h3>
+        <p>If the step isn't complete, the loop repeats. The planner signals <code>stepComplete: true</code> when the goal is achieved.</p>
+      </div>
+    </div>
+
+    <h3>Self-Healing</h3>
+    <p>When an action fails, ETUS does not immediately fail the test. Instead:</p>
+    <ul>
+      <li>The failure is added to the sub-action history</li>
+      <li>The planner re-observes the screen and tries an alternative approach</li>
+      <li>Up to <code>healing.maxAttempts</code> (default: 3) consecutive failures before the step fails</li>
+    </ul>
+
+    <h3>Test YAML Format</h3>
+    <pre><code>test-id: t_quad-adar-micro-magic-cross-cue-open-agog-rang-cours
+name: User can complete checkout
+meta:
+  retries: 1
+steps:
+  - Navigate to the product catalog
+  - Add the first item to cart
+  - Open the shopping cart
+  - Click "Proceed to Checkout"
+  - Fill in shipping address with valid data
+  - Select standard shipping
+  - Verify order summary displays correct total
+  - Click "Place Order"
+  - Verify confirmation page shows order number</code></pre>
+
+    <hr>
+
+    <h2 id="memory-system">Feature: Memory System</h2>
+    <p>ETUS accumulates behavioral observations from test runs and injects them as context into future runs. This makes the agent progressively better at testing your specific product.</p>
+
+    <h3>Memory Tiers</h3>
+    <table>
+      <thead><tr><th>Tier</th><th>Scope</th><th>Example</th></tr></thead>
+      <tbody>
+        <tr><td>Product</td><td>Applies to all tests for a target</td><td>"Login button uses aria-label 'Sign In'"</td></tr>
+        <tr><td>Suite</td><td>Applies to tests within a suite</td><td>"After step 3, a loading spinner appears for 2s"</td></tr>
+        <tr><td>Test</td><td>Applies to one specific test</td><td>"The confirm dialog requires scrolling to see the button"</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Trust Scores</h3>
+    <p>Each observation has a trust score (0.0–1.0) that increases through repeated confirmation and decreases when contradicted. Low-trust observations are excluded from future runs.</p>
+
+    <h3>Integration Value</h3>
+    <ul>
+      <li>Tests become more reliable over time without manual maintenance</li>
+      <li>The agent adapts to UI changes automatically</li>
+      <li>Memory is file-backed (version-controllable, reviewable)</li>
+      <li>Located at <code>etus-agent-memory/</code> — can be shared across environments</li>
+    </ul>
+
+    <hr>
+
+    <h2 id="caching">Feature: Smart Caching</h2>
+    <p>ETUS caches validated action plans at the sub-action level, dramatically reducing LLM costs and execution time on subsequent runs.</p>
+
+    <h3>Performance Impact</h3>
+    <div class="docs-card-grid">
+      <div class="docs-card"><h3>5x Faster</h3><p>Execution time: 42s → 8s on cached runs</p></div>
+      <div class="docs-card"><h3>3x Fewer Tokens</h3><p>LLM planner calls skipped for cached actions</p></div>
+      <div class="docs-card"><h3>$0 per Cache Hit</h3><p>Cached actions bypass the LLM entirely</p></div>
+    </div>
+
+    <h3>How It Works</h3>
+    <ul>
+      <li>Cache key = SHA-256 of (config + suite + test + step + platform + step index)</li>
+      <li>Sub-actions cached individually: step with 5 actions = 5 cache entries</li>
+      <li>Cache miss at index N invalidates all entries from N onward (prefix invalidation)</li>
+      <li>TTL-based expiry (default: 7 days)</li>
+      <li>The agent still observes the live page — cache only skips planning, not verification</li>
+    </ul>
+
+    <h3>Configuration</h3>
+    <pre><code>services:
+  cache:
+    dir: .etus-agent/cache
+    ttl: 7d    # or 24h, 1h, etc.
+
+# Override per-run:
+ETUS_AGENT_CACHE_DIR=/custom/cache etus-agent run
+etus-agent run --no-cache   # bypass cache</code></pre>
+
+    <hr>
+
+
+    <h2 id="hooks">Feature: Hook System</h2>
+    <p>Hooks run before/after tests or suites in isolated Docker containers. Use them for data setup, API calls, auth preparation, and cleanup.</p>
+
+    <h3>Sandbox Constraints</h3>
+    <table>
+      <thead><tr><th>Constraint</th><th>Value</th></tr></thead>
+      <tbody>
+        <tr><td>Memory</td><td>512 MB</td></tr>
+        <tr><td>CPU</td><td>1 core</td></tr>
+        <tr><td>PID limit</td><td>256</td></tr>
+        <tr><td>Filesystem</td><td>Read-only (except /tmp)</td></tr>
+        <tr><td>Network</td><td>Disabled by default (enable with <code>network: true</code>)</td></tr>
+        <tr><td>Runtimes</td><td>Node 24, Bun 1.x, Python 3.12, Bash (Alpine)</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Variable Output</h3>
+    <p>Hooks pass data back by writing to <code>/tmp/etus-agent.env</code>:</p>
+    <pre><code>// setup-hook.mjs (inside container)
+import { writeFileSync } from 'fs'
+
+const token = await fetchAuthToken()
+writeFileSync('/tmp/etus-agent.env', `AUTH_TOKEN=${token}\n`)</code></pre>
+    <p>Subsequent hooks and test steps can access <code>{{AUTH_TOKEN}}</code>.</p>
+
+    <hr>
+
+    <h2 id="accessibility">Feature: Accessibility Auditing</h2>
+    <p>ETUS integrates axe-core for automated WCAG accessibility checks during test execution.</p>
+
+    <h3>Configuration</h3>
+    <pre><code>services:
+  accessibility:
+    enabled: true
+    standard: wcag2aa      # or wcag2aaa
+    runAfter: every-step   # or end-of-test
+    failOnViolation: false # true = fail test on a11y issues</code></pre>
+
+    <h3>Integration Value</h3>
+    <ul>
+      <li>Accessibility violations reported per step in run results</li>
+      <li>Available via MCP tools and Dashboard API</li>
+      <li>Non-blocking mode: log violations without failing tests</li>
+      <li>Blocking mode: fail tests on WCAG violations</li>
+    </ul>
+
+    <hr>
+
+    <h2 id="llm-providers">Feature: Multi-LLM Support</h2>
+    <p>ETUS supports any OpenAI-compatible endpoint, enabling flexibility in model choice and cost optimization.</p>
+
+    <h3>Supported Providers</h3>
+    <table>
+      <thead><tr><th>Provider</th><th>Config Value</th><th>Auth Method</th></tr></thead>
+      <tbody>
+        <tr><td>OpenRouter</td><td><code>openai-compatible</code></td><td>API key</td></tr>
+        <tr><td>OpenAI</td><td><code>openai-compatible</code></td><td>API key</td></tr>
+        <tr><td>Anthropic</td><td><code>anthropic-compatible</code></td><td>API key / Bearer token</td></tr>
+        <tr><td>Google Gemini</td><td><code>gemini</code></td><td>API key</td></tr>
+        <tr><td>DeepSeek</td><td><code>openai-compatible</code></td><td>API key</td></tr>
+        <tr><td>Local (Ollama, LM Studio)</td><td><code>openai-compatible</code></td><td>None required</td></tr>
+        <tr><td>Codex (subscription)</td><td><code>openai-subscription</code></td><td>OAuth plugin</td></tr>
+        <tr><td>Claude Code (subscription)</td><td><code>anthropic-subscription</code></td><td>OAuth plugin</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Configuration Example</h3>
+    <pre><code>registry:
+  llms:
+    - name: production
+      provider: openai-compatible
+      model: anthropic/claude-sonnet-4
+      baseURL: https://openrouter.ai/api/v1
+    - name: fast
+      provider: openai-compatible
+      model: openai/gpt-4o-mini
+      baseURL: https://openrouter.ai/api/v1
+
+use:
+  llm: production   # default model for runs</code></pre>
+
+    <div class="docs-callout">
+      <strong>Recommendation</strong><br>
+      Use a multimodal model (vision-capable) for best results. ETUS sends compressed screenshots to the planner for visual context.
+    </div>
+
+    <hr>
+
+
+    <h2 id="mcp-tools-reference">MCP Tools Reference (33 Tools)</h2>
+    <p>All tools use the <code>etus_agent_</code> prefix. Below is the complete list grouped by category.</p>
+
+    <h3>Discovery & Config</h3>
+    <table>
+      <thead><tr><th>Tool</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td><code>etus_agent_discover</code></td><td>Discover workspace structure, targets, and capabilities</td></tr>
+        <tr><td><code>etus_agent_get_config</code></td><td>Read current configuration</td></tr>
+        <tr><td><code>etus_agent_schema_reference</code></td><td>Get schema for config, tests, suites, or hooks</td></tr>
+      </tbody>
+    </table>
+
+    <h3>ID Management</h3>
+    <table>
+      <thead><tr><th>Tool</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td><code>etus_agent_generate_id</code></td><td>Generate a canonical 10-word ID for test/suite/hook/observation</td></tr>
+        <tr><td><code>etus_agent_validate_id</code></td><td>Validate an existing ID format</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Test Management</h3>
+    <table>
+      <thead><tr><th>Tool</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td><code>etus_agent_list_tests</code></td><td>List all test files in workspace</td></tr>
+        <tr><td><code>etus_agent_read_test</code></td><td>Read a test file content</td></tr>
+        <tr><td><code>etus_agent_validate_test</code></td><td>Validate test YAML against schema</td></tr>
+        <tr><td><code>etus_agent_create_test</code></td><td>Create a new test file</td></tr>
+        <tr><td><code>etus_agent_update_test</code></td><td>Update an existing test file</td></tr>
+        <tr><td><code>etus_agent_delete_test</code></td><td>Delete a test file</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Suite Management</h3>
+    <table>
+      <thead><tr><th>Tool</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td><code>etus_agent_list_suites</code></td><td>List all suite files</td></tr>
+        <tr><td><code>etus_agent_read_suite</code></td><td>Read a suite file content</td></tr>
+        <tr><td><code>etus_agent_validate_suite</code></td><td>Validate suite YAML against schema</td></tr>
+        <tr><td><code>etus_agent_create_suite</code></td><td>Create a new suite</td></tr>
+        <tr><td><code>etus_agent_update_suite</code></td><td>Update an existing suite</td></tr>
+        <tr><td><code>etus_agent_delete_suite</code></td><td>Delete a suite</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Hook Management</h3>
+    <table>
+      <thead><tr><th>Tool</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td><code>etus_agent_list_hooks</code></td><td>List all registered hooks</td></tr>
+        <tr><td><code>etus_agent_read_hook</code></td><td>Read hook details</td></tr>
+        <tr><td><code>etus_agent_create_hook</code></td><td>Register a new hook</td></tr>
+        <tr><td><code>etus_agent_update_hook</code></td><td>Update a hook definition</td></tr>
+        <tr><td><code>etus_agent_delete_hook</code></td><td>Remove a hook</td></tr>
+        <tr><td><code>etus_agent_run_hook</code></td><td>Execute a hook immediately (sandbox)</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Execution</h3>
+    <table>
+      <thead><tr><th>Tool</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td><code>etus_agent_enqueue_test_run</code></td><td>Queue a test for execution</td></tr>
+        <tr><td><code>etus_agent_enqueue_suite_run</code></td><td>Queue a suite for execution</td></tr>
+        <tr><td><code>etus_agent_cancel_run</code></td><td>Cancel a running or queued run</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Results & Artifacts</h3>
+    <table>
+      <thead><tr><th>Tool</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td><code>etus_agent_get_run</code></td><td>Get run status and metadata</td></tr>
+        <tr><td><code>etus_agent_get_run_steps</code></td><td>Get step-by-step results with traces</td></tr>
+        <tr><td><code>etus_agent_get_run_logs</code></td><td>Get console/network logs from a run</td></tr>
+        <tr><td><code>etus_agent_get_run_execution_logs</code></td><td>Get server-side execution audit trail</td></tr>
+        <tr><td><code>etus_agent_get_run_artifact</code></td><td>Get binary artifact (screenshot, video)</td></tr>
+        <tr><td><code>etus_agent_classify_failure</code></td><td>AI-classify a test failure reason</td></tr>
+      </tbody>
+    </table>
+
+    <hr>
+
+
+    <h2 id="config-schema">Configuration Schema</h2>
+    <p>Full configuration file: <code>etus-agent.config.yaml</code></p>
+
+    <pre><code>workspace:
+  testMatch: ['tests/**/*.yaml']      # Glob patterns for test discovery
+  suiteMatch: ['suites/**/*.suite.yaml']
+  hooksFile: hooks.yaml               # Hook registry
+  agentRules: ./agent-rules.md        # Custom LLM planner instructions
+  envFile: .env                       # Non-secret variables
+  secretsFile: .env.secrets.local     # Secret values (redacted in output)
+
+services:
+  dashboard:
+    port: 3100                        # Dashboard UI + API port
+    artifactsDir: .etus-agent/artifacts
+  mcp:
+    enabled: true
+    transport: http                   # http or stdio
+    host: 127.0.0.1                   # loopback only by default
+    port: 3471
+    path: /mcp
+  cache:
+    dir: .etus-agent/cache
+    ttl: 7d                           # Cache entry lifetime
+  authState:
+    dir: .etus-agent/auth-states
+  accessibility:
+    enabled: true
+    standard: wcag2aa                 # wcag2aa or wcag2aaa
+    runAfter: every-step
+    failOnViolation: false
+  recording:
+    enabled: true                     # Playwright video recording
+  memory:
+    enabled: true
+    provider: local
+    dir: etus-agent-memory
+  logging:
+    level: warn                       # debug | info | warn | error
+
+registry:
+  llms:
+    - name: default
+      provider: openai-compatible
+      model: anthropic/claude-sonnet-4
+      baseURL: https://openrouter.ai/api/v1
+      screenshotSize: 50kb
+      effectiveResolution: 500
+  targets:
+    my-app:
+      platform: web
+      url: https://app.example.com
+
+use:
+  browser:
+    name: chromium                    # chromium | firefox | webkit
+    headless: true
+    viewport: { width: 1280, height: 720 }
+  timeout:
+    step: 5m
+    test: 30m
+    navigation: 1m
+  healing:
+    maxAttempts: 3
+  planner:
+    maxSubActions: 10
+    previousStepCount: 5
+  logCapture:
+    console: true
+    network: true
+  parallel: false
+  llm: default                        # references registry.llms[].name</code></pre>
+
+    <hr>
+
+    <h2 id="env-vars">Environment Variables</h2>
+    <table>
+      <thead><tr><th>Variable</th><th>Overrides</th><th>Default</th></tr></thead>
+      <tbody>
+        <tr><td><code>ETUS_AGENT_DASHBOARD_PORT</code></td><td>services.dashboard.port</td><td>3100</td></tr>
+        <tr><td><code>ETUS_AGENT_MCP_PORT</code></td><td>services.mcp.port</td><td>3471</td></tr>
+        <tr><td><code>ETUS_AGENT_CACHE_DIR</code></td><td>services.cache.dir</td><td>.etus-agent/cache</td></tr>
+        <tr><td><code>ETUS_AGENT_CACHE_TTL</code></td><td>services.cache.ttl</td><td>7d</td></tr>
+        <tr><td><code>ETUS_AGENT_LOG_LEVEL</code></td><td>services.logging.level</td><td>warn</td></tr>
+        <tr><td><code>ETUS_AGENT_HEADLESS</code></td><td>use.browser.headless</td><td>true</td></tr>
+        <tr><td><code>ETUS_AGENT_CLI_BIN</code></td><td>CLI binary path for dashboard child process</td><td>auto-detected</td></tr>
+        <tr><td><code>ETUS_AGENT_POSTHOG_KEY</code></td><td>Analytics key (empty = disabled)</td><td>empty</td></tr>
+      </tbody>
+    </table>
+
+    <hr>
+
+    <h2 id="roadmap">Roadmap (Coming Soon)</h2>
+    <table>
+      <thead><tr><th>Feature</th><th>Description</th><th>ETA</th></tr></thead>
+      <tbody>
+        <tr><td>Reduce Token Usage</td><td>Intelligent context pruning, DOM summarization — target 60-80% cost reduction</td><td>Q3 2026</td></tr>
+        <tr><td>Full Video Recording</td><td>End-to-end video with step timeline synchronization</td><td>Q3 2026</td></tr>
+        <tr><td>AI Scenario Suggestions</td><td>Auto-generate test cases from app analysis</td><td>Q3 2026</td></tr>
+        <tr><td>Auto Bypass CAPTCHA</td><td>reCAPTCHA, hCaptcha, Cloudflare Turnstile handling</td><td>Q4 2026</td></tr>
+        <tr><td>Mobile Testing</td><td>Android (Appium/UiAutomator2) and iOS (XCUITest)</td><td>Q4 2026</td></tr>
+        <tr><td>Docker-First Execution</td><td>Single <code>docker run</code> command for zero-setup testing</td><td>Q4 2026</td></tr>
+        <tr><td>Cloud Device Farm</td><td>BrowserStack / Sauce Labs native integration</td><td>Q4 2026</td></tr>
+        <tr><td>Parallel Execution</td><td>Concurrent browser instances with load balancing</td><td>Q4 2026</td></tr>
+        <tr><td>Visual Regression</td><td>AI-powered screenshot diff analysis</td><td>2027</td></tr>
+        <tr><td>Scheduled Runs</td><td>Cron-based test execution with alerting</td><td>2027</td></tr>
+        <tr><td>Slack/Teams Notifications</td><td>Real-time failure alerts with context</td><td>2027</td></tr>
+      </tbody>
+    </table>
+
+    <hr>
+
+    <div class="docs-footer">
+      <p>ETUS v0.1.21 — Partner Integration Guide</p>
+      <p>For technical support and integration assistance, contact the ETUS team.</p>
+    </div>
+
+  </main>
+</div>
+<script src="assets/docs.js"></script>
+</body>
+</html>
