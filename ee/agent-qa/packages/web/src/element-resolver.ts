@@ -1,5 +1,5 @@
 import type { Page, Locator } from 'playwright-core'
-import type { Action } from '@etus/agent-qa-core'
+import type { Action } from '@etus/agent-core'
 import type { RefMap } from './types.js'
 
 const ACTIONS_WITHOUT_REF = new Set(['navigate', 'waitFor', 'delay', 'waitForUrl', 'assert'])

@@ -15,7 +15,7 @@ import {
   registerLLMAuthProviderPlugin,
   removeAuth,
   writeAuth,
-} from '@etus/agent-qa-core'
+} from '@etus/agent-core'
 import { generateText } from 'ai'
 
 const { mockGetAgentQaUpdateStatus, mockResolveLLMAuth } = vi.hoisted(() => ({
@@ -23,8 +23,8 @@ const { mockGetAgentQaUpdateStatus, mockResolveLLMAuth } = vi.hoisted(() => ({
   mockResolveLLMAuth: vi.fn(),
 }))
 
-vi.mock('@etus/agent-qa-core', async () => {
-  const actual = await vi.importActual<typeof import('@etus/agent-qa-core')>('@etus/agent-qa-core')
+vi.mock('@etus/agent-core', async () => {
+  const actual = await vi.importActual<typeof import('@etus/agent-core')>('@etus/agent-core')
   const { z } = await import('zod')
   const providerHeadersSchema = z.record(z.string(), z.string()).superRefine((headers, ctx) => {
     const seen = new Set<string>()
@@ -211,9 +211,9 @@ async function createConfigWorkspace(initialConfig = ''): Promise<{
   configManager: ConfigManager
   configPath: string
 }> {
-  const dir = await mkdtemp(join(tmpdir(), 'agent-qa-config-settings-'))
+  const dir = await mkdtemp(join(tmpdir(), 'etus-agent-config-settings-'))
   tempDirs.push(dir)
-  const configPath = join(dir, 'agent-qa.config.yaml')
+  const configPath = join(dir, 'etus-agent.config.yaml')
   await writeFile(
     configPath,
     initialConfig || [
@@ -264,7 +264,7 @@ async function writeWorkspaceSupportFiles(configPath: string): Promise<void> {
   const configDir = dirname(configPath)
   await Promise.all([
     writeFile(join(configDir, 'hooks.yaml'), 'hooks: []\n', 'utf-8'),
-    writeFile(join(configDir, 'agent-rules.md'), '# agent-qa rules\n', 'utf-8'),
+    writeFile(join(configDir, 'agent-rules.md'), '# etus-agent rules\n', 'utf-8'),
     writeFile(join(configDir, '.env'), '', 'utf-8'),
     writeFile(join(configDir, '.env.secrets.local'), '', 'utf-8'),
   ])
@@ -490,7 +490,7 @@ describe('PUT /api/config/settings', () => {
         'services.memory': {
           enabled: true,
           provider: 'local',
-          dir: '.agent-qa/custom-memory',
+          dir: '.etus-agent/custom-memory',
           minTrust: 0.4,
           maxInjections: 4,
         },
@@ -513,7 +513,7 @@ describe('PUT /api/config/settings', () => {
         },
         'registry.providers': {
           browserstack: {
-            project: 'agent-qa',
+            project: 'etus-agent',
             retries: 2,
           },
         },
@@ -544,7 +544,7 @@ describe('PUT /api/config/settings', () => {
         memory: {
           enabled: true,
           provider: 'local',
-          dir: '.agent-qa/custom-memory',
+          dir: '.etus-agent/custom-memory',
           minTrust: 0.4,
           maxInjections: 4,
         },
@@ -569,7 +569,7 @@ describe('PUT /api/config/settings', () => {
         },
         providers: {
           browserstack: {
-            project: 'agent-qa',
+            project: 'etus-agent',
             retries: 2,
           },
         },

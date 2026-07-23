@@ -1,4 +1,4 @@
-# ETUS package instructions: @etus/agent-qa-dashboard
+# ETUS package instructions: @etus/agent-dashboard
 
 Inherit the root ETUS branding, security, and release rules.
 
@@ -21,9 +21,9 @@ ownership, and dashboard-started MCP service lifecycle.
 
 ## Commands
 
-- Test: `pnpm --filter @etus/agent-qa-dashboard test`
-- Typecheck: `pnpm --filter @etus/agent-qa-dashboard typecheck`
-- Build: `pnpm --filter @etus/agent-qa-dashboard build`
+- Test: `pnpm --filter @etus/agent-dashboard test`
+- Typecheck: `pnpm --filter @etus/agent-dashboard typecheck`
+- Build: `pnpm --filter @etus/agent-dashboard build`
 
 ## Local Rules
 
@@ -42,6 +42,6 @@ ownership, and dashboard-started MCP service lifecycle.
 Run focused server checks:
 
 ```bash
-pnpm --filter @etus/agent-qa-dashboard test
-pnpm --filter @etus/agent-qa-dashboard typecheck
+pnpm --filter @etus/agent-dashboard test
+pnpm --filter @etus/agent-dashboard typecheck
 ```

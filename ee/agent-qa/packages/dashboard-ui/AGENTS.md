@@ -1,4 +1,4 @@
-# ETUS package instructions: @etus/agent-qa-dashboard-ui
+# ETUS package instructions: @etus/agent-dashboard-ui
 
 Inherit the root ETUS branding, security, and release rules.
 
@@ -21,10 +21,10 @@ command palette behavior, charts, tables, and YAML authoring surfaces.
 
 ## Commands
 
-- Test: `pnpm --filter @etus/agent-qa-dashboard-ui test`
-- Typecheck: `pnpm --filter @etus/agent-qa-dashboard-ui typecheck`
-- Build: `pnpm --filter @etus/agent-qa-dashboard-ui build`
-- Dev server: `pnpm --filter @etus/agent-qa-dashboard-ui dev`
+- Test: `pnpm --filter @etus/agent-dashboard-ui test`
+- Typecheck: `pnpm --filter @etus/agent-dashboard-ui typecheck`
+- Build: `pnpm --filter @etus/agent-dashboard-ui build`
+- Dev server: `pnpm --filter @etus/agent-dashboard-ui dev`
 
 ## Local Rules
 
@@ -42,6 +42,6 @@ command palette behavior, charts, tables, and YAML authoring surfaces.
 Run focused UI checks:
 
 ```bash
-pnpm --filter @etus/agent-qa-dashboard-ui test
-pnpm --filter @etus/agent-qa-dashboard-ui typecheck
+pnpm --filter @etus/agent-dashboard-ui test
+pnpm --filter @etus/agent-dashboard-ui typecheck
 ```

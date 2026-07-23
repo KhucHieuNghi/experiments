@@ -63,8 +63,8 @@ describe('runHooks', () => {
     mockRunHook
       .mockResolvedValueOnce(successResult({
         SAFE: 'value',
-        AGENT_QA_AUTH_STATE_JSON: '{"name":"bad"}',
-        AGENT_QA_AUTH_STATE_STORAGE_STATE_PATH: '/tmp/bad.json',
+        ETUS_AGENT_AUTH_STATE_JSON: '{"name":"bad"}',
+        ETUS_AGENT_AUTH_STATE_STORAGE_STATE_PATH: '/tmp/bad.json',
       }))
       .mockResolvedValueOnce(successResult({}))
 

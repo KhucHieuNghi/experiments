@@ -13,7 +13,7 @@ import {
   writeAuthStateFiles,
   type AuthStateMetadata,
   type ResolvedWorkspacePaths,
-} from '@etus/agent-qa-core'
+} from '@etus/agent-core'
 
 import { ConfigManager } from '../config/index.js'
 import { DashboardDatabase } from '../db/database.js'
@@ -198,7 +198,7 @@ const AUTH_STATE_PAYLOAD = {
 }
 
 function expectAuthStateResponseSafe(serialized: string): void {
-  expect(serialized).not.toContain('.agent-qa/auth-states')
+  expect(serialized).not.toContain('.etus-agent/auth-states')
   expect(serialized).not.toContain('.json')
   expect(serialized).not.toContain('payloadPath')
   expect(serialized).not.toContain('metadataPath')
@@ -335,7 +335,7 @@ async function createConfigWorkspace(configContent: string, hooksContent?: strin
   configManager: ConfigManager
   configPath: string
 }> {
-  const dir = await mkdtemp(join(tmpdir(), 'agent-qa-routes-test-'))
+  const dir = await mkdtemp(join(tmpdir(), 'etus-agent-routes-test-'))
   tempDirs.push(dir)
   const configPath = join(dir, 'config.yaml')
   await writeFile(configPath, configContent, 'utf-8')
@@ -366,7 +366,7 @@ function createWorkspacePaths(
         secretsFile: '.env.secrets.local',
       },
     },
-    configPath: join(workspaceDir, 'agent-qa.config.yaml'),
+    configPath: join(workspaceDir, 'etus-agent.config.yaml'),
   })
 }
 
@@ -396,7 +396,7 @@ async function createSuiteWorkspace(): Promise<{
   suiteFileManager: SuiteFileManager
   testFileManager: TestFileManager
 }> {
-  const dir = await mkdtemp(join(tmpdir(), 'agent-qa-suite-routes-'))
+  const dir = await mkdtemp(join(tmpdir(), 'etus-agent-suite-routes-'))
   tempDirs.push(dir)
   await writeFile(
     join(dir, 't.yaml'),
@@ -424,7 +424,7 @@ async function createDashboardWorkspace(): Promise<{
   artifactsDir: string
   db: DashboardDatabase
 }> {
-  const dir = await mkdtemp(join(tmpdir(), 'agent-qa-dashboard-routes-'))
+  const dir = await mkdtemp(join(tmpdir(), 'etus-agent-dashboard-routes-'))
   tempDirs.push(dir)
   const artifactsDir = join(dir, 'artifacts')
   return {
@@ -497,7 +497,7 @@ describe('API Routes', () => {
       }
       const paths = resolveAuthStatePaths({
         configDir: dirname(configPath),
-        authStateDir: '.agent-qa/auth-states',
+        authStateDir: '.etus-agent/auth-states',
         targetName,
         stateName,
         platform: 'web',
@@ -513,7 +513,7 @@ describe('API Routes', () => {
       const { configManager, configPath } = await createConfigWorkspace([
         'services:',
         '  authState:',
-        '    dir: .agent-qa/auth-states',
+        '    dir: .etus-agent/auth-states',
         '',
       ].join('\n'))
       const prod = await seedAuthState(configPath, 'prod-web', 'admin', '2026-05-17T09:00:00.000Z')
@@ -539,7 +539,7 @@ describe('API Routes', () => {
       const { configManager, configPath } = await createConfigWorkspace([
         'services:',
         '  authState:',
-        '    dir: .agent-qa/auth-states',
+        '    dir: .etus-agent/auth-states',
         '',
       ].join('\n'))
       await seedAuthState(configPath, 'prod-web', 'admin', '2026-05-17T09:00:00.000Z')
@@ -627,7 +627,7 @@ describe('API Routes', () => {
 
     it('returns a path-free conflict message when auth state already exists', async () => {
       const captureWebAuthState = vi.fn().mockRejectedValue(
-        new Error(`Auth state "admin" for target "staging-web" already exists. Use replace=true to replace it. .agent-qa/auth-states ${AUTH_STATE_COOKIE_SECRET}`),
+        new Error(`Auth state "admin" for target "staging-web" already exists. Use replace=true to replace it. .etus-agent/auth-states ${AUTH_STATE_COOKIE_SECRET}`),
       )
       const sessionManager = {
         getSession: vi.fn(() => ({
@@ -653,7 +653,7 @@ describe('API Routes', () => {
       'Auth-state capture is only available for web Live Mode sessions.',
       'Live session is not ready for auth-state capture.',
       'Cannot save auth state while the Live Mode session is executing.',
-      `EACCES .agent-qa/auth-states/staging-web/admin.json ${AUTH_STATE_INDEXED_DB_SECRET}`,
+      `EACCES .etus-agent/auth-states/staging-web/admin.json ${AUTH_STATE_INDEXED_DB_SECRET}`,
     ])('sanitizes live-session save failures: %s', async (failureMessage) => {
       const captureWebAuthState = vi.fn().mockRejectedValue(new Error(failureMessage))
       const sessionManager = {
@@ -725,7 +725,7 @@ describe('API Routes', () => {
         phase: 'setup',
         status: 'passed',
         duration: 1,
-        stdout: '/workspace/.agent-qa-auth-state/storage-state.json',
+        stdout: '/workspace/.etus-agent-auth-state/storage-state.json',
         stderr: storageJson,
         variables: { SESSION_TOKEN: 'hook-session-token', SAFE_VALUE: 'visible' },
       })
@@ -754,7 +754,7 @@ describe('API Routes', () => {
         expect(res.body).toContain('[auth state redacted]')
         expect(res.body).not.toContain('demo-acc')
         expect(res.body).not.toContain(storagePath)
-        expect(res.body).not.toContain('/workspace/.agent-qa-auth-state/storage-state.json')
+        expect(res.body).not.toContain('/workspace/.etus-agent-auth-state/storage-state.json')
         expect(res.body).not.toContain(AUTH_STATE_COOKIE_SECRET)
         expect(res.body).not.toContain(AUTH_STATE_LOCAL_STORAGE_SECRET)
         expect(res.body).not.toContain(AUTH_STATE_INDEXED_DB_SECRET)
@@ -891,7 +891,7 @@ describe('API Routes', () => {
 
   describe('GET /api/tests', () => {
     it('returns target metadata and target options for truthful tests-page filters', async () => {
-      const testsDir = await mkdtemp(join(tmpdir(), 'agent-qa-tests-routes-'))
+      const testsDir = await mkdtemp(join(tmpdir(), 'etus-agent-tests-routes-'))
       tempDirs.push(testsDir)
       await writeFile(
         join(testsDir, 'login.yaml'),
@@ -933,7 +933,7 @@ describe('API Routes', () => {
     })
 
     it('derives platform metadata from target registry when test YAML omits top-level platform', async () => {
-      const testsDir = await mkdtemp(join(tmpdir(), 'agent-qa-tests-target-platform-'))
+      const testsDir = await mkdtemp(join(tmpdir(), 'etus-agent-tests-target-platform-'))
       tempDirs.push(testsDir)
       const configContent = [
         'registry:',
@@ -1098,7 +1098,7 @@ describe('API Routes', () => {
 
   describe('DELETE /api/tests/:t_id', () => {
     it('deletes a test file by test id for the tests-page bottom toolbar', async () => {
-      const testsDir = await mkdtemp(join(tmpdir(), 'agent-qa-tests-delete-'))
+      const testsDir = await mkdtemp(join(tmpdir(), 'etus-agent-tests-delete-'))
       tempDirs.push(testsDir)
       await writeFile(
         join(testsDir, 'login.yaml'),
@@ -1284,7 +1284,7 @@ describe('API Routes', () => {
 
     it('preserves absolute video paths outside artifactsDir/videos', async () => {
       const { artifactsDir, db: actualDb } = await createDashboardWorkspace()
-      const externalDir = await mkdtemp(join(tmpdir(), 'agent-qa-dashboard-external-video-'))
+      const externalDir = await mkdtemp(join(tmpdir(), 'etus-agent-dashboard-external-video-'))
       tempDirs.push(externalDir)
       const externalVideo = join(externalDir, 'outside.webm')
       await writeFile(externalVideo, 'outside-video', 'utf-8')
@@ -1336,7 +1336,7 @@ describe('API Routes', () => {
 
   describe('POST /api/queue/enqueue', () => {
     it('normalizes queued files under configured workspace.testMatch', async () => {
-      const testsDir = join(tmpdir(), `agent-qa-queue-tests-${randomUUID()}`, 'e2e-specs')
+      const testsDir = join(tmpdir(), `etus-agent-queue-tests-${randomUUID()}`, 'e2e-specs')
       tempDirs.push(testsDir)
       await mkdir(join(testsDir, 'web'), { recursive: true })
       await writeFile(join(testsDir, 'web/15-github-trending.yaml'), 'name: Queued test\nsteps: []\n', 'utf-8')
@@ -1370,7 +1370,7 @@ describe('API Routes', () => {
     })
 
     it('honors non-default workspace test and suite patterns', async () => {
-      const workspaceDir = await mkdtemp(join(tmpdir(), 'agent-qa-queue-non-default-'))
+      const workspaceDir = await mkdtemp(join(tmpdir(), 'etus-agent-queue-non-default-'))
       tempDirs.push(workspaceDir)
       await mkdir(join(workspaceDir, 'specs/web'), { recursive: true })
       await mkdir(join(workspaceDir, 'cases'), { recursive: true })
@@ -1428,8 +1428,8 @@ describe('API Routes', () => {
       expect(res.status).toBe(202)
       expect(enqueue).toHaveBeenCalledWith(expect.objectContaining({
         attributes: {
-          'agent-qa.trigger': 'api',
-          'agent-qa.runner': 'local',
+          'etus-agent.trigger': 'api',
+          'etus-agent.runner': 'local',
           'git.branch': 'phase223-main',
         },
       }))
@@ -1447,12 +1447,12 @@ describe('API Routes', () => {
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({
           name: 'Protected attrs',
-          attributes: { 'agent-qa.trigger': 'evil' },
+          attributes: { 'etus-agent.trigger': 'evil' },
         }),
       })
 
       expect(res.status).toBe(400)
-      expect(JSON.parse(res.body).error).toContain('reserved prefix "agent-qa."')
+      expect(JSON.parse(res.body).error).toContain('reserved prefix "etus-agent."')
       expect(enqueue).not.toHaveBeenCalled()
     })
 
@@ -1492,8 +1492,8 @@ describe('API Routes', () => {
     })
 
     it('rejects absolute queued files outside configured workspace patterns', async () => {
-      const testsDir = await mkdtemp(join(tmpdir(), 'agent-qa-queue-contained-'))
-      const outsideDir = await mkdtemp(join(tmpdir(), 'agent-qa-queue-outside-'))
+      const testsDir = await mkdtemp(join(tmpdir(), 'etus-agent-queue-contained-'))
+      const outsideDir = await mkdtemp(join(tmpdir(), 'etus-agent-queue-outside-'))
       tempDirs.push(testsDir, outsideDir)
       const enqueue = vi.fn().mockReturnValue('run-queue-outside')
       router = createRouter({
@@ -1515,7 +1515,7 @@ describe('API Routes', () => {
     })
 
     it('rejects queued traversal paths outside the configured workspace', async () => {
-      const testsDir = await mkdtemp(join(tmpdir(), 'agent-qa-queue-contained-'))
+      const testsDir = await mkdtemp(join(tmpdir(), 'etus-agent-queue-contained-'))
       tempDirs.push(testsDir)
       const enqueue = vi.fn().mockReturnValue('run-queue-traversal')
       router = createRouter({
@@ -1537,7 +1537,7 @@ describe('API Routes', () => {
     })
 
     it('normalizes queued suite files against the suite root instead of testsDir', async () => {
-      const workspaceDir = await mkdtemp(join(tmpdir(), 'agent-qa-queue-suite-root-'))
+      const workspaceDir = await mkdtemp(join(tmpdir(), 'etus-agent-queue-suite-root-'))
       const testsDir = join(workspaceDir, 'tests')
       const suitesDir = join(workspaceDir, 'suites')
       tempDirs.push(workspaceDir)
@@ -1584,8 +1584,8 @@ describe('API Routes', () => {
     })
 
     it('rejects queued suite paths outside configured suite patterns', async () => {
-      const workspaceDir = await mkdtemp(join(tmpdir(), 'agent-qa-queue-suite-contained-'))
-      const outsideDir = await mkdtemp(join(tmpdir(), 'agent-qa-queue-suite-outside-'))
+      const workspaceDir = await mkdtemp(join(tmpdir(), 'etus-agent-queue-suite-contained-'))
+      const outsideDir = await mkdtemp(join(tmpdir(), 'etus-agent-queue-suite-outside-'))
       tempDirs.push(workspaceDir, outsideDir)
       const testsDir = join(workspaceDir, 'tests')
       await mkdir(testsDir, { recursive: true })
@@ -1625,7 +1625,7 @@ describe('API Routes', () => {
       testFileManager: TestFileManager
       suiteFileManager: SuiteFileManager
     }> {
-      const testsDir = await mkdtemp(join(tmpdir(), 'agent-qa-trigger-timeout-'))
+      const testsDir = await mkdtemp(join(tmpdir(), 'etus-agent-trigger-timeout-'))
       tempDirs.push(testsDir)
       const { configManager, configPath } = await createConfigWorkspace([
         'use:',
@@ -1647,7 +1647,7 @@ describe('API Routes', () => {
       testFileManager: TestFileManager
       suiteFileManager: SuiteFileManager
     }> {
-      const testsDir = await mkdtemp(join(tmpdir(), 'agent-qa-trigger-parallel-'))
+      const testsDir = await mkdtemp(join(tmpdir(), 'etus-agent-trigger-parallel-'))
       tempDirs.push(testsDir)
       const { configManager, configPath } = await createConfigWorkspace([
         'use:',
@@ -1659,7 +1659,7 @@ describe('API Routes', () => {
     }
 
     it('resolves test-viewer paths through configured workspace.testMatch', async () => {
-      const testsDir = join(tmpdir(), `agent-qa-trigger-tests-${randomUUID()}`, 'e2e-specs')
+      const testsDir = join(tmpdir(), `etus-agent-trigger-tests-${randomUUID()}`, 'e2e-specs')
       tempDirs.push(testsDir)
       await mkdir(join(testsDir, 'web'), { recursive: true })
       await writeFile(join(testsDir, 'web/15-github-trending.yaml'), 'name: Trending\nsteps: []\n', 'utf-8')
@@ -1706,7 +1706,7 @@ describe('API Routes', () => {
     })
 
     it('normalizes trigger patterns against discovered configured workspace tests', async () => {
-      const testsDir = join(tmpdir(), `agent-qa-trigger-tests-${randomUUID()}`, 'e2e-specs')
+      const testsDir = join(tmpdir(), `etus-agent-trigger-tests-${randomUUID()}`, 'e2e-specs')
       tempDirs.push(testsDir)
       await mkdir(join(testsDir, 'web'), { recursive: true })
       await writeFile(join(testsDir, 'web/15-github-trending.yaml'), 'name: Trending\nsteps: []\n', 'utf-8')
@@ -1835,8 +1835,8 @@ describe('API Routes', () => {
     })
 
     it('rejects absolute trigger patterns outside configured workspace tests', async () => {
-      const testsDir = await mkdtemp(join(tmpdir(), 'agent-qa-trigger-contained-'))
-      const outsideDir = await mkdtemp(join(tmpdir(), 'agent-qa-trigger-outside-'))
+      const testsDir = await mkdtemp(join(tmpdir(), 'etus-agent-trigger-contained-'))
+      const outsideDir = await mkdtemp(join(tmpdir(), 'etus-agent-trigger-outside-'))
       tempDirs.push(testsDir, outsideDir)
       const enqueue = vi.fn().mockReturnValue('run-outside-pattern')
       router = createRouter({
@@ -1858,7 +1858,7 @@ describe('API Routes', () => {
     })
 
     it('rejects trigger pattern traversal outside the configured workspace', async () => {
-      const testsDir = await mkdtemp(join(tmpdir(), 'agent-qa-trigger-contained-'))
+      const testsDir = await mkdtemp(join(tmpdir(), 'etus-agent-trigger-contained-'))
       tempDirs.push(testsDir)
       const enqueue = vi.fn().mockReturnValue('run-traversal-pattern')
       router = createRouter({
@@ -1880,7 +1880,7 @@ describe('API Routes', () => {
     })
 
     it('normalizes dashboard list workspace paths before enqueueing the run', async () => {
-      const testsDir = join(tmpdir(), `agent-qa-trigger-tests-${randomUUID()}`, 'e2e-specs')
+      const testsDir = join(tmpdir(), `etus-agent-trigger-tests-${randomUUID()}`, 'e2e-specs')
       tempDirs.push(testsDir)
       await mkdir(join(testsDir, 'web'), { recursive: true })
       await writeFile(join(testsDir, 'web/15-github-trending.yaml'), 'name: Trending\nsteps: []\n', 'utf-8')
@@ -1909,8 +1909,8 @@ describe('API Routes', () => {
     })
 
     it('rejects absolute test files outside configured workspace tests', async () => {
-      const testsDir = await mkdtemp(join(tmpdir(), 'agent-qa-trigger-contained-'))
-      const outsideDir = await mkdtemp(join(tmpdir(), 'agent-qa-trigger-outside-'))
+      const testsDir = await mkdtemp(join(tmpdir(), 'etus-agent-trigger-contained-'))
+      const outsideDir = await mkdtemp(join(tmpdir(), 'etus-agent-trigger-outside-'))
       tempDirs.push(testsDir, outsideDir)
       const enqueue = vi.fn().mockReturnValue('run-outside')
       router = createRouter({
@@ -1932,7 +1932,7 @@ describe('API Routes', () => {
     })
 
     it('rejects relative traversal test files outside the configured workspace', async () => {
-      const testsDir = await mkdtemp(join(tmpdir(), 'agent-qa-trigger-contained-'))
+      const testsDir = await mkdtemp(join(tmpdir(), 'etus-agent-trigger-contained-'))
       tempDirs.push(testsDir)
       const enqueue = vi.fn().mockReturnValue('run-traversal')
       router = createRouter({
@@ -1954,8 +1954,8 @@ describe('API Routes', () => {
     })
 
     it('rejects suite files outside the configured suite root before enqueueing', async () => {
-      const testsDir = await mkdtemp(join(tmpdir(), 'agent-qa-trigger-contained-'))
-      const outsideDir = await mkdtemp(join(tmpdir(), 'agent-qa-trigger-outside-'))
+      const testsDir = await mkdtemp(join(tmpdir(), 'etus-agent-trigger-contained-'))
+      const outsideDir = await mkdtemp(join(tmpdir(), 'etus-agent-trigger-outside-'))
       tempDirs.push(testsDir, outsideDir)
       const enqueue = vi.fn().mockReturnValue('run-outside-suite')
       router = createRouter({
@@ -1977,7 +1977,7 @@ describe('API Routes', () => {
     })
 
     it('runs suite files from the suite root without nesting them under testsDir', async () => {
-      const workspaceDir = await mkdtemp(join(tmpdir(), 'agent-qa-trigger-suite-root-'))
+      const workspaceDir = await mkdtemp(join(tmpdir(), 'etus-agent-trigger-suite-root-'))
       const testsDir = join(workspaceDir, 'tests')
       const suitesDir = join(workspaceDir, 'suites')
       tempDirs.push(workspaceDir)
@@ -2051,7 +2051,7 @@ describe('API Routes', () => {
     })
 
     it('uses suite YAML use.parallel for dashboard-triggered suite parent jobs', async () => {
-      const workspaceDir = await mkdtemp(join(tmpdir(), 'agent-qa-trigger-suite-parallel-'))
+      const workspaceDir = await mkdtemp(join(tmpdir(), 'etus-agent-trigger-suite-parallel-'))
       const testsDir = join(workspaceDir, 'tests')
       const suitesDir = join(workspaceDir, 'suites')
       tempDirs.push(workspaceDir)
@@ -2113,7 +2113,7 @@ describe('API Routes', () => {
     })
 
     it('passes cache and memory overrides through to the queued args and labels BrowserStack explicitly', async () => {
-      const testsDir = join(tmpdir(), `agent-qa-trigger-tests-${randomUUID()}`, 'e2e-specs')
+      const testsDir = join(tmpdir(), `etus-agent-trigger-tests-${randomUUID()}`, 'e2e-specs')
       tempDirs.push(testsDir)
       await mkdir(join(testsDir, 'web'), { recursive: true })
       await writeFile(join(testsDir, 'web/15-github-trending.yaml'), 'name: Trending\nsteps: []\n', 'utf-8')
@@ -2141,8 +2141,8 @@ describe('API Routes', () => {
       expect(enqueue).toHaveBeenCalledWith(expect.objectContaining({
         filePath: 'web/15-github-trending.yaml',
         attributes: {
-          'agent-qa.trigger': 'dashboard',
-          'agent-qa.runner': 'browserstack',
+          'etus-agent.trigger': 'dashboard',
+          'etus-agent.runner': 'browserstack',
         },
         metadata: expect.objectContaining({
           args: [
@@ -2156,7 +2156,7 @@ describe('API Routes', () => {
     })
 
     it('derives the queued platform from target metadata when the test file has no top-level platform', async () => {
-      const testsDir = await mkdtemp(join(tmpdir(), 'agent-qa-trigger-target-platform-'))
+      const testsDir = await mkdtemp(join(tmpdir(), 'etus-agent-trigger-target-platform-'))
       tempDirs.push(testsDir)
       const configContent = [
         'registry:',
@@ -2432,8 +2432,8 @@ describe('API Routes', () => {
 
   describe('POST /api/cache/purge', () => {
     it('reads services.cache.dir and purges target-driven mobile cache entries with the effective platform', async () => {
-      const testsDir = await mkdtemp(join(tmpdir(), 'agent-qa-cache-purge-tests-'))
-      const cacheDir = await mkdtemp(join(tmpdir(), 'agent-qa-cache-purge-cache-'))
+      const testsDir = await mkdtemp(join(tmpdir(), 'etus-agent-cache-purge-tests-'))
+      const cacheDir = await mkdtemp(join(tmpdir(), 'etus-agent-cache-purge-cache-'))
       tempDirs.push(testsDir, cacheDir)
 
       const configContent = [
@@ -2481,13 +2481,13 @@ describe('API Routes', () => {
     })
 
     it('resolves relative services.cache.dir from the config file directory', async () => {
-      const testsDir = await mkdtemp(join(tmpdir(), 'agent-qa-cache-purge-tests-'))
+      const testsDir = await mkdtemp(join(tmpdir(), 'etus-agent-cache-purge-tests-'))
       tempDirs.push(testsDir)
 
       const configContent = [
         'services:',
         '  cache:',
-        '    dir: .agent-qa/custom-cache',
+        '    dir: .etus-agent/custom-cache',
         'registry:',
         '  targets:',
         '    web:',
@@ -2497,7 +2497,7 @@ describe('API Routes', () => {
       ].join('\n')
       const { configManager, configPath } = await createConfigWorkspace(configContent)
       const configDir = dirname(configPath)
-      const cacheDir = join(configDir, '.agent-qa/custom-cache')
+      const cacheDir = join(configDir, '.etus-agent/custom-cache')
       const testContent = [
         'name: Web flow',
         'test-id: t_web_flow',
@@ -2550,7 +2550,7 @@ describe('API Routes', () => {
         '  memory:',
         '    enabled: true',
         '    provider: local',
-        '    dir: .agent-qa/custom-memory',
+        '    dir: .etus-agent/custom-memory',
         'use:',
         '  mobile:',
         '    appState: preserve',
@@ -2558,8 +2558,8 @@ describe('API Routes', () => {
       ].join('\n')
       const { configManager, configPath } = await createConfigWorkspace(configContent)
       const configDir = dirname(configPath)
-      const defaultObservationPath = join(configDir, 'agent-qa-memory/tests', SEEDED_TEST_ID, `${obsId}.md`)
-      const customObservationPath = join(configDir, '.agent-qa/custom-memory/tests', SEEDED_TEST_ID, `${obsId}.md`)
+      const defaultObservationPath = join(configDir, 'etus-agent-memory/tests', SEEDED_TEST_ID, `${obsId}.md`)
+      const customObservationPath = join(configDir, '.etus-agent/custom-memory/tests', SEEDED_TEST_ID, `${obsId}.md`)
       await mkdir(join(defaultObservationPath, '..'), { recursive: true })
       await mkdir(join(customObservationPath, '..'), { recursive: true })
       await writeFile(defaultObservationPath, 'default-root observation', 'utf-8')

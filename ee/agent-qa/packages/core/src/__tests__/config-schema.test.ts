@@ -68,9 +68,9 @@ describe('AgentQaConfigSchema — 4-bucket structure', () => {
         secretsFile: '.env.secrets.local',
       },
       services: {
-        dashboard: { port: 3470, artifactsDir: '.agent-qa/artifacts' },
-        cache: { dir: '.agent-qa/cache', ttl: '7d' },
-        authState: { dir: '.agent-qa/auth-states' },
+        dashboard: { port: 3470, artifactsDir: '.etus-agent/artifacts' },
+        cache: { dir: '.etus-agent/cache', ttl: '7d' },
+        authState: { dir: '.etus-agent/auth-states' },
         logging: { level: 'warn' as const },
         recording: { enabled: true },
         accessibility: {
@@ -83,7 +83,7 @@ describe('AgentQaConfigSchema — 4-bucket structure', () => {
           enabled: true,
           provider: 'local' as const,
           curatorEnabled: true,
-          dir: '.agent-qa/custom-memory',
+          dir: '.etus-agent/custom-memory',
         },
         mcp: {
           enabled: true,
@@ -118,8 +118,8 @@ describe('AgentQaConfigSchema — 4-bucket structure', () => {
     const result = AgentQaConfigSchema.safeParse(withWorkspace({
       plugins: {
         auth: [
-          { package: '@etus/agent-qa-subscription-auth' },
-          { path: '../agent-qa-subscription-auth/dist/index.js' },
+          { package: '@etus/agent-subscription-auth' },
+          { path: '../etus-agent-subscription-auth/dist/index.js' },
         ],
       },
     }))
@@ -127,8 +127,8 @@ describe('AgentQaConfigSchema — 4-bucket structure', () => {
     expect(result.success).toBe(true)
     if (result.success) {
       expect(result.data.plugins?.auth).toEqual([
-        { package: '@etus/agent-qa-subscription-auth' },
-        { path: '../agent-qa-subscription-auth/dist/index.js' },
+        { package: '@etus/agent-subscription-auth' },
+        { path: '../etus-agent-subscription-auth/dist/index.js' },
       ])
     }
   })
@@ -138,8 +138,8 @@ describe('AgentQaConfigSchema — 4-bucket structure', () => {
       plugins: {
         auth: [
           {
-            package: '@etus/agent-qa-subscription-auth',
-            path: '../agent-qa-subscription-auth/dist/index.js',
+            package: '@etus/agent-subscription-auth',
+            path: '../etus-agent-subscription-auth/dist/index.js',
           },
         ],
       },
@@ -196,8 +196,8 @@ describe('AgentQaConfigSchema — 4-bucket structure', () => {
     const result = AgentQaConfigSchema.safeParse(withWorkspace({
       services: {
         dashboard: {
-          artifactsDir: '.agent-qa/artifacts',
-          dbPath: '.agent-qa/runs.db',
+          artifactsDir: '.etus-agent/artifacts',
+          dbPath: '.etus-agent/runs.db',
         },
       },
     }))
@@ -209,15 +209,15 @@ describe('AgentQaConfigSchema — 4-bucket structure', () => {
       services: {
         dashboard: {
           port: 3470,
-          dbPath: '.agent-qa/runs.db',
-          artifactsDir: '.agent-qa/custom-artifacts',
+          dbPath: '.etus-agent/runs.db',
+          artifactsDir: '.etus-agent/custom-artifacts',
         },
         cache: {
-          dir: '.agent-qa/custom-cache',
+          dir: '.etus-agent/custom-cache',
           ttl: '7d',
         },
         authState: {
-          dir: '.agent-qa/custom-auth-states',
+          dir: '.etus-agent/custom-auth-states',
         },
         logging: {
           level: 'warn',
@@ -232,23 +232,23 @@ describe('AgentQaConfigSchema — 4-bucket structure', () => {
           enabled: true,
           provider: 'local',
           curatorEnabled: true,
-          dir: '.agent-qa/custom-memory',
+          dir: '.etus-agent/custom-memory',
         },
       },
     }))
 
     expect(result.success).toBe(true)
     if (result.success) {
-      expect(result.data.services?.dashboard?.artifactsDir).toBe('.agent-qa/custom-artifacts')
-      expect(result.data.services?.cache?.dir).toBe('.agent-qa/custom-cache')
+      expect(result.data.services?.dashboard?.artifactsDir).toBe('.etus-agent/custom-artifacts')
+      expect(result.data.services?.cache?.dir).toBe('.etus-agent/custom-cache')
       expect(result.data.services?.cache?.ttl).toBe(604_800_000)
-      expect(result.data.services?.authState?.dir).toBe('.agent-qa/custom-auth-states')
+      expect(result.data.services?.authState?.dir).toBe('.etus-agent/custom-auth-states')
       expect(result.data.services?.logging?.level).toBe('warn')
       expect(result.data.services?.recording?.enabled).toBe(false)
       expect(result.data.services?.accessibility?.enabled).toBe(false)
       expect(result.data.services?.memory?.provider).toBe('local')
       expect(result.data.services?.memory?.curatorEnabled).toBe(true)
-      expect(result.data.services?.memory?.dir).toBe('.agent-qa/custom-memory')
+      expect(result.data.services?.memory?.dir).toBe('.etus-agent/custom-memory')
     }
   })
 
@@ -265,7 +265,7 @@ describe('AgentQaConfigSchema — 4-bucket structure', () => {
 
   it('rejects services.dashboard.screenshotDir (old key)', () => {
     const result = AgentQaConfigSchema.safeParse({
-      services: { dashboard: { screenshotDir: '.agent-qa/screenshots' } },
+      services: { dashboard: { screenshotDir: '.etus-agent/screenshots' } },
     })
     expect(result.success).toBe(false)
   })
@@ -274,19 +274,19 @@ describe('AgentQaConfigSchema — 4-bucket structure', () => {
     const result = AgentQaConfigSchema.safeParse(withWorkspace({
       services: {
         authState: {
-          dir: '.agent-qa/auth-states',
+          dir: '.etus-agent/auth-states',
         },
       },
     }))
 
     expect(result.success).toBe(true)
-    expect(AuthStateConfigSchema.safeParse({ dir: '.agent-qa/auth-states' }).success).toBe(true)
+    expect(AuthStateConfigSchema.safeParse({ dir: '.etus-agent/auth-states' }).success).toBe(true)
   })
 
   it('rejects invalid services.authState config', () => {
     expect(AuthStateConfigSchema.safeParse({}).success).toBe(false)
     expect(AuthStateConfigSchema.safeParse({ dir: '' }).success).toBe(false)
-    expect(AuthStateConfigSchema.safeParse({ dir: '.agent-qa/auth-states', ttlSeconds: 3600 }).success).toBe(false)
+    expect(AuthStateConfigSchema.safeParse({ dir: '.etus-agent/auth-states', ttlSeconds: 3600 }).success).toBe(false)
   })
 
   it('workspace accepts all documented fields per D-04', () => {
@@ -661,13 +661,13 @@ describe('Sub-schemas — primitives', () => {
       provider: 'anthropic-compatible',
       model: 'claude-compatible',
       baseURL: 'https://remote.example/api/v1/messages',
-      providerHeaders: { 'x-workspace': 'agent-qa' },
+      providerHeaders: { 'x-workspace': 'etus-agent' },
     })
     const openAICompatible = ModelConfigSchema.safeParse({
       provider: 'openai-compatible',
       model: 'deepseek-chat',
       baseURL: 'https://remote.example/api/v1',
-      providerHeaders: { 'x-workspace': 'agent-qa' },
+      providerHeaders: { 'x-workspace': 'etus-agent' },
     })
 
     expect(anthropicCompatible.success).toBe(true)
@@ -759,13 +759,13 @@ describe('Sub-schemas — primitives', () => {
 
   it('AuthStateConfigSchema requires a non-empty dir only', () => {
     expect(AuthStateConfigSchema.safeParse({}).success).toBe(false)
-    expect(AuthStateConfigSchema.safeParse({ dir: '.agent-qa/auth-states' }).success).toBe(true)
-    expect(AuthStateConfigSchema.safeParse({ dir: '.agent-qa/auth-states', ttlSeconds: 3600 }).success).toBe(false)
+    expect(AuthStateConfigSchema.safeParse({ dir: '.etus-agent/auth-states' }).success).toBe(true)
+    expect(AuthStateConfigSchema.safeParse({ dir: '.etus-agent/auth-states', ttlSeconds: 3600 }).success).toBe(false)
   })
 
   it('MemoryConfigSchema defaults and validates dir', () => {
-    expect(MemoryConfigSchema.parse({}).dir).toBe('agent-qa-memory')
-    expect(MemoryConfigSchema.safeParse({ dir: '.agent-qa/custom-memory' }).success).toBe(true)
+    expect(MemoryConfigSchema.parse({}).dir).toBe('etus-agent-memory')
+    expect(MemoryConfigSchema.safeParse({ dir: '.etus-agent/custom-memory' }).success).toBe(true)
     expect(MemoryConfigSchema.safeParse({ dir: '' }).success).toBe(false)
   })
 
@@ -790,7 +790,7 @@ describe('Sub-schemas — primitives', () => {
   it('DashboardConfigSchema accepts optional port and artifactsDir', () => {
     expect(DashboardConfigSchema.safeParse({}).success).toBe(true)
     expect(
-      DashboardConfigSchema.safeParse({ port: 3470, artifactsDir: '.agent-qa/artifacts' }).success,
+      DashboardConfigSchema.safeParse({ port: 3470, artifactsDir: '.etus-agent/artifacts' }).success,
     ).toBe(true)
   })
 

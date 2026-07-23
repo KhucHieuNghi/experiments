@@ -51,7 +51,7 @@ describe('ensureMemoryDirs', () => {
   let root: string
 
   beforeEach(async () => {
-    root = await mkdtemp(join(tmpdir(), 'agent-qa-mem-'))
+    root = await mkdtemp(join(tmpdir(), 'etus-agent-mem-'))
   })
 
   afterEach(async () => {
@@ -76,7 +76,7 @@ describe('writeObservation', () => {
   let root: string
 
   beforeEach(async () => {
-    root = await mkdtemp(join(tmpdir(), 'agent-qa-mem-'))
+    root = await mkdtemp(join(tmpdir(), 'etus-agent-mem-'))
   })
 
   afterEach(async () => {
@@ -230,7 +230,7 @@ describe('round-trip tests', () => {
   let root: string
 
   beforeEach(async () => {
-    root = await mkdtemp(join(tmpdir(), 'agent-qa-mem-'))
+    root = await mkdtemp(join(tmpdir(), 'etus-agent-mem-'))
   })
 
   afterEach(async () => {
@@ -296,7 +296,7 @@ describe('listObservations', () => {
   let dir: string
 
   beforeEach(async () => {
-    dir = await mkdtemp(join(tmpdir(), 'agent-qa-mem-'))
+    dir = await mkdtemp(join(tmpdir(), 'etus-agent-mem-'))
   })
 
   afterEach(async () => {

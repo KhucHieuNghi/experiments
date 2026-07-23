@@ -43,8 +43,8 @@ export function getAnalyticsIdentityPath(
   env: Record<string, string | undefined> = process.env,
   homeDir = homedir(),
 ): string {
-  if (env.XDG_DATA_HOME) return join(env.XDG_DATA_HOME, 'agent-qa', 'analytics.json')
-  return join(homeDir, '.agent-qa', 'analytics.json')
+  if (env.XDG_DATA_HOME) return join(env.XDG_DATA_HOME, 'etus-agent', 'analytics.json')
+  return join(homeDir, '.etus-agent', 'analytics.json')
 }
 
 export function generateAnalyticsUserId(): string {

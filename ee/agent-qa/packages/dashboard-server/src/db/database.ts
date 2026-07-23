@@ -4,7 +4,7 @@ import { dirname } from 'node:path'
 import { MIGRATIONS, SCHEMA_VERSION, type DashboardMigration } from './schema.js'
 import {
   createBetterSqlite3Database,
-  DEFAULT_AGENT_QA_RUNS_DB_PATH,
+  DEFAULT_ETUS_AGENT_RUNS_DB_PATH,
   generateRunId,
   RUN_ARTIFACT_SCHEMA_VERSION,
   type BetterSqlite3Database,
@@ -15,9 +15,9 @@ import {
   type RunArtifactPayload,
   type RunArtifactStageInput,
   type RunAttributes,
-} from '@etus/agent-qa-core'
+} from '@etus/agent-core'
 
-const DASHBOARD_DB_PATH_FALLBACK = DEFAULT_AGENT_QA_RUNS_DB_PATH || '.agent-qa/runs.db'
+const DASHBOARD_DB_PATH_FALLBACK = DEFAULT_ETUS_AGENT_RUNS_DB_PATH || '.etus-agent/runs.db'
 
 export interface RunRow {
   id: string
@@ -1566,7 +1566,7 @@ export class DashboardDatabase {
     return row ? this.mapReasoningTraceRow(row) : undefined
   }
 
-  // Satisfies LogStorage interface from @etus/agent-qa-core (structural typing)
+  // Satisfies LogStorage interface from @etus/agent-core (structural typing)
   insertLogs(entries: LogEntry[]): void {
     if (entries.length === 0) return
     const stmt = this.db.prepare(

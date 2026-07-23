@@ -38,8 +38,8 @@ export function rejectRemovedCliSurface(input: {
   execArgv?: readonly string[]
   argv?: readonly string[]
 } = {}): void {
-  // Node 24 can consume shebang-launched `agent-qa run --env-file ...` into
-  // execArgv before Commander sees it, so reject it here as a removed agent-qa
+  // Node 24 can consume shebang-launched `etus-agent run --env-file ...` into
+  // execArgv before Commander sees it, so reject it here as a removed etus-agent
   // flag instead of letting Node treat it as its own env loader.
   const removedNodeArg = findRemovedNodeEnvFileArg(input.execArgv ?? process.execArgv)
   if (removedNodeArg) {

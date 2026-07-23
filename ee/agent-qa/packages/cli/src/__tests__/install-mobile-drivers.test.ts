@@ -38,7 +38,7 @@ async function runCommand(
   })
 
   const parent = new Command()
-  parent.option('--config <path>', 'config file path', 'agent-qa.config.yaml')
+  parent.option('--config <path>', 'config file path', 'etus-agent.config.yaml')
   parent.addCommand(createInstallMobileDriversCommand({
     resolveAppium: vi.fn(() => ({ command: LOCAL_APPIUM, source: 'local' as const })),
     execFile,
@@ -59,9 +59,9 @@ describe('install-mobile-drivers command', () => {
   })
 
   it('formats retry commands with selected targets and update flags', () => {
-    expect(formatInstallMobileDriversRetryCommand({ all: true })).toBe('agent-qa install-mobile-drivers --all')
-    expect(formatInstallMobileDriversRetryCommand({ android: true, ios: true, update: true })).toBe('agent-qa install-mobile-drivers --android --ios --update')
-    expect(formatInstallMobileDriversRetryCommand({ ios: true, update: true, unsafe: true })).toBe('agent-qa install-mobile-drivers --ios --update --unsafe')
+    expect(formatInstallMobileDriversRetryCommand({ all: true })).toBe('etus-agent install-mobile-drivers --all')
+    expect(formatInstallMobileDriversRetryCommand({ android: true, ios: true, update: true })).toBe('etus-agent install-mobile-drivers --android --ios --update')
+    expect(formatInstallMobileDriversRetryCommand({ ios: true, update: true, unsafe: true })).toBe('etus-agent install-mobile-drivers --ios --update --unsafe')
   })
 
   it('validates target and update flag combinations', () => {
@@ -98,7 +98,7 @@ describe('install-mobile-drivers command', () => {
   it('installs the Android UiAutomator2 driver through the resolved local Appium binary', async () => {
     const execFile = makeExecFile({ drivers: [] })
 
-    await runCommand(['--android'], execFile, ['--config', '/tmp/project/agent-qa.config.yaml'])
+    await runCommand(['--android'], execFile, ['--config', '/tmp/project/etus-agent.config.yaml'])
 
     expect(execFile).toHaveBeenCalledWith(LOCAL_APPIUM, ['--version'], { stdio: 'pipe' })
     expect(execFile).toHaveBeenCalledWith(LOCAL_APPIUM, ['driver', 'list', '--installed', '--json'], { stdio: 'pipe', encoding: 'utf-8' })
@@ -189,6 +189,6 @@ describe('install-mobile-drivers command', () => {
 
     expect(process.exitCode).toBe(17)
     expect(output).toContain('XCUITest driver installation failed')
-    expect(output).toContain('agent-qa install-mobile-drivers --ios')
+    expect(output).toContain('etus-agent install-mobile-drivers --ios')
   })
 })

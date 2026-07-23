@@ -26,8 +26,8 @@ export function createReleaseCommitAndTag(version, options = {}) {
   execFileSync('git', ['config', 'user.name', options.gitUserName ?? 'github-actions[bot]'], { cwd })
   execFileSync('git', ['config', 'user.email', options.gitUserEmail ?? '41898282+github-actions[bot]@users.noreply.github.com'], { cwd })
   execFileSync('git', ['add', '--', 'packages/*/package.json'], { cwd })
-  execFileSync('git', ['commit', '-m', `release: agent-qa v${version}`], { cwd })
-  execFileSync('git', ['tag', '-a', `v${version}`, '-m', `agent-qa v${version}`], { cwd })
+  execFileSync('git', ['commit', '-m', `release: etus-agent v${version}`], { cwd })
+  execFileSync('git', ['tag', '-a', `v${version}`, '-m', `etus-agent v${version}`], { cwd })
 }
 
 export function parseReleaseArgs(argv = []) {

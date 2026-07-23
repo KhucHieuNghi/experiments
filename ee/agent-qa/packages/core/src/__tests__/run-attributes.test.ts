@@ -72,12 +72,12 @@ describe('run attributes', () => {
 
   it('rejects unknown or invalid protected trusted attributes', () => {
     expect(() => validateTrustedRunAttributes({
-      'agent-qa.custom': 'evil',
-    }, 'inherited run attributes')).toThrow(/inherited run attributes: Attribute key "agent-qa\.custom" uses the reserved prefix/)
+      'etus-agent.custom': 'evil',
+    }, 'inherited run attributes')).toThrow(/inherited run attributes: Attribute key "etus-agent\.custom" uses the reserved prefix/)
 
     expect(() => validateTrustedRunAttributes({
       [ATTR_TRIGGER]: 'evil',
-    }, 'inherited run attributes')).toThrow(/Attribute value for "agent-qa\.trigger" must be one of/)
+    }, 'inherited run attributes')).toThrow(/Attribute value for "etus-agent\.trigger" must be one of/)
   })
 
   it('formats attributes with protected keys first and custom keys alphabetically', () => {
@@ -88,8 +88,8 @@ describe('run attributes', () => {
       [ATTR_TRIGGER]: 'cli',
     })).toBe([
       'Run attributes:',
-      '  agent-qa.trigger=cli',
-      '  agent-qa.runner=local',
+      '  etus-agent.trigger=cli',
+      '  etus-agent.runner=local',
       '  git.branch=phase223-main',
       '  z.custom=last',
     ].join('\n'))

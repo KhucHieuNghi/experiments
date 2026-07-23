@@ -19,13 +19,13 @@ export class StdoutLiveReporter implements Reporter {
   private redactor?: SecretRedactor
 
   constructor(options: StdoutLiveReporterOptions = {}) {
-    this.active = options.active ?? process.env.AGENT_QA_LIVE_EVENTS === 'true'
+    this.active = options.active ?? process.env.ETUS_AGENT_LIVE_EVENTS === 'true'
     this.redactor = options.redactor
   }
 
   private emit(event: Record<string, unknown>): void {
     if (!this.active) return
-    process.stdout.write(`AGENT_QA_EVENT:${JSON.stringify(redactSecretValue(event, this.redactor))}\n`)
+    process.stdout.write(`ETUS_AGENT_EVENT:${JSON.stringify(redactSecretValue(event, this.redactor))}\n`)
   }
 
   private withRunId(event: Record<string, unknown>, runId = this.activeRunId): Record<string, unknown> {
@@ -59,11 +59,11 @@ export class StdoutLiveReporter implements Reporter {
         ? (context.artifact.runtime as { suiteIndex: number }).suiteIndex
         : undefined
     this.activeSuiteTotal = readSuiteTotal(context)
-    if (process.env.AGENT_QA_PARENT_RUN_ID) {
+    if (process.env.ETUS_AGENT_PARENT_RUN_ID) {
       this.emit(this.withRunContext({
         type: 'retry-attempt',
-        attempt: parseInt(process.env.AGENT_QA_ATTEMPT_NUMBER ?? '1', 10),
-        maxRetries: parseInt(process.env.AGENT_QA_MAX_RETRIES ?? '0', 10),
+        attempt: parseInt(process.env.ETUS_AGENT_ATTEMPT_NUMBER ?? '1', 10),
+        maxRetries: parseInt(process.env.ETUS_AGENT_MAX_RETRIES ?? '0', 10),
         testName: test.name,
       }))
     }

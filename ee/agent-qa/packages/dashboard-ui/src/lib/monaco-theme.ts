@@ -1,7 +1,7 @@
 import * as monaco from 'monaco-editor'
 
 export function registerThemes() {
-  monaco.editor.defineTheme('agent-qa-dark', {
+  monaco.editor.defineTheme('etus-agent-dark', {
     base: 'vs-dark',
     inherit: true,
     rules: [
@@ -50,7 +50,7 @@ export function registerThemes() {
     },
   })
 
-  monaco.editor.defineTheme('agent-qa-light', {
+  monaco.editor.defineTheme('etus-agent-light', {
     base: 'vs',
     inherit: true,
     rules: [

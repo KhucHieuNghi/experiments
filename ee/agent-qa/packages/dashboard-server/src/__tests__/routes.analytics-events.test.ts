@@ -10,7 +10,7 @@ import {
   buildAnalyticsEvent,
   captureAnalytics,
   resolveAnalyticsStandardProperties,
-} from '@etus/agent-qa-core'
+} from '@etus/agent-core'
 
 const {
   mockBuildAnalyticsEvent,
@@ -22,8 +22,8 @@ const {
   mockResolveAnalyticsStandardProperties: vi.fn(),
 }))
 
-vi.mock('@etus/agent-qa-core', async () => {
-  const actual = await vi.importActual<typeof import('@etus/agent-qa-core')>('@etus/agent-qa-core')
+vi.mock('@etus/agent-core', async () => {
+  const actual = await vi.importActual<typeof import('@etus/agent-core')>('@etus/agent-core')
   return {
     ...actual,
     buildAnalyticsEvent: mockBuildAnalyticsEvent,
@@ -32,7 +32,7 @@ vi.mock('@etus/agent-qa-core', async () => {
   }
 })
 
-await vi.importActual<typeof import('@etus/agent-qa-core')>('@etus/agent-qa-core')
+await vi.importActual<typeof import('@etus/agent-core')>('@etus/agent-core')
 const buildAnalyticsEventMock = vi.mocked(buildAnalyticsEvent)
 const captureAnalyticsMock = vi.mocked(captureAnalytics)
 const resolveAnalyticsStandardPropertiesMock = vi.mocked(resolveAnalyticsStandardProperties)
@@ -131,9 +131,9 @@ async function createConfigWorkspace(configContent: string): Promise<{
   configManager: ConfigManagerInstance
   configPath: string
 }> {
-  const dir = await mkdtemp(join(tmpdir(), 'agent-qa-analytics-route-'))
+  const dir = await mkdtemp(join(tmpdir(), 'etus-agent-analytics-route-'))
   tempDirs.push(dir)
-  const configPath = join(dir, 'agent-qa.config.yaml')
+  const configPath = join(dir, 'etus-agent.config.yaml')
   await writeFile(configPath, configContent, 'utf-8')
   return {
     configManager: new ConfigManager(configPath),
@@ -171,7 +171,7 @@ beforeEach(async () => {
   resolveAnalyticsStandardPropertiesMock.mockResolvedValue({
     surface: 'dashboard-ui',
     runtime_context: 'user',
-    agent_qa_version: '0.1.0',
+    etus_agent_version: '0.1.0',
   })
   router = createRouter({ db: createMockDatabase() as any, analyticsBridge: createAnalyticsBridge() })
 })
@@ -185,7 +185,7 @@ afterEach(async () => {
 describe('dashboard analytics bridge route', () => {
   it('accepts dashboard product events and delegates capture through shared core analytics', async () => {
     const response = await invokeRoute('/api/analytics/events', routeBody({
-      name: 'agent-qa.dashboard.opened',
+      name: 'etus-agent.dashboard.opened',
       properties: {
         route: 'phase244-route-secret',
         url: 'https://phase244-secret.example',
@@ -201,11 +201,11 @@ describe('dashboard analytics bridge route', () => {
     await vi.waitFor(() => expect(captureAnalyticsMock).toHaveBeenCalledTimes(1))
     expect(resolveAnalyticsStandardPropertiesMock).toHaveBeenCalledWith({ surface: 'dashboard-ui' })
     expect(buildAnalyticsEventMock).toHaveBeenCalledWith({
-      name: 'agent-qa.dashboard.opened',
+      name: 'etus-agent.dashboard.opened',
       properties: expect.objectContaining({
         surface: 'dashboard-ui',
         runtime_context: 'user',
-        agent_qa_version: '0.1.0',
+        etus_agent_version: '0.1.0',
       }),
     })
 
@@ -216,7 +216,7 @@ describe('dashboard analytics bridge route', () => {
     expect(buildInput.properties).not.toHaveProperty('entity_id')
     expect(buildInput.properties).not.toHaveProperty('entity_name')
     expect(captureAnalyticsMock).toHaveBeenCalledWith(
-      expect.objectContaining({ name: 'agent-qa.dashboard.opened' }),
+      expect.objectContaining({ name: 'etus-agent.dashboard.opened' }),
       { config: {} },
     )
   })
@@ -240,7 +240,7 @@ describe('dashboard analytics bridge route', () => {
     })
 
     const response = await invokeRoute('/api/analytics/events', routeBody({
-      name: 'agent-qa.dashboard.opened',
+      name: 'etus-agent.dashboard.opened',
       properties: {},
     }))
 
@@ -268,7 +268,7 @@ describe('dashboard analytics bridge route', () => {
     })
 
     const response = await invokeRoute('/api/analytics/events', routeBody({
-      name: 'agent-qa.dashboard.opened',
+      name: 'etus-agent.dashboard.opened',
       properties: {},
     }))
 
@@ -277,15 +277,15 @@ describe('dashboard analytics bridge route', () => {
     await vi.waitFor(() => expect(captureAnalyticsMock).toHaveBeenCalledTimes(1))
     expect(resolveAnalyticsStandardPropertiesMock).toHaveBeenCalledWith({ surface: 'dashboard-ui' })
     expect(buildAnalyticsEventMock).toHaveBeenCalledWith({
-      name: 'agent-qa.dashboard.opened',
+      name: 'etus-agent.dashboard.opened',
       properties: expect.objectContaining({
         surface: 'dashboard-ui',
         runtime_context: 'user',
-        agent_qa_version: '0.1.0',
+        etus_agent_version: '0.1.0',
       }),
     })
     expect(captureAnalyticsMock).toHaveBeenCalledWith(
-      expect.objectContaining({ name: 'agent-qa.dashboard.opened' }),
+      expect.objectContaining({ name: 'etus-agent.dashboard.opened' }),
       { config: {} },
     )
   })
@@ -299,7 +299,7 @@ describe('dashboard analytics bridge route', () => {
     })
 
     const response = await invokeRoute('/api/analytics/events', routeBody({
-      name: 'agent-qa.dashboard.opened',
+      name: 'etus-agent.dashboard.opened',
       properties: {},
     }))
 
@@ -314,7 +314,7 @@ describe('dashboard analytics bridge route', () => {
     captureAnalyticsMock.mockRejectedValueOnce(new Error('phase244 capture failed'))
 
     const response = await invokeRoute('/api/analytics/events', routeBody({
-      name: 'agent-qa.dashboard.opened',
+      name: 'etus-agent.dashboard.opened',
       properties: {},
     }))
 
@@ -326,8 +326,8 @@ describe('dashboard analytics bridge route', () => {
   it.each([
     [{ properties: {} }, 'missing name'],
     [{ name: 42, properties: {} }, 'non-string name'],
-    [{ name: 'agent-qa.dashboard.opened', properties: [] }, 'array properties'],
-    [{ name: 'agent-qa.dashboard.route.viewed', properties: {} }, 'route event'],
+    [{ name: 'etus-agent.dashboard.opened', properties: [] }, 'array properties'],
+    [{ name: 'etus-agent.dashboard.route.viewed', properties: {} }, 'route event'],
   ])('rejects invalid analytics payloads: %s', async (body, _caseName) => {
     const response = await invokeRoute('/api/analytics/events', routeBody(body))
 

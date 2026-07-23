@@ -1,1 +1,1 @@
-export { generateSuiteId } from '@etus/agent-qa-ids'
+export { generateSuiteId } from '@etus/agent-ids'

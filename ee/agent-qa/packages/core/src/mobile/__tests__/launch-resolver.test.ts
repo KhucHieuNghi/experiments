@@ -75,7 +75,7 @@ function expectMobileSetupError(fn: () => unknown) {
 }
 
 function withTempDir<T>(fn: (dir: string) => T): T {
-  const dir = mkdtempSync(join(tmpdir(), 'agent-qa-app-install-'))
+  const dir = mkdtempSync(join(tmpdir(), 'etus-agent-app-install-'))
   try {
     return fn(dir)
   } finally {
@@ -292,8 +292,8 @@ describe('resolveMobileRunConfig', () => {
       }),
       targetName: 'release-android-wikipedia',
       useDeviceName: 'android-emu',
-      configFilePath: join(dir, 'agent-qa.config.yaml'),
-      localConfigFilePath: join(dir, 'agent-qa.local.yaml'),
+      configFilePath: join(dir, 'etus-agent.config.yaml'),
+      localConfigFilePath: join(dir, 'etus-agent.local.yaml'),
       localBindings: {
         apps: {
           'release-android-wikipedia': { path: 'local.apk' },
@@ -320,7 +320,7 @@ describe('resolveMobileRunConfig', () => {
       }),
       targetName: 'release-android-wikipedia',
       useDeviceName: 'android-emu',
-      configFilePath: join(dir, 'agent-qa.config.yaml'),
+      configFilePath: join(dir, 'etus-agent.config.yaml'),
     })
 
     expect(resolved.app.install?.path).toBe(targetApp)
@@ -342,7 +342,7 @@ describe('resolveMobileRunConfig', () => {
       config: makeConfig(),
       targetName: 'release-android-wikipedia',
       useDeviceName: 'android-emu',
-      localConfigFilePath: join(dir, 'agent-qa.local.yaml'),
+      localConfigFilePath: join(dir, 'etus-agent.local.yaml'),
       localBindings: {
         apps: {
           'release-android-wikipedia': { path: 'missing.apk' },
@@ -389,7 +389,7 @@ describe('resolveMobileRunConfig', () => {
       }),
       targetName: 'release-android-wikipedia',
       useDeviceName: 'android-emu',
-      configFilePath: join(dir, 'agent-qa.config.yaml'),
+      configFilePath: join(dir, 'etus-agent.config.yaml'),
     })
 
     expect(resolved.app.install?.path).toBe(appFile)
@@ -405,7 +405,7 @@ describe('resolveMobileRunConfig', () => {
       config: makeConfig(),
       targetName: 'release-android-wikipedia',
       useDeviceName: 'android-emu',
-      localConfigFilePath: join(dir, 'agent-qa.local.yaml'),
+      localConfigFilePath: join(dir, 'etus-agent.local.yaml'),
       localBindings: {
         apps: {
           'release-android-wikipedia': { path: 'local.apk' },
@@ -414,10 +414,10 @@ describe('resolveMobileRunConfig', () => {
     })
 
     expect(resolved.app.install?.sourceTrace['app.path']).toBe(
-      'agent-qa.local.yaml apps.release-android-wikipedia.path',
+      'etus-agent.local.yaml apps.release-android-wikipedia.path',
     )
     expect(resolved.sourceTrace).toContain(
-      'app.path=agent-qa.local.yaml apps.release-android-wikipedia.path',
+      'app.path=etus-agent.local.yaml apps.release-android-wikipedia.path',
     )
   }))
 })

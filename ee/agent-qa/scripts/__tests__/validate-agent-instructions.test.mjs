@@ -5,13 +5,13 @@ import { join } from 'node:path'
 import test from 'node:test'
 import { validateAgentInstructions } from '../validate-agent-instructions.mjs'
 
-function writeFixture(rootDir, packageName = '@etus/agent-qa-core') {
+function writeFixture(rootDir, packageName = '@etus/agent-core') {
   writeFileSync(
     join(rootDir, 'AGENTS.md'),
     [
-      '# agent-qa Agent Instructions',
+      '# etus-agent Agent Instructions',
       '',
-      '`agent-qa` `AGENT_QA_*` `agent_qa_*` `@etus/agent-qa-*`',
+      '`etus-agent` `ETUS_AGENT_*` `etus_agent_*` `@etus/agent-*`',
       '',
       '<!-- branding-forbidden:start -->',
       '`AgentQA` `AGENTQA` `agentqa` `agentqa_`',
@@ -26,7 +26,7 @@ function writeFixture(rootDir, packageName = '@etus/agent-qa-core') {
   writeFileSync(
     join(packageDir, 'AGENTS.md'),
     [
-      `# agent-qa package instructions: ${packageName}`,
+      `# etus-agent package instructions: ${packageName}`,
       '',
       `pnpm --filter ${packageName} test`,
       '',
@@ -35,7 +35,7 @@ function writeFixture(rootDir, packageName = '@etus/agent-qa-core') {
 }
 
 function withFixture(fn) {
-  const rootDir = mkdtempSync(join(tmpdir(), 'agent-qa-agents-'))
+  const rootDir = mkdtempSync(join(tmpdir(), 'etus-agent-agents-'))
   try {
     mkdirSync(rootDir, { recursive: true })
     writeFixture(rootDir)
@@ -71,7 +71,7 @@ test('missing package AGENTS.md is reported with the package name', () => {
 
     const errors = validateOnePackage(rootDir)
 
-    assert.ok(errors.some(error => error.includes('@etus/agent-qa-core')))
+    assert.ok(errors.some(error => error.includes('@etus/agent-core')))
     assert.ok(errors.some(error => error.includes('AGENTS.md is missing')))
   })
 })
@@ -93,9 +93,9 @@ test('forbidden branding outside root marker block is reported', () => {
     writeFileSync(
       join(rootDir, 'packages/core/AGENTS.md'),
       [
-        '# agent-qa package instructions: @etus/agent-qa-core',
+        '# etus-agent package instructions: @etus/agent-core',
         '',
-        'pnpm --filter @etus/agent-qa-core test',
+        'pnpm --filter @etus/agent-core test',
         'Do not write AgentQA here.',
         '',
       ].join('\n'),

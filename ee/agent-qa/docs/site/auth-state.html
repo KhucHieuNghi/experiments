@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Auth State - ETUS Documentation</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+  <div class="docs-layout">
+    <aside class="docs-sidebar">
+      <div class="docs-logo">ETUS <span>docs</span></div>
+      <nav class="docs-nav">
+        <div class="docs-nav-group">
+          <div class="docs-nav-label">Getting Started</div>
+          <a href="index.html">Overview</a>
+          <a href="quickstart.html">Quickstart</a>
+        </div>
+        <div class="docs-nav-group">
+          <div class="docs-nav-label">Core Concepts</div>
+          <a href="configuration.html">Configuration</a>
+          <a href="tests.html">Tests</a>
+          <a href="suites.html">Suites</a>
+          <a href="hooks.html">Hooks</a>
+        </div>
+        <div class="docs-nav-group">
+          <div class="docs-nav-label">Features</div>
+          <a href="memory.html">Memory</a>
+          <a href="caching.html">Caching</a>
+          <a href="web-testing.html">Web Testing</a>
+          <a href="auth-state.html">Auth State</a>
+        </div>
+        <div class="docs-nav-group">
+          <div class="docs-nav-label">Reference</div>
+          <a href="cli.html">CLI Commands</a>
+          <a href="env-vars.html">Environment Variables</a>
+        </div>
+      </nav>
+    </aside>
+    <main class="docs-main">
+      <button class="docs-menu-btn">Menu</button>
+      <div class="docs-breadcrumb"><a href="index.html">Docs</a> / Auth State</div>
+
+      <h1>Auth State</h1>
+      <p class="docs-subtitle">Capture authenticated browser sessions once and reuse them across tests. Keep credentials out of test artifacts and logs.</p>
+
+      <h2>How it works</h2>
+      <div class="docs-steps">
+        <div class="docs-step">
+          <h3>Capture a login session</h3>
+          <p>Use <code>etus-agent auth login</code> to interactively log into your application. ETUS captures the browser state (cookies, local storage, session storage) and saves it under a logical name.</p>
+        </div>
+        <div class="docs-step">
+          <h3>Store by name</h3>
+          <p>The auth state is stored at <code>~/.etus-agent/auth.json</code> with a human-readable name (e.g., "admin", "viewer", "test-user").</p>
+        </div>
+        <div class="docs-step">
+          <h3>Reuse in tests</h3>
+          <p>Tests reference the named auth state. ETUS restores the session before executing steps, so tests start already logged in.</p>
+        </div>
+        <div class="docs-step">
+          <h3>Pass to hooks</h3>
+          <p>Auth state names are available to hooks so setup scripts can make authenticated API calls.</p>
+        </div>
+      </div>
+
+      <h2>Capturing auth state</h2>
+      <pre><code># Interactive login capture
+npx etus-agent auth login --name admin --url http://localhost:3000/login
+
+# Test that the stored state is still valid
+npx etus-agent auth test --name admin
+
+# List stored auth states
+npx etus-agent auth status</code></pre>
+
+      <h2>Using auth in tests</h2>
+      <pre><code># tests/admin-dashboard.yaml
+test-id: test_admin_dashboard
+name: Admin can view analytics
+
+use:
+  auth: admin              # Use the "admin" auth state
+  baseUrl: http://localhost:3000
+
+steps:
+  - Navigate to the analytics dashboard
+  - Verify the page shows revenue metrics
+  - Verify the "Export CSV" button is visible</code></pre>
+
+      <h2>Using auth in suites</h2>
+      <pre><code># suites/admin-flows.yaml
+suite-id: suite_admin_flows
+name: Admin user flows
+
+use:
+  auth: admin
+
+tests:
+  - tests/admin-dashboard.yaml
+  - tests/admin-users.yaml
+  - tests/admin-settings.yaml</code></pre>
+
+      <h2>Credential safety</h2>
+      <p>ETUS keeps credentials safe through multiple layers:</p>
+      <ul>
+        <li><strong>No plaintext passwords</strong> in test files&mdash;only logical auth state names</li>
+        <li><strong>Redaction</strong> in all output, logs, and artifacts</li>
+        <li><strong>Local storage only</strong>&mdash;auth state lives at <code>~/.etus-agent/auth.json</code>, never in the project directory</li>
+        <li><strong>Secret variables</strong>&mdash;use <code>{{secret:NAME}}</code> for any sensitive values; always redacted</li>
+      </ul>
+
+      <div class="docs-callout">
+        <strong>Important</strong><br>
+        The <code>~/.etus-agent/auth.json</code> file contains session tokens. Never commit it to version control. It is stored in the user home directory by design.
+      </div>
+
+      <h2>CLI commands</h2>
+      <table>
+        <thead>
+          <tr><th>Command</th><th>Description</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>etus-agent auth login</code></td><td>Capture a new auth state interactively</td></tr>
+          <tr><td><code>etus-agent auth test</code></td><td>Validate a stored auth state is still valid</td></tr>
+          <tr><td><code>etus-agent auth status</code></td><td>List all stored auth states</td></tr>
+          <tr><td><code>etus-agent auth set</code></td><td>Manually set auth credentials</td></tr>
+          <tr><td><code>etus-agent auth logout</code></td><td>Remove a stored auth state</td></tr>
+        </tbody>
+      </table>
+
+      <div class="docs-footer">
+        <p>ETUS Documentation</p>
+      </div>
+    </main>
+  </div>
+  <script src="assets/docs.js"></script>
+</body>
+</html>

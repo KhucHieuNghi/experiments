@@ -7,15 +7,15 @@ test('derives dependency-first individual package publish order', () => {
   const ordered = derivePublishOrder(shuffled).map(record => record.pkg.name)
 
   assert.deepEqual(ordered, [
-    '@etus/agent-qa-ids',
-    '@etus/agent-qa-core',
-    '@etus/agent-qa-web',
-    '@etus/agent-qa-android',
-    '@etus/agent-qa-ios',
-    '@etus/agent-qa-mcp',
-    '@etus/agent-qa-dashboard-ui',
-    '@etus/agent-qa-dashboard',
-    'agent-qa',
+    '@etus/agent-ids',
+    '@etus/agent-core',
+    '@etus/agent-web',
+    '@etus/agent-android',
+    '@etus/agent-ios',
+    '@etus/agent-mcp',
+    '@etus/agent-dashboard-ui',
+    '@etus/agent-dashboard',
+    'etus-agent',
   ])
 })
 
@@ -24,18 +24,18 @@ test('rejects missing, duplicate, private, or extra public package records', () 
   assert.throws(
     () => derivePublishOrder([
       ...publicPackageNames.map(name => ({ pkg: { name, private: false } })),
-      { pkg: { name: 'agent-qa', private: false } },
+      { pkg: { name: 'etus-agent', private: false } },
     ]),
     /duplicate public package/,
   )
   assert.throws(
-    () => derivePublishOrder(publicPackageNames.map(name => ({ pkg: { name, private: name === 'agent-qa' } }))),
+    () => derivePublishOrder(publicPackageNames.map(name => ({ pkg: { name, private: name === 'etus-agent' } }))),
     /private public package/,
   )
   assert.throws(
     () => derivePublishOrder([
       ...publicPackageNames.map(name => ({ pkg: { name, private: false } })),
-      { pkg: { name: '@etus/agent-qa-extra', private: false } },
+      { pkg: { name: '@etus/agent-extra', private: false } },
     ]),
     /extra public package/,
   )

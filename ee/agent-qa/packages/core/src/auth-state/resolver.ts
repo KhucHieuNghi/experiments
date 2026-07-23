@@ -1,5 +1,5 @@
 import path from 'node:path'
-import { DEFAULT_AGENT_QA_AUTH_STATES_DIR } from '../runtime-paths.js'
+import { DEFAULT_ETUS_AGENT_AUTH_STATES_DIR } from '../runtime-paths.js'
 import { AuthStateNameSchema, TargetNameSchema } from './schema.js'
 
 export type AuthStateTargetPlatform = 'web' | 'android' | 'ios'
@@ -44,7 +44,7 @@ function assertInsideRoot(rootDir: string, filePath: string): void {
 
 export function resolveAuthStateRoot(input: ResolveAuthStateRootInput): string {
   const { configDir, authStateDir } = input
-  const configuredDir = authStateDir ?? DEFAULT_AGENT_QA_AUTH_STATES_DIR
+  const configuredDir = authStateDir ?? DEFAULT_ETUS_AGENT_AUTH_STATES_DIR
   if (configuredDir.trim().length === 0) {
     throw new Error('authState.dir must be a non-empty path')
   }

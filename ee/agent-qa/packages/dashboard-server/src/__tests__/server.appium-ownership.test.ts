@@ -5,7 +5,7 @@ import { mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { parse as parseYaml } from 'yaml'
-import { resolveWorkspacePaths } from '@etus/agent-qa-core'
+import { resolveWorkspacePaths } from '@etus/agent-core'
 
 type MobilePlatform = 'android' | 'ios'
 type CloseStatus = 'completed' | 'failed' | 'cancelled' | 'timeout'
@@ -38,7 +38,7 @@ const mockState = vi.hoisted(() => ({
 
 vi.mock('../execution/test-runner.js', () => {
   class MockTestRunner {
-    static resolveCliBin = vi.fn(() => '/mock/agent-qa')
+    static resolveCliBin = vi.fn(() => '/mock/etus-agent')
 
     private onProcessClose?: (runId: string, status: CloseStatus) => void
 
@@ -96,8 +96,8 @@ vi.mock('../execution/appium-manager.js', () => {
   return { AppiumManager: MockAppiumManager }
 })
 
-vi.mock('@etus/agent-qa-core', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('@etus/agent-qa-core')>()
+vi.mock('@etus/agent-core', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@etus/agent-core')>()
   return {
     ...actual,
     createModel: vi.fn().mockResolvedValue({ modelId: 'test-model' }),
@@ -107,7 +107,7 @@ vi.mock('@etus/agent-qa-core', async (importOriginal) => {
   }
 })
 
-vi.mock('@etus/agent-qa-android', () => ({
+vi.mock('@etus/agent-android', () => ({
   AndroidPlatformAdapter: vi.fn().mockImplementation(function () {
     return {
       platform: 'android',
@@ -184,8 +184,8 @@ registry:
 `
 
 function createConfigPath(content = MOBILE_CONFIG): { configPath: string; workspacePaths: ReturnType<typeof resolveWorkspacePaths> } {
-  tempDir = mkdtempSync(join(tmpdir(), 'agent-qa-appium-ownership-'))
-  const configPath = join(tempDir, 'agent-qa.config.yaml')
+  tempDir = mkdtempSync(join(tmpdir(), 'etus-agent-appium-ownership-'))
+  const configPath = join(tempDir, 'etus-agent.config.yaml')
   writeFileSync(join(tempDir, 'hooks.yaml'), 'hooks: []\n')
   writeFileSync(join(tempDir, 'agent-rules.md'), '')
   writeFileSync(join(tempDir, '.env'), '')
@@ -298,7 +298,7 @@ describe('dashboard Appium ownership', () => {
     expect(appium.acquireLease).toHaveBeenCalledWith({ runId: ios.runId, platform: 'ios' })
 
     const executeCalls = runner.execute.mock.calls as Array<[{ env?: Record<string, string> }]>
-    expect(executeCalls.map(([opts]) => opts.env?.AGENT_QA_APPIUM_URL)).toEqual([
+    expect(executeCalls.map(([opts]) => opts.env?.ETUS_AGENT_APPIUM_URL)).toEqual([
       'http://localhost:4723',
       'http://localhost:4723',
     ])

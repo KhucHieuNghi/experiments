@@ -1,5 +1,5 @@
 {
-  "name": "@etus/agent-qa-ios",
+  "name": "@etus/agent-ios",
   "version": "0.1.21",
   "private": false,
   "description": "ETUS iOS adapter for Appium-backed mobile testing.",
@@ -48,7 +48,7 @@
     "clean": "rm -rf dist .turbo"
   },
   "dependencies": {
-    "@etus/agent-qa-core": "workspace:*",
+    "@etus/agent-core": "workspace:*",
     "webdriverio": "9.24.0"
   },
   "devDependencies": {

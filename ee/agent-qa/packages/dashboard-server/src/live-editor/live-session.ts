@@ -20,7 +20,7 @@ import {
   resolveAuthStatePaths,
   resolveSecretTemplatesInValue,
   writeAuthStateFiles,
-} from '@etus/agent-qa-core'
+} from '@etus/agent-core'
 import type {
   AgentLoopConfig,
   AuthStateMetadata,
@@ -33,7 +33,7 @@ import type {
   MobilePlatform,
   SecretRedactor,
   SecretStore,
-} from '@etus/agent-qa-core'
+} from '@etus/agent-core'
 import type { LanguageModel } from 'ai'
 import { prepareMobileLiveSession } from './mobile-bootstrap.js'
 import type { MobileLiveAppiumLease } from './mobile-bootstrap.js'
@@ -526,16 +526,16 @@ export class LiveSession {
       const platformLabel = platform === 'android' ? 'Android' : 'iOS'
       try {
         if (platform === 'android') {
-          const { AndroidPlatformAdapter } = await import('@etus/agent-qa-android')
+          const { AndroidPlatformAdapter } = await import('@etus/agent-android')
           adapter = new AndroidPlatformAdapter()
         } else {
-          const { IOSPlatformAdapter } = await import('@etus/agent-qa-ios')
+          const { IOSPlatformAdapter } = await import('@etus/agent-ios')
           adapter = new IOSPlatformAdapter()
         }
       } catch (err) {
         throw new MobileSetupError({
           category: 'adapter-load',
-          message: `Failed to load ${platformLabel} adapter (@etus/agent-qa-${platform}). Is the package installed? ${err instanceof Error ? err.message : String(err)}`,
+          message: `Failed to load ${platformLabel} adapter (@etus/agent-${platform}). Is the package installed? ${err instanceof Error ? err.message : String(err)}`,
           platform,
           targetName: config.targetName,
           deviceName: platformConfig.device?.name,
@@ -598,7 +598,7 @@ export class LiveSession {
       await this.setupMobileAdapter('ios', config)
       this.currentUrl = null
     } else {
-      const { WebPlatformAdapter } = await import('@etus/agent-qa-web')
+      const { WebPlatformAdapter } = await import('@etus/agent-web')
       const adapter = new WebPlatformAdapter()
       await adapter.setup({ platform: 'web', browser: { name: 'chromium', headless: config.headless ?? true } })
       this.adapter = adapter

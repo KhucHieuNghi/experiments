@@ -30,7 +30,7 @@ describe('analytics identity', () => {
   let identityPath: string
 
   beforeEach(async () => {
-    tempDir = await mkdtemp(join(tmpdir(), 'agent-qa-analytics-'))
+    tempDir = await mkdtemp(join(tmpdir(), 'etus-agent-analytics-'))
     identityPath = join(tempDir, 'analytics.json')
   })
 
@@ -38,12 +38,12 @@ describe('analytics identity', () => {
     await rm(tempDir, { recursive: true, force: true })
   })
 
-  it('resolves XDG_DATA_HOME before falling back to ~/.agent-qa', () => {
+  it('resolves XDG_DATA_HOME before falling back to ~/.etus-agent', () => {
     expect(getAnalyticsIdentityPath({ XDG_DATA_HOME: join(tempDir, 'xdg') }, '/home/tester')).toBe(
-      join(tempDir, 'xdg', 'agent-qa', 'analytics.json'),
+      join(tempDir, 'xdg', 'etus-agent', 'analytics.json'),
     )
     expect(getAnalyticsIdentityPath({}, '/home/tester')).toBe(
-      join('/home/tester', '.agent-qa', 'analytics.json'),
+      join('/home/tester', '.etus-agent', 'analytics.json'),
     )
   })
 

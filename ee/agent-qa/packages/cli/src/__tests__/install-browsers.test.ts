@@ -8,7 +8,7 @@ import {
   runBrowserInstall,
 } from '../commands/install-browsers.js'
 
-const PLAYWRIGHT_CLI = '/tmp/agent-qa/node_modules/playwright-core/cli.js'
+const PLAYWRIGHT_CLI = '/tmp/etus-agent/node_modules/playwright-core/cli.js'
 
 function spawnResult(status: number) {
   return {
@@ -52,7 +52,7 @@ describe('install-browsers command', () => {
 
   it('builds Playwright args for all browsers without browser names', () => {
     expect(buildBrowserInstallArgs({ all: true })).toEqual([])
-    expect(formatInstallBrowsersRetryCommand({ all: true })).toBe('agent-qa install-browsers --all')
+    expect(formatInstallBrowsersRetryCommand({ all: true })).toBe('etus-agent install-browsers --all')
   })
 
   it('builds Playwright args for selected browsers and pass-through flags', () => {
@@ -68,7 +68,7 @@ describe('install-browsers command', () => {
       firefox: true,
       webkit: true,
       force: true,
-    })).toBe('agent-qa install-browsers --firefox --webkit --force')
+    })).toBe('etus-agent install-browsers --firefox --webkit --force')
   })
 
   it('fails before spawning when no browser selector is provided', async () => {
@@ -116,13 +116,13 @@ describe('install-browsers command', () => {
     )
   })
 
-  it('returns nonzero status and agent-qa retry guidance when install fails', async () => {
+  it('returns nonzero status and etus-agent retry guidance when install fails', async () => {
     const spawn = vi.fn(() => spawnResult(13))
 
     const output = await runCommand(['--webkit', '--force'], spawn)
 
     expect(process.exitCode).toBe(13)
-    expect(output).toContain('agent-qa install-browsers --webkit --force')
+    expect(output).toContain('etus-agent install-browsers --webkit --force')
     expect(output).not.toContain('npx playwright install')
   })
 

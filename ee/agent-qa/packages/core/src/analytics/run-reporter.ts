@@ -94,7 +94,7 @@ function readAttributes(value: unknown): RunAttributes | undefined {
 }
 
 function readAttributesFromEnv(env: Record<string, string | undefined> = process.env): RunAttributes | undefined {
-  const raw = env.AGENT_QA_RUN_ATTRIBUTES_JSON
+  const raw = env.ETUS_AGENT_RUN_ATTRIBUTES_JSON
   if (!raw) return undefined
   try {
     return readAttributes(JSON.parse(raw))
@@ -447,7 +447,7 @@ export class AnalyticsRunReporter implements Reporter {
 
     try {
       await this.service.capture(buildAnalyticsEvent({
-        name: 'agent-qa.test_run.completed',
+        name: 'etus-agent.test_run.completed',
         properties,
       }))
     } catch {
@@ -478,7 +478,7 @@ export class AnalyticsRunReporter implements Reporter {
 
     try {
       await this.service.capture(buildAnalyticsEvent({
-        name: 'agent-qa.suite_run.completed',
+        name: 'etus-agent.suite_run.completed',
         properties,
       }))
     } catch {

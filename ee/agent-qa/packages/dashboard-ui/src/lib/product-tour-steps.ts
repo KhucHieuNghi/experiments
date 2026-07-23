@@ -10,7 +10,6 @@ export const PRODUCT_TOUR_AUTO_START_PATHS = [
   routes.config,
 ] as const
 
-export const PRODUCT_TOUR_GITHUB_URL = 'https://www.onpoint.vn'
 
 export interface ProductTourRuntimeContext {
   exampleTestId?: string | null
@@ -18,7 +17,6 @@ export interface ProductTourRuntimeContext {
   runStatus?: string | null
   runDetailStatus?: string | null
   runDetailReached?: boolean
-  githubNudgeDismissed?: boolean
 }
 
 export type ProductTourStepRoute =
@@ -35,7 +33,6 @@ export interface ProductTourStep {
   action?: {
     label: string
     href: string
-    icon?: 'github'
   }
   include?: (context: ProductTourRuntimeContext) => boolean
 }
@@ -49,7 +46,6 @@ const hasSuccessfulRunDetailValue = (context: ProductTourRuntimeContext) => {
   return (
     Boolean(context.runId) &&
     context.runDetailReached === true &&
-    !context.githubNudgeDismissed &&
     (status === 'passed' || status === 'healed')
   )
 }
@@ -58,7 +54,7 @@ export const foundationProductTourSteps = [
   {
     id: 'intro',
     title: 'Welcome to ETUS',
-    body: 'ETUS lets you write tests in natural language for web and mobile. It runs them through a strict QA harness, learns from past runs, adapts when the UI changes, and shows you exactly what happened.',
+    body: 'ETUS lets you write tests in natural language for web. It runs them through a strict QA harness, learns from past runs, adapts when the UI changes, and shows you exactly what happened.',
     centered: true,
   },
   {
@@ -78,7 +74,7 @@ export const foundationProductTourSteps = [
   {
     id: 'tests',
     title: 'Tests hold natural-language checks',
-    body: 'Tests are natural-language checks that ETUS can run against your configured web or mobile target.',
+    body: 'Tests are natural-language checks that ETUS can run against your configured web target.',
     route: routes.tests,
     targetId: 'tour-tests-table',
   },
@@ -149,18 +145,6 @@ export const foundationProductTourSteps = [
     route: (context) => (context.runId ? routes.runDetail(context.runId) : null),
     targetId: 'tour-run-detail-reasoning',
     include: hasRun,
-  },
-  {
-    id: 'github-nudge',
-    title: 'If ETUS helped',
-    body: 'If ETUS helped, consider starring it on GitHub.',
-    centered: true,
-    action: {
-      label: 'View on GitHub',
-      href: PRODUCT_TOUR_GITHUB_URL,
-      icon: 'github',
-    },
-    include: hasSuccessfulRunDetailValue,
   },
   {
     id: 'runs-fallback',

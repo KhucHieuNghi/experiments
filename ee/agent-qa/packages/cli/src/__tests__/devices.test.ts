@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { resolveDevice, loadLocalBindings, resolveProviderCredentials } from '../devices.js'
-import type { AgentQaConfig } from '@etus/agent-qa-core'
+import type { AgentQaConfig } from '@etus/agent-core'
 
 function makeConfig(devices?: Record<string, unknown>, providers?: Record<string, unknown>): AgentQaConfig {
   return {
@@ -59,7 +59,7 @@ describe('resolveDevice', () => {
   it('throws for transport:local with no local binding (D-10)', () => {
     const config = makeConfig(sampleDevices)
     expect(() => resolveDevice(config, 'pixel-7')).toThrow(
-      'transport: local but no binding found in agent-qa.local.yaml',
+      'transport: local but no binding found in etus-agent.local.yaml',
     )
   })
 
@@ -117,7 +117,7 @@ describe('loadLocalBindings', () => {
     const dir = `/tmp/test-bindings-${Date.now()}`
     mkdirSync(dir, { recursive: true })
     writeFileSync(
-      join(dir, 'agent-qa.local.yaml'),
+      join(dir, 'etus-agent.local.yaml'),
       `devices:
   pixel-7:
     avd: Pixel_7_API_34
@@ -154,7 +154,7 @@ apps:
     const dir = `/tmp/test-bindings-empty-${Date.now()}`
     mkdirSync(dir, { recursive: true })
     writeFileSync(
-      join(dir, 'agent-qa.local.yaml'),
+      join(dir, 'etus-agent.local.yaml'),
       `# This file is for machine-specific device, app, and provider bindings.
 # Keep it out of git.
 
@@ -190,7 +190,7 @@ providers:
     const dir = `/tmp/test-bindings-incomplete-provider-${Date.now()}`
     mkdirSync(dir, { recursive: true })
     writeFileSync(
-      join(dir, 'agent-qa.local.yaml'),
+      join(dir, 'etus-agent.local.yaml'),
       `providers:
   browserstack:
     username: testuser
@@ -204,13 +204,13 @@ providers:
     }
   })
 
-  it('does not fall back to agent-qa.devices.local.yaml', async () => {
+  it('does not fall back to etus-agent.devices.local.yaml', async () => {
     const { writeFileSync, mkdirSync, rmSync } = await import('node:fs')
     const { join } = await import('node:path')
     const dir = `/tmp/test-bindings-no-fallback-${Date.now()}`
     mkdirSync(dir, { recursive: true })
     writeFileSync(
-      join(dir, 'agent-qa.devices.local.yaml'),
+      join(dir, 'etus-agent.devices.local.yaml'),
       `devices:
   pixel-7:
     avd: Pixel_7_API_34
@@ -255,7 +255,7 @@ describe('resolveProviderCredentials', () => {
       'credentials not found',
     )
     expect(() => resolveProviderCredentials('browserstack')).toThrow(
-      'agent-qa.local.yaml',
+      'etus-agent.local.yaml',
     )
   })
 

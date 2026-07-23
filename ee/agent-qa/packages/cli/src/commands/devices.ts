@@ -15,7 +15,7 @@ function formatStatus(
     return pc.green('Ready') + pc.dim(' (no local binding required)')
   }
   if (!localBinding) {
-    return pc.red('UNBOUND') + pc.yellow(' - run `agent-qa devices init`')
+    return pc.red('UNBOUND') + pc.yellow(' - run `etus-agent devices init`')
   }
   const keys = Object.entries(localBinding).slice(0, 2)
   const details = keys.map(([k, v]) => `${k}: ${v}`).join(', ')
@@ -129,10 +129,10 @@ function appendGitignoreEntry(dir: string, entry: string): void {
 
 async function initDevices(): Promise<void> {
   const dir = process.cwd()
-  const localFilePath = join(dir, 'agent-qa.local.yaml')
+  const localFilePath = join(dir, 'etus-agent.local.yaml')
 
   if (existsSync(localFilePath)) {
-    console.log(pc.yellow('agent-qa.local.yaml already exists. Skipping generation.'))
+    console.log(pc.yellow('etus-agent.local.yaml already exists. Skipping generation.'))
     return
   }
 
@@ -200,11 +200,11 @@ async function initDevices(): Promise<void> {
 
   writeFileSync(localFilePath, yamlContent)
 
-  appendGitignoreEntry(dir, 'agent-qa.local.yaml')
+  appendGitignoreEntry(dir, 'etus-agent.local.yaml')
 
   console.log('')
-  console.log(pc.green(`  Generated agent-qa.local.yaml with ${bindCount} device binding(s)`))
-  console.log(pc.dim('  Added agent-qa.local.yaml to .gitignore'))
+  console.log(pc.green(`  Generated etus-agent.local.yaml with ${bindCount} device binding(s)`))
+  console.log(pc.dim('  Added etus-agent.local.yaml to .gitignore'))
   console.log('')
 }
 

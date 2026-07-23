@@ -7,11 +7,11 @@ const { mockStartMcpServer, mockFlushAnalytics, mockResolveConfig } = vi.hoisted
   mockResolveConfig: vi.fn(),
 }))
 
-vi.mock('@etus/agent-qa-mcp', () => ({
+vi.mock('@etus/agent-mcp', () => ({
   startMcpServer: mockStartMcpServer,
 }))
 
-vi.mock('@etus/agent-qa-core', () => ({
+vi.mock('@etus/agent-core', () => ({
   flushAnalytics: mockFlushAnalytics,
 }))
 
@@ -55,7 +55,7 @@ describe('createMcpCommand', () => {
     const program = new Command()
     program.addCommand(createMcpCommand())
 
-    await program.parseAsync(['node', 'agent-qa', 'mcp'])
+    await program.parseAsync(['node', 'etus-agent', 'mcp'])
 
     expect(mockStartMcpServer).toHaveBeenCalledOnce()
     expect(mockStartMcpServer).toHaveBeenCalledWith({
@@ -71,7 +71,7 @@ describe('createMcpCommand', () => {
     const program = new Command()
     program.addCommand(createMcpCommand())
 
-    await program.parseAsync(['node', 'agent-qa', 'mcp'])
+    await program.parseAsync(['node', 'etus-agent', 'mcp'])
 
     expect(mockStartMcpServer).toHaveBeenCalledOnce()
     expect(mockFlushAnalytics).toHaveBeenCalledWith({ config: {} })
@@ -89,7 +89,7 @@ describe('createMcpCommand', () => {
     program.addCommand(cmd)
 
     try {
-      await program.parseAsync(['node', 'agent-qa', 'mcp', '--transport', 'http'])
+      await program.parseAsync(['node', 'etus-agent', 'mcp', '--transport', 'http'])
     } catch (err) {
       if ((err as Error).message !== 'process.exit') throw err
     }

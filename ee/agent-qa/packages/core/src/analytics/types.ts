@@ -1,15 +1,15 @@
 import type { AnalyticsAgentProduct, AnalyticsRuntimeContext } from './identity.js'
 
 export type AnalyticsEventName =
-  | 'agent-qa.analytics.initialized'
-  | 'agent-qa.analytics.test_event'
-  | 'agent-qa.test_run.completed'
-  | 'agent-qa.suite_run.completed'
-  | 'agent-qa.dashboard.opened'
-  | 'agent-qa.dashboard.live_mode.started'
-  | 'agent-qa.dashboard.entity.created'
-  | 'agent-qa.mcp.server.lifecycle'
-  | 'agent-qa.mcp.tool.invoked'
+  | 'etus-agent.analytics.initialized'
+  | 'etus-agent.analytics.test_event'
+  | 'etus-agent.test_run.completed'
+  | 'etus-agent.suite_run.completed'
+  | 'etus-agent.dashboard.opened'
+  | 'etus-agent.dashboard.live_mode.started'
+  | 'etus-agent.dashboard.entity.created'
+  | 'etus-agent.mcp.server.lifecycle'
+  | 'etus-agent.mcp.tool.invoked'
 
 export type AnalyticsSurface =
   | 'core'
@@ -21,7 +21,7 @@ export type AnalyticsSurface =
 export type AnalyticsTransportKind = 'posthog' | 'noop' | 'mock'
 
 export interface AnalyticsEventProperties {
-  agent_qa_version?: string
+  etus_agent_version?: string
   surface?: AnalyticsSurface
   runtime_context?: AnalyticsRuntimeContext
   agent_product?: AnalyticsAgentProduct

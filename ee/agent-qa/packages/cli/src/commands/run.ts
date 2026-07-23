@@ -3,26 +3,26 @@ import { resolve as resolvePath } from 'node:path'
 import { Command } from 'commander'
 import pc from 'picocolors'
 import { resolveConfig, mergeWithTestConfig, mergeUseBlocks, formatConfigDebug, loadEnvOverrides } from '../config.js'
-import { ATTR_RUNNER, ATTR_TRIGGER, AUTH_STATE_SCHEMA_VERSION, buildInternalRunAttributes, DEFAULT_AGENT_QA_ARTIFACTS_DIR, DEFAULT_AGENT_QA_CACHE_DIR, DEFAULT_AGENT_QA_VIDEOS_DIR, formatRunAttributesBlock, generateRunId, mergeRunAttributes, MobileSetupError, normalizeAuthStateUse, parseRunAttrFlags, redactAuthStateValue, resolveAuthStateForRun, resolveAuthStatePaths, resolveMemoryRoot, resolveMobileRunConfig, validateTrustedRunAttributes } from '@etus/agent-qa-core'
-import { discoverWorkspaceFiles, isWorkspacePathMatch, resolveWorkspaceFileTarget, resolveWorkspacePaths } from '@etus/agent-qa-core'
-import type { AgentQaConfig, AuthStateMetadata, NormalizedAuthStateUse, ResolvedAuthStateForRun, ResolvedAuthStatePaths, ResolvedMobileRunConfig, ResolvedWorkspacePaths, RunAttributes, RunAttributeRunner, RunAttributeTrigger, WorkspaceFileKind, WorkspaceFileRecord } from '@etus/agent-qa-core'
+import { ATTR_RUNNER, ATTR_TRIGGER, AUTH_STATE_SCHEMA_VERSION, buildInternalRunAttributes, DEFAULT_ETUS_AGENT_ARTIFACTS_DIR, DEFAULT_ETUS_AGENT_CACHE_DIR, DEFAULT_ETUS_AGENT_VIDEOS_DIR, formatRunAttributesBlock, generateRunId, mergeRunAttributes, MobileSetupError, normalizeAuthStateUse, parseRunAttrFlags, redactAuthStateValue, resolveAuthStateForRun, resolveAuthStatePaths, resolveMemoryRoot, resolveMobileRunConfig, validateTrustedRunAttributes } from '@etus/agent-core'
+import { discoverWorkspaceFiles, isWorkspacePathMatch, resolveWorkspaceFileTarget, resolveWorkspacePaths } from '@etus/agent-core'
+import type { AgentQaConfig, AuthStateMetadata, NormalizedAuthStateUse, ResolvedAuthStateForRun, ResolvedAuthStatePaths, ResolvedMobileRunConfig, ResolvedWorkspacePaths, RunAttributes, RunAttributeRunner, RunAttributeTrigger, WorkspaceFileKind, WorkspaceFileRecord } from '@etus/agent-core'
 import { resolveTarget, type ResolvedTarget } from '../targets.js'
 import { resolveDevice, loadLocalBindings, resolveProviderCredentials, type ResolvedDevice } from '../devices.js'
 import { applyResolvedAuthToModelConfig, resolveLLMModels, resolveModelAuth } from '../llm-utils.js'
 import { formatInstallBrowsersRetryCommand, type BrowserInstallSelection } from './install-browsers.js'
-import type { TestDefinition, TestResult, ParseError, PlatformAdapter, PlatformConfig, SuiteDefinition, SuiteResult, RunSuiteConfig, HookDefinition, SandboxRunnerOptions, SecretStore, SecretRedactor } from '@etus/agent-qa-core'
-import { isPathInsideDir } from '@etus/agent-qa-core'
+import type { TestDefinition, TestResult, ParseError, PlatformAdapter, PlatformConfig, SuiteDefinition, SuiteResult, RunSuiteConfig, HookDefinition, SandboxRunnerOptions, SecretStore, SecretRedactor } from '@etus/agent-core'
+import { isPathInsideDir } from '@etus/agent-core'
 import { printAgentQaUpdateNoticeIfNeeded, shouldPrintAgentQaUpdateNotice, type AgentQaUpdateNoticeContext } from '../version-notice.js'
 
-const RUNTIME_ARTIFACTS_DIR = DEFAULT_AGENT_QA_ARTIFACTS_DIR || '.agent-qa/artifacts'
-const RUNTIME_CACHE_DIR = DEFAULT_AGENT_QA_CACHE_DIR || '.agent-qa/cache'
-const RUNTIME_VIDEOS_DIR = DEFAULT_AGENT_QA_VIDEOS_DIR || '.agent-qa/artifacts/videos'
+const RUNTIME_ARTIFACTS_DIR = DEFAULT_ETUS_AGENT_ARTIFACTS_DIR || '.etus-agent/artifacts'
+const RUNTIME_CACHE_DIR = DEFAULT_ETUS_AGENT_CACHE_DIR || '.etus-agent/cache'
+const RUNTIME_VIDEOS_DIR = DEFAULT_ETUS_AGENT_VIDEOS_DIR || '.etus-agent/artifacts/videos'
 
-let _appiumManager: InstanceType<typeof import('@etus/agent-qa-dashboard').AppiumManager> | null = null
+let _appiumManager: InstanceType<typeof import('@etus/agent-dashboard').AppiumManager> | null = null
 
 async function acquireAppium(logLevel: string): Promise<string | undefined> {
-  if (process.env.AGENT_QA_APPIUM_URL) return process.env.AGENT_QA_APPIUM_URL
-  const { AppiumManager } = await import('@etus/agent-qa-dashboard')
+  if (process.env.ETUS_AGENT_APPIUM_URL) return process.env.ETUS_AGENT_APPIUM_URL
+  const { AppiumManager } = await import('@etus/agent-dashboard')
   if (!_appiumManager) {
     _appiumManager = new AppiumManager({
       logLevel: logLevel === 'debug' ? 'debug' : 'normal',
@@ -41,30 +41,30 @@ export async function createPlatformAdapter(
 ): Promise<PlatformAdapter> {
   if (platform === 'android') {
     try {
-      const { AndroidPlatformAdapter } = await import('@etus/agent-qa-android')
+      const { AndroidPlatformAdapter } = await import('@etus/agent-android')
       return new AndroidPlatformAdapter()
     } catch {
       throw new Error(
-        'Android adapter not available. Install @etus/agent-qa-android: pnpm add @etus/agent-qa-android',
+        'Android adapter not available. Install @etus/agent-android: pnpm add @etus/agent-android',
       )
     }
   }
   if (platform === 'ios') {
     try {
-      const { IOSPlatformAdapter } = await import('@etus/agent-qa-ios')
+      const { IOSPlatformAdapter } = await import('@etus/agent-ios')
       return new IOSPlatformAdapter()
     } catch {
       throw new Error(
-        'iOS adapter not available. Install @etus/agent-qa-ios: pnpm add @etus/agent-qa-ios',
+        'iOS adapter not available. Install @etus/agent-ios: pnpm add @etus/agent-ios',
       )
     }
   }
-  const { WebPlatformAdapter } = await import('@etus/agent-qa-web')
+  const { WebPlatformAdapter } = await import('@etus/agent-web')
   return new WebPlatformAdapter()
 }
 
 const runWebAccessibilityCheck: NonNullable<RunSuiteConfig['accessibilityCheck']> = async (page, options) => {
-  const { runAccessibilityCheck } = await import('@etus/agent-qa-web')
+  const { runAccessibilityCheck } = await import('@etus/agent-web')
   return runAccessibilityCheck(page as any, options)
 }
 
@@ -266,13 +266,13 @@ function buildCliRunAttributes(userAttributes: RunAttributes, runner: RunAttribu
 }
 
 function readRunAttributesFromEnv(): RunAttributes | undefined {
-  const raw = process.env.AGENT_QA_RUN_ATTRIBUTES_JSON
+  const raw = process.env.ETUS_AGENT_RUN_ATTRIBUTES_JSON
   if (!raw) return undefined
   let parsed: unknown
   try {
     parsed = JSON.parse(raw)
   } catch {
-    throw new Error('inherited run attributes: AGENT_QA_RUN_ATTRIBUTES_JSON must contain valid run attributes JSON')
+    throw new Error('inherited run attributes: ETUS_AGENT_RUN_ATTRIBUTES_JSON must contain valid run attributes JSON')
   }
   const attributes = validateTrustedRunAttributes(parsed, 'inherited run attributes')
   return Object.keys(attributes).length > 0 ? attributes : undefined
@@ -296,7 +296,7 @@ function resolveCliRunAttributes(
 }
 
 function writeRunAttributesToEnv(attributes: RunAttributes): void {
-  process.env.AGENT_QA_RUN_ATTRIBUTES_JSON = JSON.stringify(attributes)
+  process.env.ETUS_AGENT_RUN_ATTRIBUTES_JSON = JSON.stringify(attributes)
 }
 
 function printRunAttributes(attributes: RunAttributes | undefined): void {
@@ -306,7 +306,7 @@ function printRunAttributes(attributes: RunAttributes | undefined): void {
 }
 
 function resolveReporterSelection(opts: RunOptions, dashboardConfigured: boolean): { selection?: ReporterSelection; error?: string } {
-  const requiredDashboard = Boolean(process.env.AGENT_QA_RUN_ID || process.env.AGENT_QA_SUITE_QUEUE_ID)
+  const requiredDashboard = Boolean(process.env.ETUS_AGENT_RUN_ID || process.env.ETUS_AGENT_SUITE_QUEUE_ID)
   const requested = opts.reporter
     ?.flatMap((name) => name.split(','))
     .map((name) => name.trim())
@@ -317,7 +317,7 @@ function resolveReporterSelection(opts: RunOptions, dashboardConfigured: boolean
       selection: {
         console: true,
         junit: Boolean(opts.junitOutput),
-        stdoutLive: process.env.AGENT_QA_LIVE_EVENTS === 'true',
+        stdoutLive: process.env.ETUS_AGENT_LIVE_EVENTS === 'true',
         dashboard: dashboardConfigured || requiredDashboard,
       },
     }
@@ -412,11 +412,11 @@ function formatParseErrors(errors: ParseError[]): void {
 }
 
 function createTestRunId(): string {
-  return process.env.AGENT_QA_RUN_ID ?? generateRunId()
+  return process.env.ETUS_AGENT_RUN_ID ?? generateRunId()
 }
 
 function createSuiteRunId(): string {
-  return process.env.AGENT_QA_SUITE_QUEUE_ID ?? process.env.AGENT_QA_RUN_ID ?? generateRunId()
+  return process.env.ETUS_AGENT_SUITE_QUEUE_ID ?? process.env.ETUS_AGENT_RUN_ID ?? generateRunId()
 }
 
 function printRunId(runId: string | null | undefined): void {
@@ -529,7 +529,7 @@ async function loadRuntimeSecrets(input: {
 }): Promise<RuntimeSecretsContext> {
   const configuredSecretsFile = (input.config as any).workspace?.secretsFile
   if (typeof configuredSecretsFile !== 'string' || configuredSecretsFile.trim().length === 0) {
-    console.error(pc.red('Error: workspace.secretsFile is required. Run `agent-qa init` or set it in agent-qa.config.yaml.'))
+    console.error(pc.red('Error: workspace.secretsFile is required. Run `etus-agent init` or set it in etus-agent.config.yaml.'))
     process.exit(1)
   }
 
@@ -550,7 +550,7 @@ async function loadRuntimeSecrets(input: {
   }
 
   try {
-    const { SecretStore, SecretRedactor } = await import('@etus/agent-qa-core')
+    const { SecretStore, SecretRedactor } = await import('@etus/agent-core')
     const secretStore = SecretStore.fromEnvContent(secretsContent)
     return {
       secretStore,
@@ -648,7 +648,7 @@ export async function resolveDeviceAndFarmSession(
   }
 
   const credentials = resolveProviderCredentials(resolved.transport, localBindings)
-  const { getProvider, registerAllProviders } = await import('@etus/agent-qa-core')
+  const { getProvider, registerAllProviders } = await import('@etus/agent-core')
   registerAllProviders()
   const provider = getProvider(resolved.transport)
   if (!provider) {
@@ -810,7 +810,7 @@ async function captureAuthStateForRun(input: {
     name: input.paths.stateName,
     capturedAt,
   }
-  const { writeAuthStateFiles } = await import('@etus/agent-qa-core')
+  const { writeAuthStateFiles } = await import('@etus/agent-core')
   await writeAuthStateFiles(input.paths, { payload, metadata })
 
   return {
@@ -847,11 +847,11 @@ async function executeSuites(
   const { parseSuiteFile, parseTestFile, runSuite,
     createModel, getProviderOptions, LLMPlanner, LLMVerifier,
     ConsoleReporter, JUnitReporter, MultiReporter, createAnalyticsRunReporter,
-  } = await import('@etus/agent-qa-core')
+  } = await import('@etus/agent-core')
   const { readFile } = await import('node:fs/promises')
   const path = await import('node:path')
 
-  const configFilePath = globalOpts.config ?? 'agent-qa.config.yaml'
+  const configFilePath = globalOpts.config ?? 'etus-agent.config.yaml'
   const configDir = path.dirname(path.resolve(configFilePath))
 
   const suiteResults: SuiteResult[] = []
@@ -895,7 +895,7 @@ async function executeSuites(
   const createSuiteDashboardResources = async (): Promise<{ dashboardDb?: any; logStorage?: any }> => {
     if (!dashboardEnabled) return {}
     try {
-      const { DashboardDatabase, resolveDashboardDbPath } = await import('@etus/agent-qa-dashboard')
+      const { DashboardDatabase, resolveDashboardDbPath } = await import('@etus/agent-dashboard')
       const configuredDbPath = dashboardCfg?.dbPath as string | undefined
       const dashboardDb = new DashboardDatabase({
         dbPath: resolveDashboardDbPath({ configDir, configuredDbPath }),
@@ -960,7 +960,7 @@ async function executeSuites(
         const runId = createSuiteRunId()
         if (dashboardDb) {
           const now = new Date().toISOString()
-          const existingRunId = process.env.AGENT_QA_RUN_ID ?? process.env.AGENT_QA_SUITE_QUEUE_ID
+          const existingRunId = process.env.ETUS_AGENT_RUN_ID ?? process.env.ETUS_AGENT_SUITE_QUEUE_ID
           if (existingRunId) {
             dashboardDb.updateRun(existingRunId, {
               name: `Path traversal rejected in suite`,
@@ -1005,7 +1005,7 @@ async function executeSuites(
             const location = `${e.file}:${e.line}:${e.column}`
             errorLines.push(`${e.severity}: ${e.message}\n  --> ${location}`)
           }
-          const existingRunId = process.env.AGENT_QA_RUN_ID ?? process.env.AGENT_QA_SUITE_QUEUE_ID
+          const existingRunId = process.env.ETUS_AGENT_RUN_ID ?? process.env.ETUS_AGENT_SUITE_QUEUE_ID
           if (existingRunId) {
             dashboardDb.updateRun(existingRunId, {
               name: `Parse errors in suite "${suite.name}"`,
@@ -1040,7 +1040,7 @@ async function executeSuites(
         const runId = createSuiteRunId()
         if (dashboardDb) {
           const now = new Date().toISOString()
-          const existingRunId = process.env.AGENT_QA_RUN_ID ?? process.env.AGENT_QA_SUITE_QUEUE_ID
+          const existingRunId = process.env.ETUS_AGENT_RUN_ID ?? process.env.ETUS_AGENT_SUITE_QUEUE_ID
           if (existingRunId) {
             dashboardDb.updateRun(existingRunId, {
               name: `No test definition in suite "${suite.name}"`,
@@ -1084,7 +1084,7 @@ async function executeSuites(
         const runId = createSuiteRunId()
         if (dashboardDb) {
           const now = new Date().toISOString()
-          const existingRunId = process.env.AGENT_QA_RUN_ID ?? process.env.AGENT_QA_SUITE_QUEUE_ID
+          const existingRunId = process.env.ETUS_AGENT_RUN_ID ?? process.env.ETUS_AGENT_SUITE_QUEUE_ID
           if (existingRunId) {
             dashboardDb.updateRun(existingRunId, {
               name: `ID mismatch in suite "${suite.name}"`,
@@ -1191,7 +1191,7 @@ async function executeSuites(
         localBindings: suiteLocalBindings,
         configFilePath: path.resolve(configFilePath),
         localConfigFilePath: suiteLocalBindings?.filePath,
-        appiumUrl: process.env.AGENT_QA_APPIUM_URL,
+        appiumUrl: process.env.ETUS_AGENT_APPIUM_URL,
       })
       const resolved = await resolveDeviceAndFarmSession(
         config, mobileResolved.deviceName, suitePlatform,
@@ -1218,7 +1218,7 @@ async function executeSuites(
       try {
         const appiumUrl = await acquireAppium(effectiveLogLevel)
         if (mobileResolved) {
-          mobileResolved = { ...mobileResolved, appium: { url: appiumUrl, managed: !process.env.AGENT_QA_APPIUM_URL } }
+          mobileResolved = { ...mobileResolved, appium: { url: appiumUrl, managed: !process.env.ETUS_AGENT_APPIUM_URL } }
         }
       } catch (err) {
         throw new MobileSetupError({
@@ -1264,21 +1264,21 @@ async function executeSuites(
     const resolvedAuth = await resolveModelAuth(configName, plannerCfg)
     const plannerModelConfig = applyResolvedAuthToModelConfig(plannerCfg, resolvedAuth)
     const verifierModelConfig = applyResolvedAuthToModelConfig(verifierCfg, resolvedAuth)
-    process.env.AGENT_QA_LLM_MODEL = plannerCfg.model
-    process.env.AGENT_QA_LLM_PROVIDER = plannerCfg.provider
+    process.env.ETUS_AGENT_LLM_MODEL = plannerCfg.model
+    process.env.ETUS_AGENT_LLM_PROVIDER = plannerCfg.provider
 
     const plannerModel = await createModel(plannerModelConfig)
     const verifierModel = await createModel(verifierModelConfig)
 
     const providerOpts = getProviderOptions(plannerModelConfig)
 
-    const { LogManager } = await import('@etus/agent-qa-core')
+    const { LogManager } = await import('@etus/agent-core')
 
     const logger = new LogManager({
-      runId: process.env.AGENT_QA_RUN_ID || undefined,
+      runId: process.env.ETUS_AGENT_RUN_ID || undefined,
       displayLevel: effectiveLogLevel as any,
       storage: logStorage,
-      ndjson: process.env.AGENT_QA_LIVE_EVENTS === 'true',
+      ndjson: process.env.ETUS_AGENT_LIVE_EVENTS === 'true',
       redactor: variableContext?.secretRedactor,
     })
 
@@ -1301,7 +1301,7 @@ async function executeSuites(
     const planner = new LLMPlanner(plannerModel, suitePlatform, providerOpts, logger.createScopedLogger('planner'), suiteEffectiveRules || undefined)
     const verifier = new LLMVerifier(verifierModel, providerOpts)
 
-    const reporters: import('@etus/agent-qa-core').Reporter[] = []
+    const reporters: import('@etus/agent-core').Reporter[] = []
     if (reporterSelection.console) {
       reporters.push(new ConsoleReporter({ verbose: false, logLevel: effectiveLogLevel }))
     }
@@ -1309,12 +1309,12 @@ async function executeSuites(
       reporters.push(new JUnitReporter({ outputPath: opts.junitOutput }))
     }
     if (reporterSelection.stdoutLive) {
-      const { StdoutLiveReporter } = await import('@etus/agent-qa-core')
+      const { StdoutLiveReporter } = await import('@etus/agent-core')
       reporters.push(new StdoutLiveReporter({ active: true, redactor: variableContext?.secretRedactor }))
     }
     if (reporterSelection.dashboard && dashboardDb) {
       try {
-        const { DashboardReporter } = await import('@etus/agent-qa-dashboard')
+        const { DashboardReporter } = await import('@etus/agent-dashboard')
         const { resolve } = await import('node:path')
         const dashArtifactsDir = config.services?.dashboard?.artifactsDir ?? RUNTIME_ARTIFACTS_DIR
         reporters.push(new DashboardReporter({
@@ -1329,9 +1329,9 @@ async function executeSuites(
     reporters.push(analyticsReporter)
 
     // Wire action cache
-    let actionCache: import('@etus/agent-qa-core').ActionCache | undefined
+    let actionCache: import('@etus/agent-core').ActionCache | undefined
     if (opts.cache !== false) {
-      const { FileActionCache } = await import('@etus/agent-qa-core')
+      const { FileActionCache } = await import('@etus/agent-core')
       const { resolve } = await import('node:path')
       actionCache = new FileActionCache({
         dir: resolve(configDir, config.services?.cache?.dir ?? RUNTIME_CACHE_DIR),
@@ -1346,14 +1346,14 @@ async function executeSuites(
 
     const captureScreenshots = reporterSelection.dashboard || opts.screenshotMode === 'every-step' || Boolean(opts.screenshotDir)
 
-    let suiteMemoryProvider: import('@etus/agent-qa-core').MemoryProvider | undefined
-    let suiteCircuitBreaker: import('@etus/agent-qa-core').CircuitBreaker | undefined
+    let suiteMemoryProvider: import('@etus/agent-core').MemoryProvider | undefined
+    let suiteCircuitBreaker: import('@etus/agent-core').CircuitBreaker | undefined
     const suiteMemoryConfig = config.services?.memory
     const suiteMemoryRoot = resolveMemoryRoot(config, configDir)
 
     if (opts.memory !== false && suiteMemoryConfig?.enabled !== false) {
       try {
-        const { createMemoryProvider } = await import('@etus/agent-qa-core')
+        const { createMemoryProvider } = await import('@etus/agent-core')
         suiteMemoryProvider = await createMemoryProvider({
           provider: suiteMemoryConfig?.provider ?? 'local',
           memoryRoot: suiteMemoryRoot,
@@ -1364,7 +1364,7 @@ async function executeSuites(
       }
 
       if (suiteMemoryConfig?.circuitBreakerEnabled !== false) {
-        const { CircuitBreaker } = await import('@etus/agent-qa-core')
+        const { CircuitBreaker } = await import('@etus/agent-core')
         suiteCircuitBreaker = new CircuitBreaker({
           windowSize: suiteMemoryConfig?.circuitBreakerWindowSize,
           baselineSize: suiteMemoryConfig?.circuitBreakerBaselineSize,
@@ -1590,7 +1590,7 @@ export function createRunCommand(): Command {
         })
 
         // Read raw config file content for cache key scoping
-        const configFilePath = resolvePath(globalOpts.config ?? 'agent-qa.config.yaml')
+        const configFilePath = resolvePath(globalOpts.config ?? 'etus-agent.config.yaml')
         const workspacePaths = resolveWorkspacePaths({
           config,
           configPath: configFilePath,
@@ -1602,14 +1602,14 @@ export function createRunCommand(): Command {
         } catch { /* best-effort: resolveConfig already required the file */ }
 
         // Load variables from env file, config inline, and CLI flags
-        const { parseEnvFile } = await import('@etus/agent-qa-core')
+        const { parseEnvFile } = await import('@etus/agent-core')
         const { readFileSync, existsSync } = await import('node:fs')
         const configDir = workspacePaths.configDir
 
         const cliVars = parseVarFlags(opts.var)
-        const inheritedContextRunId = process.env.AGENT_QA_RUN_ID
-          ?? process.env.AGENT_QA_SUITE_QUEUE_ID
-          ?? process.env.AGENT_QA_PARENT_RUN_ID
+        const inheritedContextRunId = process.env.ETUS_AGENT_RUN_ID
+          ?? process.env.ETUS_AGENT_SUITE_QUEUE_ID
+          ?? process.env.ETUS_AGENT_PARENT_RUN_ID
         const inheritedRunAttributes = inheritedContextRunId
           ? readRunAttributesFromEnv()
           : undefined
@@ -1659,7 +1659,7 @@ export function createRunCommand(): Command {
           process.exit(1)
         }
         try {
-          const { parseHooksFile } = await import('@etus/agent-qa-core')
+          const { parseHooksFile } = await import('@etus/agent-core')
           const { hooks, errors } = await parseHooksFile(hooksFilePath)
           if (errors.length > 0) {
             console.error(pc.red('Hooks configuration errors:'))
@@ -1729,12 +1729,12 @@ export function createRunCommand(): Command {
             .map(record => record.absolutePath)
 
           if (discoveredTestFiles.length === 0 && discoveredSuiteFiles.length === 0) {
-            console.error(pc.red('Error: No test or suite files found. Check workspace.testMatch and workspace.suiteMatch in agent-qa.config.yaml'))
+            console.error(pc.red('Error: No test or suite files found. Check workspace.testMatch and workspace.suiteMatch in etus-agent.config.yaml'))
             process.exit(2)
           }
         } else {
           if (!workspacePaths.testMatch || workspacePaths.testMatch.length === 0) {
-            console.error(pc.red('Error: No testMatch patterns in config. Add workspace.testMatch to agent-qa.config.yaml.'))
+            console.error(pc.red('Error: No testMatch patterns in config. Add workspace.testMatch to etus-agent.config.yaml.'))
             process.exit(2)
           }
           discoveredTestFiles = (await discoverWorkspaceFiles({ workspace: workspacePaths, kind: 'test' }))
@@ -1757,7 +1757,7 @@ export function createRunCommand(): Command {
             await maybePrintPostRunUpdateNotice({
               reporterSelection: suiteReporterSelection,
               effectiveLogLevel,
-              liveEvents: process.env.AGENT_QA_LIVE_EVENTS,
+              liveEvents: process.env.ETUS_AGENT_LIVE_EVENTS,
               cwd: process.cwd(),
             })
           }
@@ -1794,7 +1794,7 @@ export function createRunCommand(): Command {
         let currentRunId: string | undefined
         if (dashboardEnabled) {
           try {
-            const { DashboardDatabase, resolveDashboardDbPath } = await import('@etus/agent-qa-dashboard')
+            const { DashboardDatabase, resolveDashboardDbPath } = await import('@etus/agent-dashboard')
             const configuredDbPath = dashboardCfg2?.dbPath as string | undefined
             dashboardDb = new DashboardDatabase({
               dbPath: resolveDashboardDbPath({ configDir, configuredDbPath }),
@@ -1806,7 +1806,7 @@ export function createRunCommand(): Command {
           }
         }
 
-        const { parseAllTests, formatParseError } = await import('@etus/agent-qa-core')
+        const { parseAllTests, formatParseError } = await import('@etus/agent-core')
         const parseResult = await parseAllTests(files)
 
         if (parseResult.errors.length > 0) {
@@ -1831,7 +1831,7 @@ export function createRunCommand(): Command {
               if (resolvedTarget?.platform) detectedPlatform = resolvedTarget.platform
             }
             const testName = nameMatch ? nameMatch[1].trim().replace(/^['"]|['"]$/g, '') : basename(files[0], '.yaml')
-            const existingRunId = process.env.AGENT_QA_RUN_ID
+            const existingRunId = process.env.ETUS_AGENT_RUN_ID
             let artifactRunId: string
             if (existingRunId) {
               dashboardDb.updateRun(existingRunId, {
@@ -1929,14 +1929,14 @@ export function createRunCommand(): Command {
         const {
           createModel, getProviderOptions, LLMPlanner, LLMVerifier, runTestWithRetry,
           ConsoleReporter, JUnitReporter, MultiReporter, createAnalyticsRunReporter,
-        } = await import('@etus/agent-qa-core')
+        } = await import('@etus/agent-core')
 
         const recordingEnabled = opts.record ?? config.services?.recording?.enabled ?? false
 
         // Wire action cache from config (logger wired after LogManager creation below)
-        let actionCache: import('@etus/agent-qa-core').ActionCache | undefined
+        let actionCache: import('@etus/agent-core').ActionCache | undefined
 
-        const reporters: import('@etus/agent-qa-core').Reporter[] = []
+        const reporters: import('@etus/agent-core').Reporter[] = []
         if (reporterSelection.console) {
           reporters.push(new ConsoleReporter({ verbose: false, logLevel: effectiveLogLevel }))
         }
@@ -1945,17 +1945,17 @@ export function createRunCommand(): Command {
         }
 
         if (reporterSelection.stdoutLive) {
-          const { StdoutLiveReporter } = await import('@etus/agent-qa-core')
+          const { StdoutLiveReporter } = await import('@etus/agent-core')
           reporters.push(new StdoutLiveReporter({ active: true, redactor: runtimeSecrets.secretRedactor }))
         }
 
         const captureScreenshots = reporterSelection.dashboard || opts.screenshotMode === 'every-step' || Boolean(opts.screenshotDir)
 
         // Wire DashboardReporter (DB already created above before parse step)
-        const { LogManager } = await import('@etus/agent-qa-core')
+        const { LogManager } = await import('@etus/agent-core')
         if (reporterSelection.dashboard && dashboardDb) {
           try {
-            const { DashboardReporter } = await import('@etus/agent-qa-dashboard')
+            const { DashboardReporter } = await import('@etus/agent-dashboard')
             const { resolve } = await import('node:path')
             const dashArtifactsDir = config.services?.dashboard?.artifactsDir ?? RUNTIME_ARTIFACTS_DIR
             reporters.push(new DashboardReporter({
@@ -1972,16 +1972,16 @@ export function createRunCommand(): Command {
         reporters.push(analyticsReporter)
 
         const logger = new LogManager({
-          runId: process.env.AGENT_QA_RUN_ID || undefined,
+          runId: process.env.ETUS_AGENT_RUN_ID || undefined,
           displayLevel: effectiveLogLevel as any,
           storage: logStorage,
-          ndjson: process.env.AGENT_QA_LIVE_EVENTS === 'true',
+          ndjson: process.env.ETUS_AGENT_LIVE_EVENTS === 'true',
           redactor: runtimeSecrets.secretRedactor,
         })
 
         // Wire action cache with logger (skip when --no-cache)
         if (opts.cache !== false) {
-          const { FileActionCache } = await import('@etus/agent-qa-core')
+          const { FileActionCache } = await import('@etus/agent-core')
           const { resolve } = await import('node:path')
           actionCache = new FileActionCache({
             dir: resolve(configDir, config.services?.cache?.dir ?? RUNTIME_CACHE_DIR),
@@ -1997,12 +1997,12 @@ export function createRunCommand(): Command {
 
         const results: TestResult[] = []
 
-        let circuitBreaker: import('@etus/agent-qa-core').CircuitBreaker | undefined
+        let circuitBreaker: import('@etus/agent-core').CircuitBreaker | undefined
         let circuitBreakerTripped = false
         const memoryGlobalConfig = config.services?.memory
         const runtimeMemoryRoot = resolveMemoryRoot(config, configDir)
         if (opts.memory !== false && memoryGlobalConfig?.circuitBreakerEnabled !== false && memoryGlobalConfig?.enabled !== false) {
-          const { CircuitBreaker } = await import('@etus/agent-qa-core')
+          const { CircuitBreaker } = await import('@etus/agent-core')
           circuitBreaker = new CircuitBreaker({
             windowSize: memoryGlobalConfig?.circuitBreakerWindowSize,
             baselineSize: memoryGlobalConfig?.circuitBreakerBaselineSize,
@@ -2016,7 +2016,7 @@ export function createRunCommand(): Command {
         const runOneDirectTest = async (test: TestDefinition): Promise<DirectTestOutcome> => {
           let currentPlatform: 'web' | 'android' | 'ios' | null = null
           let currentAdapterKey: string | null = null
-          let adapter: import('@etus/agent-qa-core').PlatformAdapter | null = null
+          let adapter: import('@etus/agent-core').PlatformAdapter | null = null
           let analyticsRunId: string | undefined
           let analyticsFilePath = 'unknown'
           let analyticsPlatform: 'web' | 'android' | 'ios' | undefined
@@ -2046,7 +2046,7 @@ export function createRunCommand(): Command {
           ) ?? 'unknown'
           analyticsFilePath = filePath
 
-          const runId = process.env.AGENT_QA_RUN_ID ?? generateRunId()
+          const runId = process.env.ETUS_AGENT_RUN_ID ?? generateRunId()
           analyticsRunId = runId
           analyticsStartedAt = Date.now()
           currentRunId = runId
@@ -2124,7 +2124,7 @@ export function createRunCommand(): Command {
               localBindings: testLocalBindings,
               configFilePath: resolvePath(configFilePath),
               localConfigFilePath: testLocalBindings?.filePath,
-              appiumUrl: process.env.AGENT_QA_APPIUM_URL,
+              appiumUrl: process.env.ETUS_AGENT_APPIUM_URL,
             })
             analyticsAppState = testMobileResolved.appState
             const resolved = await resolveDeviceAndFarmSession(
@@ -2168,7 +2168,7 @@ export function createRunCommand(): Command {
                 try {
                   const appiumUrl = await acquireAppium(effectiveLogLevel)
                   if (testMobileResolved) {
-                    testMobileResolved = { ...testMobileResolved, appium: { url: appiumUrl, managed: !process.env.AGENT_QA_APPIUM_URL } }
+                    testMobileResolved = { ...testMobileResolved, appium: { url: appiumUrl, managed: !process.env.ETUS_AGENT_APPIUM_URL } }
                   }
                 } catch (err) {
                   throw new MobileSetupError({
@@ -2224,8 +2224,8 @@ export function createRunCommand(): Command {
             const resolvedAuth = await resolveModelAuth(configName, plannerCfg)
             const plannerModelConfig = applyResolvedAuthToModelConfig(plannerCfg, resolvedAuth)
             const verifierModelConfig = applyResolvedAuthToModelConfig(verifierCfg, resolvedAuth)
-            process.env.AGENT_QA_LLM_MODEL = plannerCfg.model
-            process.env.AGENT_QA_LLM_PROVIDER = plannerCfg.provider
+            process.env.ETUS_AGENT_LLM_MODEL = plannerCfg.model
+            process.env.ETUS_AGENT_LLM_PROVIDER = plannerCfg.provider
             if (effectiveLogLevel === 'debug') {
               console.log(pc.dim(`  Model: ${plannerCfg.model} (${plannerCfg.provider})`))
             }
@@ -2261,7 +2261,7 @@ export function createRunCommand(): Command {
             }
 
             // Per-test recording override: meta.record takes priority over global
-            let testRecording: import('@etus/agent-qa-core').PlatformConfig['recording'] | undefined
+            let testRecording: import('@etus/agent-core').PlatformConfig['recording'] | undefined
             const testRecordMeta = (testDef.meta as any)?.record
             if (testRecordMeta === true || recordingEnabled) {
               const recCfg2 = config.services?.recording as Record<string, unknown> | undefined
@@ -2332,7 +2332,7 @@ export function createRunCommand(): Command {
             let testStartTime = Date.now()
             let setupHookFailed = false
             if (resolvedHooks && authAwareSandboxOptions && (testDef as any).setup?.length) {
-              const { runHooks } = await import('@etus/agent-qa-core')
+              const { runHooks } = await import('@etus/agent-core')
               const hookDefs: HookDefinition[] = []
               let hookSetupError: string | undefined
               for (const hookId of (testDef as any).setup) {
@@ -2396,13 +2396,13 @@ export function createRunCommand(): Command {
             }
 
             // Memory provider setup (best-effort)
-            let memoryProvider: import('@etus/agent-qa-core').MemoryProvider | undefined
-            let memoryInitParams: import('@etus/agent-qa-core').MemoryIndexParams | undefined
+            let memoryProvider: import('@etus/agent-core').MemoryProvider | undefined
+            let memoryInitParams: import('@etus/agent-core').MemoryIndexParams | undefined
             const memoryConfig = config.services?.memory
             let memoryRoot: string | undefined
             if (opts.memory !== false && memoryConfig?.enabled !== false) {
               try {
-                const { createMemoryProvider } = await import('@etus/agent-qa-core')
+                const { createMemoryProvider } = await import('@etus/agent-core')
                 memoryRoot = runtimeMemoryRoot
                 memoryProvider = await createMemoryProvider({
                   provider: memoryConfig?.provider ?? 'local',
@@ -2480,7 +2480,7 @@ export function createRunCommand(): Command {
 
             // Per-test teardown hooks: run AFTER test execution (D-01, D-03)
             if (resolvedHooks && teardownSandboxOptions && (testDef as any).teardown?.length) {
-              const { runHooks } = await import('@etus/agent-qa-core')
+              const { runHooks } = await import('@etus/agent-core')
               for (const hookId of (testDef as any).teardown) {
                 const hook = resolvedHooks.get(hookId)
                 if (!hook) continue
@@ -2537,7 +2537,7 @@ export function createRunCommand(): Command {
             const authStateCaptureFailed = result.metadata?.phase === 'auth-state-capture'
             if (memoryProvider && memoryConfig?.ablationEnabled !== false && result.status === 'failed' && !authStateCaptureFailed) {
               try {
-                const { shouldAblate, collectAllInjectedIds, deprecateOnFailure } = await import('@etus/agent-qa-core')
+                const { shouldAblate, collectAllInjectedIds, deprecateOnFailure } = await import('@etus/agent-core')
                 if (shouldAblate(result, memoryProvider)) {
                   console.log(`  ${pc.dim('Memory:')} ablation retry -- re-running without memory...`)
                   const ablationAdapter = await createPlatformAdapter(testPlatform)
@@ -2614,7 +2614,7 @@ export function createRunCommand(): Command {
             // Memory curator: inline blocking after teardown hooks (D-02)
             if (memoryProvider && memoryConfig?.curatorEnabled !== false && !ablationHandledDeprecation) {
               try {
-                const { runCurator } = await import('@etus/agent-qa-core')
+                const { runCurator } = await import('@etus/agent-core')
                 const injectedObservationIds = new Map<number, string[]>()
                 for (let i = 0; i < result.steps.length; i++) {
                   const ids = memoryProvider.getInjectedObservations(i)
@@ -2664,7 +2664,7 @@ export function createRunCommand(): Command {
 
             // Post-run cache invalidation: delete all step cache entries for failed runs
             if (result.status === 'failed' && !authStateCaptureFailed && actionCache && effectiveCacheEnabled && result.steps.length > 0) {
-              const { hashStepInstruction } = await import('@etus/agent-qa-core')
+              const { hashStepInstruction } = await import('@etus/agent-core')
               const { rm } = await import('node:fs/promises')
               const { resolve, join } = await import('node:path')
               const cacheDir = resolve(configDir, config.services?.cache?.dir ?? RUNTIME_CACHE_DIR)
@@ -2791,7 +2791,7 @@ export function createRunCommand(): Command {
         await maybePrintPostRunUpdateNotice({
           reporterSelection,
           effectiveLogLevel,
-          liveEvents: process.env.AGENT_QA_LIVE_EVENTS,
+          liveEvents: process.env.ETUS_AGENT_LIVE_EVENTS,
           cwd: process.cwd(),
         })
         process.exit(exitCode)

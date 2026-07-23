@@ -57,7 +57,7 @@ export function buildBrowserInstallArgs(selection: BrowserInstallSelection): str
 }
 
 export function formatInstallBrowsersRetryCommand(selection: BrowserInstallSelection): string {
-  const args = ['agent-qa', 'install-browsers']
+  const args = ['etus-agent', 'install-browsers']
 
   if (selection.all) {
     args.push('--all')
@@ -75,7 +75,7 @@ export function formatInstallBrowsersRetryCommand(selection: BrowserInstallSelec
 
 export function resolvePlaywrightCoreCli(): string {
   const require = createRequire(import.meta.url)
-  const webEntry = require.resolve('@etus/agent-qa-web')
+  const webEntry = require.resolve('@etus/agent-web')
   const webRequire = createRequire(webEntry)
   const packagePath = webRequire.resolve('playwright-core/package.json')
 

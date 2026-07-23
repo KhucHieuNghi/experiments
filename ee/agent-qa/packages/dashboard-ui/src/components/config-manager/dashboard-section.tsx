@@ -78,7 +78,7 @@ export function DashboardSection({ config, onConfigChange }: DashboardSectionPro
           <Label htmlFor="dashboard-db-path">Database Path</Label>
           <Input
             id="dashboard-db-path"
-            placeholder=".agent-qa/runs.db"
+            placeholder=".etus-agent/runs.db"
             value={dbPath}
             onChange={(e) => setDbPath(e.target.value)}
           />
@@ -88,7 +88,7 @@ export function DashboardSection({ config, onConfigChange }: DashboardSectionPro
           <Label htmlFor="dashboard-artifacts-dir">Artifacts Directory</Label>
           <Input
             id="dashboard-artifacts-dir"
-            placeholder=".agent-qa/artifacts"
+            placeholder=".etus-agent/artifacts"
             value={artifactsDir}
             onChange={(e) => setArtifactsDir(e.target.value)}
           />

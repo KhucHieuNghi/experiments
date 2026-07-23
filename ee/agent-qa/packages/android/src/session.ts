@@ -1,5 +1,5 @@
 import { remote } from 'webdriverio'
-import { MobileSetupError } from '@etus/agent-qa-core'
+import { MobileSetupError } from '@etus/agent-core'
 import type { AndroidAdapterConfig } from './types.js'
 
 export async function createAndroidSession(
@@ -7,7 +7,7 @@ export async function createAndroidSession(
   farmSession?: { hostname: string; port: number; path: string; capabilities: Record<string, unknown> },
 ) {
   const match = config.device?.match ?? {}
-  const appiumUrl = process.env.AGENT_QA_APPIUM_URL ?? config.appiumUrl ?? 'http://localhost:4723'
+  const appiumUrl = process.env.ETUS_AGENT_APPIUM_URL ?? config.appiumUrl ?? 'http://localhost:4723'
   const url = new URL(appiumUrl)
 
   const browserName = config.browserName ?? (match.browserName as string | undefined)

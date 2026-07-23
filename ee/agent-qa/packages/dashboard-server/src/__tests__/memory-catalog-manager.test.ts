@@ -33,11 +33,11 @@ afterEach(async () => {
 })
 
 async function createWorkspace(options: { memoryDir?: string } = {}) {
-  const dir = await mkdtemp(join(tmpdir(), 'agent-qa-memory-catalog-'))
+  const dir = await mkdtemp(join(tmpdir(), 'etus-agent-memory-catalog-'))
   tempDirs.push(dir)
-  const memoryDir = options.memoryDir ?? 'agent-qa-memory'
+  const memoryDir = options.memoryDir ?? 'etus-agent-memory'
 
-  const configPath = join(dir, 'agent-qa.config.yaml')
+  const configPath = join(dir, 'etus-agent.config.yaml')
   await writeFile(
     configPath,
     [
@@ -240,7 +240,7 @@ async function writeObservation(
   scope: string,
   observationId: string,
   data: Record<string, unknown>,
-  memoryDir = 'agent-qa-memory',
+  memoryDir = 'etus-agent-memory',
 ) {
   const dir = join(root, memoryDir, tier, scope)
   await mkdir(dir, { recursive: true })
@@ -273,7 +273,7 @@ async function writeLegacyTitlelessObservation(
   scope: string,
   observationId: string,
   data: Record<string, unknown>,
-  memoryDir = 'agent-qa-memory',
+  memoryDir = 'etus-agent-memory',
 ) {
   const dir = join(root, memoryDir, tier, scope)
   await mkdir(dir, { recursive: true })
@@ -337,7 +337,7 @@ describe('MemoryCatalogManager', () => {
   })
 
   it('reads observations from configured services.memory.dir and ignores the default memory root', async () => {
-    const { configManager, configPath, workspaceDir } = await createWorkspace({ memoryDir: '.agent-qa/custom-memory' })
+    const { configManager, configPath, workspaceDir } = await createWorkspace({ memoryDir: '.etus-agent/custom-memory' })
     await writeObservation(workspaceDir, 'products', PRODUCT_ALPHA, OBS_CUSTOM_ONLY, {
       title: 'Default root should not leak into custom catalog',
       content: 'This default-root observation should be ignored.',

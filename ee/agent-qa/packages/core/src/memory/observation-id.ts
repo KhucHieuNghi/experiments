@@ -1,1 +1,1 @@
-export { generateObservationId } from '@etus/agent-qa-ids'
+export { generateObservationId } from '@etus/agent-ids'

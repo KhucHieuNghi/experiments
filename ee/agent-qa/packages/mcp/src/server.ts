@@ -3,8 +3,8 @@ import {
   buildAnalyticsEvent,
   captureAnalytics,
   resolveAnalyticsStandardProperties,
-} from '@etus/agent-qa-core'
-import { createAgentQaMcpServer, type AgentQaMcpServerOptions } from './agent-qa-server.js'
+} from '@etus/agent-core'
+import { createAgentQaMcpServer, type AgentQaMcpServerOptions } from './etus-agent-server.js'
 
 export const MCP_STDIO_STARTUP_MESSAGE =
   'ETUS MCP server running over stdio. Waiting for MCP client messages on stdin. Stdout is reserved for MCP protocol traffic.'
@@ -32,7 +32,7 @@ export async function startMcpServer(options: StartMcpServerOptions = {}): Promi
       const standardProperties = options.analyticsStandardProperties
         ?? await resolveAnalyticsStandardProperties({ surface: 'mcp' })
       const event = buildAnalyticsEvent({
-        name: 'agent-qa.mcp.server.lifecycle',
+        name: 'etus-agent.mcp.server.lifecycle',
         properties: {
           ...standardProperties,
           surface: standardProperties.surface ?? 'mcp',

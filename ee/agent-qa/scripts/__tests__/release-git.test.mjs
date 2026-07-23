@@ -14,7 +14,7 @@ import { publicPackageNames } from '../release/packages.mjs'
 
 function writePackageFixture(rootDir, version = '0.1.1') {
   for (const name of publicPackageNames) {
-    const dirName = name === 'agent-qa' ? 'cli' : name.replace('@etus/agent-qa-', '')
+    const dirName = name === 'etus-agent' ? 'cli' : name.replace('@etus/agent-', '')
     const dir = join(rootDir, 'packages', dirName)
     mkdirSync(dir, { recursive: true })
     writeFileSync(join(dir, 'package.json'), JSON.stringify({ name, version, private: false }, null, 2))
@@ -54,8 +54,8 @@ test('creates deterministic release commit and annotated tag without git push', 
     ['git', ['config', 'user.name', 'github-actions[bot]']],
     ['git', ['config', 'user.email', '41898282+github-actions[bot]@users.noreply.github.com']],
     ['git', ['add', '--', 'packages/*/package.json']],
-    ['git', ['commit', '-m', 'release: agent-qa v0.1.1']],
-    ['git', ['tag', '-a', 'v0.1.1', '-m', 'agent-qa v0.1.1']],
+    ['git', ['commit', '-m', 'release: etus-agent v0.1.1']],
+    ['git', ['tag', '-a', 'v0.1.1', '-m', 'etus-agent v0.1.1']],
   ])
   assert.equal(JSON.stringify(calls).includes('git push'), false)
 })
@@ -64,7 +64,7 @@ test('parses and dispatches node scripts/release/git.mjs --commit-tag', async ()
   assert.deepEqual(parseGitArgs(['--commit-tag']), { mode: 'commit-tag' })
   assert.throws(() => parseGitArgs(['--commit-tag', '--push']), /invalid args/)
 
-  const fixtureRoot = await mkdtemp(join(tmpdir(), 'agent-qa-release-git-'))
+  const fixtureRoot = await mkdtemp(join(tmpdir(), 'etus-agent-release-git-'))
   try {
     writePackageFixture(fixtureRoot)
     const calls = []
@@ -74,14 +74,14 @@ test('parses and dispatches node scripts/release/git.mjs --commit-tag', async ()
     })
 
     assert.equal(calls.some(([cmd, args]) => cmd === 'git' && args.includes('push')), false)
-    assert.deepEqual(calls.at(-1), ['git', ['tag', '-a', 'v0.1.1', '-m', 'agent-qa v0.1.1']])
+    assert.deepEqual(calls.at(-1), ['git', ['tag', '-a', 'v0.1.1', '-m', 'etus-agent v0.1.1']])
   } finally {
     await rm(fixtureRoot, { recursive: true, force: true })
   }
 })
 
 test('fails commit-tag dispatch when shared version state is missing', async () => {
-  const fixtureRoot = await mkdtemp(join(tmpdir(), 'agent-qa-release-git-missing-'))
+  const fixtureRoot = await mkdtemp(join(tmpdir(), 'etus-agent-release-git-missing-'))
   try {
     await assert.rejects(runGitCli(['--commit-tag'], { rootDir: fixtureRoot, execFileSync: () => {} }), /public package/)
   } finally {

@@ -6,7 +6,7 @@ import {
   discoverWorkspaceFiles,
   resolveWorkspacePaths,
   type WorkspaceFileRecord,
-} from '@etus/agent-qa-core'
+} from '@etus/agent-core'
 import { parse as parseYaml } from 'yaml'
 
 import type { HookDeleteReference } from './hook-registry-types.js'

@@ -210,7 +210,7 @@ describe("AppSidebar", () => {
 
   function expectNoPrivateHelpCopy(surface: string) {
     const forbiddenCopy = [
-      "agent-qa.config.yaml",
+      "etus-agent.config.yaml",
       "file://",
       "http://localhost",
       "local logs",

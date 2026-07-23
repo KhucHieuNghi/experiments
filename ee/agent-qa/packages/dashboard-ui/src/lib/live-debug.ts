@@ -12,7 +12,7 @@ export function isLiveDebugEnabled(): boolean {
   }
 
   try {
-    return window.localStorage.getItem("agent-qa:live-debug") === "1"
+    return window.localStorage.getItem("etus-agent:live-debug") === "1"
   } catch {
     return false
   }
@@ -27,7 +27,7 @@ export function logLiveDebug(
     return
   }
 
-  const prefix = `[agent-qa live:${scope}] ${event}`
+  const prefix = `[etus-agent live:${scope}] ${event}`
   if (details) {
     console.info(prefix, details)
     return

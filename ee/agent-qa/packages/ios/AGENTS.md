@@ -1,4 +1,4 @@
-# ETUS package instructions: @etus/agent-qa-ios
+# ETUS package instructions: @etus/agent-ios
 
 Inherit the root ETUS branding, security, and release rules.
 
@@ -17,9 +17,9 @@ XCUITest capabilities, and iOS mobile action execution.
 
 ## Commands
 
-- Test: `pnpm --filter @etus/agent-qa-ios test`
-- Typecheck: `pnpm --filter @etus/agent-qa-ios typecheck`
-- Build: `pnpm --filter @etus/agent-qa-ios build`
+- Test: `pnpm --filter @etus/agent-ios test`
+- Typecheck: `pnpm --filter @etus/agent-ios typecheck`
+- Build: `pnpm --filter @etus/agent-ios build`
 
 ## Local Rules
 
@@ -36,6 +36,6 @@ XCUITest capabilities, and iOS mobile action execution.
 Run focused package checks:
 
 ```bash
-pnpm --filter @etus/agent-qa-ios test
-pnpm --filter @etus/agent-qa-ios typecheck
+pnpm --filter @etus/agent-ios test
+pnpm --filter @etus/agent-ios typecheck
 ```

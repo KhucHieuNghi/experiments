@@ -6,7 +6,7 @@ import { AutomationSchema, type AutomationDefinition } from './schema.js'
 export class AutomationLoader {
   private dir: string
 
-  constructor(dir = '.agent-qa/automations') {
+  constructor(dir = '.etus-agent/automations') {
     this.dir = dir
   }
 

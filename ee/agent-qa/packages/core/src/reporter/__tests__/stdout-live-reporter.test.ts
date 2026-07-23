@@ -30,8 +30,8 @@ function makeResult(overrides: Partial<TestResult> = {}): TestResult {
 function parseEvents(writeSpy: ReturnType<typeof vi.spyOn>): Array<Record<string, unknown>> {
   return (writeSpy.mock.calls as unknown[][])
     .map((call: unknown[]) => String(call[0]))
-    .filter((line: string) => line.startsWith('AGENT_QA_EVENT:'))
-    .map((line: string) => JSON.parse(line.slice('AGENT_QA_EVENT:'.length)))
+    .filter((line: string) => line.startsWith('ETUS_AGENT_EVENT:'))
+    .map((line: string) => JSON.parse(line.slice('ETUS_AGENT_EVENT:'.length)))
 }
 
 describe('StdoutLiveReporter', () => {
@@ -44,18 +44,18 @@ describe('StdoutLiveReporter', () => {
   afterEach(() => {
     writeSpy.mockRestore()
     vi.useRealTimers()
-    delete process.env.AGENT_QA_LIVE_EVENTS
-    delete process.env.AGENT_QA_PARENT_RUN_ID
-    delete process.env.AGENT_QA_ATTEMPT_NUMBER
-    delete process.env.AGENT_QA_MAX_RETRIES
+    delete process.env.ETUS_AGENT_LIVE_EVENTS
+    delete process.env.ETUS_AGENT_PARENT_RUN_ID
+    delete process.env.ETUS_AGENT_ATTEMPT_NUMBER
+    delete process.env.ETUS_AGENT_MAX_RETRIES
   })
 
   it('emits run ID on live start, heartbeat, retry, and completion events', () => {
     vi.useFakeTimers()
-    process.env.AGENT_QA_LIVE_EVENTS = 'true'
-    process.env.AGENT_QA_PARENT_RUN_ID = 'r_parent'
-    process.env.AGENT_QA_ATTEMPT_NUMBER = '2'
-    process.env.AGENT_QA_MAX_RETRIES = '3'
+    process.env.ETUS_AGENT_LIVE_EVENTS = 'true'
+    process.env.ETUS_AGENT_PARENT_RUN_ID = 'r_parent'
+    process.env.ETUS_AGENT_ATTEMPT_NUMBER = '2'
+    process.env.ETUS_AGENT_MAX_RETRIES = '3'
     const reporter = new StdoutLiveReporter()
 
     reporter.onTestStart(makeTest(), '/tests/login.yaml', { runId: RUN_ID })
@@ -72,7 +72,7 @@ describe('StdoutLiveReporter', () => {
   })
 
   it('emits transient step, subaction, hook, and suite identity on live events', () => {
-    process.env.AGENT_QA_LIVE_EVENTS = 'true'
+    process.env.ETUS_AGENT_LIVE_EVENTS = 'true'
     const reporter = new StdoutLiveReporter()
     const context = {
       runId: RUN_ID,
@@ -187,7 +187,7 @@ describe('StdoutLiveReporter', () => {
   })
 
   it('omits run ID when no context or result run ID exists', () => {
-    process.env.AGENT_QA_LIVE_EVENTS = 'true'
+    process.env.ETUS_AGENT_LIVE_EVENTS = 'true'
     const reporter = new StdoutLiveReporter()
 
     reporter.onTestStart(makeTest(), '/tests/login.yaml')
@@ -199,7 +199,7 @@ describe('StdoutLiveReporter', () => {
   })
 
   it('redacts secrets from emitted step, hook, and completion events', () => {
-    process.env.AGENT_QA_LIVE_EVENTS = 'true'
+    process.env.ETUS_AGENT_LIVE_EVENTS = 'true'
     const rawSecret = 'phase222-raw-secret-SHOULD-NOT-PERSIST-4f03b7'
     const redactor = new SecretRedactor(new SecretStore({ loginPassword: rawSecret }))
     const reporter = new StdoutLiveReporter({ redactor })

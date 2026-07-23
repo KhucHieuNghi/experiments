@@ -3,7 +3,7 @@ import { exec } from 'node:child_process'
 import pc from 'picocolors'
 import input from '@inquirer/input'
 import password from '@inquirer/password'
-import type { LLMAuthProviderPlugin, OAuthTokens } from '@etus/agent-qa-core'
+import type { LLMAuthProviderPlugin, OAuthTokens } from '@etus/agent-core'
 
 type ProviderMode =
   | 'openai-compatible'
@@ -74,7 +74,7 @@ function getGlobalConfigPath(command: Command): string | undefined {
 
 function printCredentialGuidance(configName: string, provider: string): void {
   console.log(pc.red(`Config ${configName} uses ${providerLabel(provider)} credentials.`))
-  console.log(pc.dim('Use agent-qa auth set --config <name> --type api-key'))
+  console.log(pc.dim('Use etus-agent auth set --config <name> --type api-key'))
   if (provider === 'anthropic-compatible') {
     console.log(pc.dim('or --type bearer-token'))
   }
@@ -153,12 +153,12 @@ function printMissingSubscriptionPluginGuidance(configName: string, provider: Su
   console.log(pc.dim(`Config: ${configName}`))
   console.log(pc.dim(`Provider: ${provider}`))
   console.log(pc.dim('Add the subscription auth plugin to package.json and install with your package manager:'))
-  console.log(pc.dim('  "devDependencies": { "@etus/agent-qa-subscription-auth": "<ETUS version>" }'))
-  console.log(pc.dim('Declare it in agent-qa.config.yaml under plugins.auth:'))
+  console.log(pc.dim('  "devDependencies": { "@etus/agent-subscription-auth": "<ETUS version>" }'))
+  console.log(pc.dim('Declare it in etus-agent.config.yaml under plugins.auth:'))
   console.log(pc.dim('  plugins:'))
   console.log(pc.dim('    auth:'))
-  console.log(pc.dim('      - package: @etus/agent-qa-subscription-auth'))
-  console.log(pc.dim('Then authenticate from agent-qa dashboard or rerun this command.'))
+  console.log(pc.dim('      - package: @etus/agent-subscription-auth'))
+  console.log(pc.dim('Then authenticate from etus-agent dashboard or rerun this command.'))
 }
 
 async function readTokensFromPlugin(
@@ -172,7 +172,7 @@ async function readTokensFromPlugin(
 
   if (plugin.dashboardAuth.mode === 'manual-code') {
     if (!plugin.exchangeCode) {
-      console.log(pc.red(`Provider "${provider}" does not support CLI code exchange. Use agent-qa dashboard.`))
+      console.log(pc.red(`Provider "${provider}" does not support CLI code exchange. Use etus-agent dashboard.`))
       process.exitCode = 1
       return null
     }
@@ -185,13 +185,13 @@ async function readTokensFromPlugin(
     return await plugin.exchangeCode({ code, sessionState: started.sessionState })
   }
 
-  console.log(pc.red(`Provider "${provider}" does not support CLI auth login. Use agent-qa dashboard.`))
+  console.log(pc.red(`Provider "${provider}" does not support CLI auth login. Use etus-agent dashboard.`))
   process.exitCode = 1
   return null
 }
 
 async function runSubscriptionPluginLogin(configName: string, provider: SubscriptionProvider): Promise<void> {
-  const { getLLMAuthProviderPlugin, writeAuth } = await import('@etus/agent-qa-core')
+  const { getLLMAuthProviderPlugin, writeAuth } = await import('@etus/agent-core')
   const plugin = getLLMAuthProviderPlugin(provider)
 
   if (!plugin) {
@@ -201,7 +201,7 @@ async function runSubscriptionPluginLogin(configName: string, provider: Subscrip
   }
 
   if (!plugin.startAuth) {
-    console.log(pc.red(`Provider "${provider}" does not support CLI auth login. Use agent-qa dashboard.`))
+    console.log(pc.red(`Provider "${provider}" does not support CLI auth login. Use etus-agent dashboard.`))
     process.exitCode = 1
     return
   }
@@ -319,7 +319,7 @@ export function createAuthCommand(): Command {
           return
         }
 
-        const { writeAuth } = await import('@etus/agent-qa-core') as unknown as {
+        const { writeAuth } = await import('@etus/agent-core') as unknown as {
           writeAuth: (configName: string, credential: Record<string, unknown>) => Promise<void>
         }
         if (credentialType === 'bearer-token') {
@@ -338,7 +338,7 @@ export function createAuthCommand(): Command {
       .action(async function (this: Command) {
         const { loadAuthPluginsForRawConfig, resolveModelAuth } = await import('../llm-utils.js')
         const { loadConfigFile } = await import('../config.js')
-        const configPath = getGlobalConfigPath(this) ?? 'agent-qa.config.yaml'
+        const configPath = getGlobalConfigPath(this) ?? 'etus-agent.config.yaml'
 
         console.log(pc.bold('Auth status:\n'))
 
@@ -379,7 +379,7 @@ export function createAuthCommand(): Command {
       .description('Remove stored credentials for a named config')
       .option('--config <name>', 'named LLM config to log out from')
       .action(async (opts: { config?: string }, command: Command) => {
-        const { removeAuth } = await import('@etus/agent-qa-core')
+        const { removeAuth } = await import('@etus/agent-core')
         const { resolveNamedConfig } = await import('../llm-utils.js')
         const configPath = getGlobalConfigPath(command)
 
@@ -439,7 +439,7 @@ export function createAuthCommand(): Command {
           console.log(pc.dim(auth.message))
         }
 
-        const { createModel, getProviderOptions } = await import('@etus/agent-qa-core')
+        const { createModel, getProviderOptions } = await import('@etus/agent-core')
         const { generateText } = await import('ai')
 
         const modelConfig = applyAuthToModelConfig(planner, auth)

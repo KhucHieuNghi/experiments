@@ -21,7 +21,7 @@ function stagedRecord(name, rootDir) {
 }
 
 test('creates trusted-publishing npm publish commands for every staged package', async () => {
-  const rootDir = await mkdtemp(join(tmpdir(), 'agent-qa-release-publish-cmds-'))
+  const rootDir = await mkdtemp(join(tmpdir(), 'etus-agent-release-publish-cmds-'))
   try {
     const stagedRecords = publicPackageNames.map(name => stagedRecord(name, rootDir))
     const commands = createPublishCommands({ stagedRecords, version: '0.1.1' })
@@ -54,7 +54,7 @@ test('requires GitHub OIDC trusted-publishing environment and rejects token path
 })
 
 test('publishes from explicit .release/staged-packages and never source package directories', async () => {
-  const rootDir = await mkdtemp(join(tmpdir(), 'agent-qa-release-publish-'))
+  const rootDir = await mkdtemp(join(tmpdir(), 'etus-agent-release-publish-'))
   try {
     const stagedDir = join(rootDir, '.release/staged-packages')
     for (const name of publicPackageNames) stagedRecord(name, stagedDir)
@@ -81,7 +81,7 @@ test('parses and dispatches node scripts/release/publish.mjs --staged-dir .relea
   assert.throws(() => parsePublishArgs([]), /missing --staged-dir/)
   assert.throws(() => parsePublishArgs(['--staged-dir', '.release/staged-packages', '--bad']), /invalid args/)
 
-  const rootDir = await mkdtemp(join(tmpdir(), 'agent-qa-release-publish-cli-'))
+  const rootDir = await mkdtemp(join(tmpdir(), 'etus-agent-release-publish-cli-'))
   try {
     const stagedDir = join(rootDir, '.release/staged-packages')
     for (const name of publicPackageNames) stagedRecord(name, stagedDir)

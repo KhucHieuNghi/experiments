@@ -57,7 +57,7 @@ async function createManagerWorkspace(
   configPath: string
   manager: HookRegistryManager
 }> {
-  const dir = await mkdtemp(join(tmpdir(), 'agent-qa-hook-manager-'))
+  const dir = await mkdtemp(join(tmpdir(), 'etus-agent-hook-manager-'))
   tempDirs.push(dir)
 
   const normalizedConfigContent = withRequiredWorkspaceConfig(configContent)

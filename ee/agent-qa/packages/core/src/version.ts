@@ -15,8 +15,8 @@ function readPackageVersion(): string {
   return '0.0.0'
 }
 
-export const AGENT_QA_VERSION = readPackageVersion()
+export const ETUS_AGENT_VERSION = readPackageVersion()
 
 export function getAgentQaVersion(): string {
-  return AGENT_QA_VERSION
+  return ETUS_AGENT_VERSION
 }

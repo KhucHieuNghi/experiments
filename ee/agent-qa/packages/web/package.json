@@ -1,5 +1,5 @@
 {
-  "name": "@etus/agent-qa-web",
+  "name": "@etus/agent-web",
   "version": "0.1.21",
   "private": false,
   "description": "ETUS web adapter for browser automation and accessibility checks.",
@@ -50,7 +50,7 @@
   },
   "dependencies": {
     "@axe-core/playwright": "4.11.3",
-    "@etus/agent-qa-core": "workspace:*",
+    "@etus/agent-core": "workspace:*",
     "playwright-core": "1.59.1"
   },
   "devDependencies": {

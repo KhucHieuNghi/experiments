@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { parse as parseYaml } from 'yaml'
 import { z } from 'zod'
-import type { AgentQaConfig } from '@etus/agent-qa-core'
+import type { AgentQaConfig } from '@etus/agent-core'
 
 const LocalAppBindingSchema = z.object({
   path: z.string().optional(),
@@ -56,7 +56,7 @@ export function formatTransportProvider(transport?: string | null): string {
 }
 
 export function loadLocalBindings(dir?: string): LocalDeviceBindings | null {
-  const filePath = join(dir ?? process.cwd(), 'agent-qa.local.yaml')
+  const filePath = join(dir ?? process.cwd(), 'etus-agent.local.yaml')
   let content: string
   try {
     content = readFileSync(filePath, 'utf-8')
@@ -91,7 +91,7 @@ export function resolveDevice(
 
   if (profile.transport === 'local' && !localMatch) {
     throw new Error(
-      `Device '${deviceName}' has transport: local but no binding found in agent-qa.local.yaml. Run \`agent-qa devices init\` to generate local bindings.`,
+      `Device '${deviceName}' has transport: local but no binding found in etus-agent.local.yaml. Run \`etus-agent devices init\` to generate local bindings.`,
     )
   }
 
@@ -127,6 +127,6 @@ export function resolveProviderCredentials(
 
   const displayName = DISPLAY_NAMES[transport] ?? transport
   throw new Error(
-    `${displayName} credentials not found. Set ${envKeys.username} and ${envKeys.accessKey} env vars, or add provider credentials to agent-qa.local.yaml.`,
+    `${displayName} credentials not found. Set ${envKeys.username} and ${envKeys.accessKey} env vars, or add provider credentials to etus-agent.local.yaml.`,
   )
 }

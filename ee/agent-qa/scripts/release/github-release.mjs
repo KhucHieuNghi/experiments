@@ -56,7 +56,7 @@ export function parseGithubReleaseArgs(argv = [], options = {}) {
 export function buildReleaseFooter() {
   return [
     '---',
-    'npm package: https://www.npmjs.com/package/agent-qa',
+    'npm package: https://www.npmjs.com/package/etus-agent',
     'Docker images: https://hub.docker.com/u/etus',
     'Docs: https://www.onpoint.vn',
     'Update: update the ETUS dev dependency in your project with your package manager.',
@@ -81,7 +81,7 @@ export function generateReleaseNotes({ version, repo }, options = {}) {
   ], ghOptions(options))
   const parsed = JSON.parse(output)
   return {
-    title: `agent-qa ${tag}`,
+    title: `etus-agent ${tag}`,
     body: parsed.body ?? '',
   }
 }
@@ -108,7 +108,7 @@ export function publishGithubRelease({ version, repo }, options = {}) {
   const mkdtempSync = options.mkdtempSync ?? defaultMkdtempSync
   const writeFileSync = options.writeFileSync ?? defaultWriteFileSync
   const rmSync = options.rmSync ?? defaultRmSync
-  const tempDir = mkdtempSync(join(options.tempRoot ?? tmpdir(), 'agent-qa-github-release-'))
+  const tempDir = mkdtempSync(join(options.tempRoot ?? tmpdir(), 'etus-agent-github-release-'))
   const notesPath = join(tempDir, `${tag}-notes.md`)
 
   try {

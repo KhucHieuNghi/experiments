@@ -652,7 +652,7 @@ export default function RunDetailPage() {
       m: () => openArtifactDrawer("memory"),
       r: () => {
         if (!run) return
-        const wasLocal = run.attributes["agent-qa.runner"] === "local"
+        const wasLocal = run.attributes["etus-agent.runner"] === "local"
         triggerRun({ file: run.filePath ?? run.name, local: wasLocal })
           .then((result) => {
             toast.success("Re-run started")

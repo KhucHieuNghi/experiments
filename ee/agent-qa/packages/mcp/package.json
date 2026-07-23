@@ -1,5 +1,5 @@
 {
-  "name": "@etus/agent-qa-mcp",
+  "name": "@etus/agent-mcp",
   "version": "0.1.21",
   "private": false,
   "description": "Model Context Protocol server and tools for ETUS authoring and triage.",
@@ -49,8 +49,8 @@
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "1.29.0",
-    "@etus/agent-qa-core": "workspace:*",
-    "@etus/agent-qa-ids": "workspace:*",
+    "@etus/agent-core": "workspace:*",
+    "@etus/agent-ids": "workspace:*",
     "glob": "13.0.6",
     "yaml": "2.8.4",
     "zod": "4.4.2"

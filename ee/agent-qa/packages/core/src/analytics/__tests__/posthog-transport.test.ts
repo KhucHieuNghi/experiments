@@ -21,14 +21,14 @@ describe('PostHog analytics transport', () => {
     transport.capture({
       distinctId: 'u_external',
       event: buildAnalyticsEvent({
-        name: 'agent-qa.analytics.test_event',
+        name: 'etus-agent.analytics.test_event',
         properties: { surface: 'core', runtime_context: 'user' },
       }),
     })
 
     expect(client.capture).toHaveBeenCalledWith(expect.objectContaining({
       distinctId: 'u_external',
-      event: 'agent-qa.analytics.test_event',
+      event: 'etus-agent.analytics.test_event',
       properties: expect.objectContaining({
         surface: 'core',
         runtime_context: 'user',
@@ -50,14 +50,14 @@ describe('PostHog analytics transport', () => {
       distinctId: 'u_internal',
       isInternal: true,
       event: buildAnalyticsEvent({
-        name: 'agent-qa.analytics.test_event',
+        name: 'etus-agent.analytics.test_event',
         properties: { surface: 'core', runtime_context: 'user' },
       }),
     })
 
     expect(client.capture).toHaveBeenCalledWith(expect.objectContaining({
       distinctId: 'u_internal',
-      event: 'agent-qa.analytics.test_event',
+      event: 'etus-agent.analytics.test_event',
       properties: expect.objectContaining({
         surface: 'core',
         runtime_context: 'user',

@@ -1,8 +1,8 @@
 import { copyFile, mkdir, readFile, rename, unlink, writeFile } from 'node:fs/promises'
 import { basename, dirname, isAbsolute, join, relative, resolve } from 'node:path'
-import { buildInternalRunAttributes, redactAuthStateValue, validateTrustedRunAttributes } from '@etus/agent-qa-core'
-import type { Reporter, RunArtifactReporterContext, RunSummary, TestDefinition, StepResult, TestResult, SuiteDefinition, SuiteSummary, HookEvent, HookResultEvent, SecretRedactor } from '@etus/agent-qa-core'
-import type { RunAttributes } from '@etus/agent-qa-core'
+import { buildInternalRunAttributes, redactAuthStateValue, validateTrustedRunAttributes } from '@etus/agent-core'
+import type { Reporter, RunArtifactReporterContext, RunSummary, TestDefinition, StepResult, TestResult, SuiteDefinition, SuiteSummary, HookEvent, HookResultEvent, SecretRedactor } from '@etus/agent-core'
+import type { RunAttributes } from '@etus/agent-core'
 import type { DashboardDatabase } from '../db/database.js'
 
 function isPathInside(rootDir: string, candidatePath: string): boolean {
@@ -143,7 +143,7 @@ export class DashboardReporter implements Reporter {
 
   constructor({
     db,
-    artifactsDir = '.agent-qa/artifacts',
+    artifactsDir = '.etus-agent/artifacts',
     onRunCreated,
     redactor,
   }: {
@@ -193,7 +193,7 @@ export class DashboardReporter implements Reporter {
   }
 
   private readAttributesFromEnv(): RunAttributes | null {
-    const raw = process.env.AGENT_QA_RUN_ATTRIBUTES_JSON
+    const raw = process.env.ETUS_AGENT_RUN_ATTRIBUTES_JSON
     if (!raw) return null
     try {
       return readAttributesRecord(JSON.parse(raw))
@@ -235,7 +235,7 @@ export class DashboardReporter implements Reporter {
     const suiteId = (suite as any)['suite-id'] ?? null
     const safeSuite = this.redactValue(suite)
     this.currentSuiteId = suiteId
-    const requestedRunId = context?.runId ?? process.env.AGENT_QA_SUITE_QUEUE_ID
+    const requestedRunId = context?.runId ?? process.env.ETUS_AGENT_SUITE_QUEUE_ID
     const existingSuiteRun = requestedRunId ? this.db.getRun(requestedRunId) : null
     const attributes = this.resolveAttributes(context, existingSuiteRun)
     const platform = resolveRunPlatform(suite, context) ?? 'web'
@@ -328,8 +328,8 @@ export class DashboardReporter implements Reporter {
     const existingStateRunId = this.executionKeyToRunId.get(executionKey)
     if (existingStateRunId && this.runIdToState.has(existingStateRunId)) return
 
-    const modelName = process.env.AGENT_QA_LLM_MODEL ?? undefined
-    const llmProvider = process.env.AGENT_QA_LLM_PROVIDER ?? undefined
+    const modelName = process.env.ETUS_AGENT_LLM_MODEL ?? undefined
+    const llmProvider = process.env.ETUS_AGENT_LLM_PROVIDER ?? undefined
 
     // Insert a 'running' row immediately so the run is visible even if the
     // process is killed before onTestEnd fires (e.g. SIGKILL on cancel).
@@ -345,8 +345,8 @@ export class DashboardReporter implements Reporter {
     const safeTestFileContent = this.redactString(testFileContent)
     const safeTestMeta = this.redactValue(safeTest.meta as Record<string, unknown> | undefined)
 
-    const parentRunId = context?.parentRunId ?? process.env.AGENT_QA_PARENT_RUN_ID
-    const existingRunId = context?.runId ?? process.env.AGENT_QA_RUN_ID
+    const parentRunId = context?.parentRunId ?? process.env.ETUS_AGENT_PARENT_RUN_ID
+    const existingRunId = context?.runId ?? process.env.ETUS_AGENT_RUN_ID
     const existingRun = existingRunId ? this.db.getRun(existingRunId) : null
     const attributeContext = parentRunId && context?.parentRunId !== parentRunId
       ? { ...context, parentRunId }
@@ -356,8 +356,8 @@ export class DashboardReporter implements Reporter {
 
     if (parentRunId) {
       // Retry attempt — always INSERT a new child run linked to the parent
-      const attemptNumber = parseInt(process.env.AGENT_QA_ATTEMPT_NUMBER ?? '1', 10)
-      const maxRetries = parseInt(process.env.AGENT_QA_MAX_RETRIES ?? '0', 10)
+      const attemptNumber = parseInt(process.env.ETUS_AGENT_ATTEMPT_NUMBER ?? '1', 10)
+      const maxRetries = parseInt(process.env.ETUS_AGENT_MAX_RETRIES ?? '0', 10)
       runId = this.db.insertRun({
         id: existingRunId,
         name: safeTest.name,
@@ -532,13 +532,13 @@ export class DashboardReporter implements Reporter {
     } else {
       // Fallback: onTestStart was never called (programmatic usage).
       // Insert the run directly with the final result.
-      const modelName = process.env.AGENT_QA_LLM_MODEL ?? undefined
-      const llmProvider = process.env.AGENT_QA_LLM_PROVIDER ?? undefined
+      const modelName = process.env.ETUS_AGENT_LLM_MODEL ?? undefined
+      const llmProvider = process.env.ETUS_AGENT_LLM_PROVIDER ?? undefined
       const resultMetadata = isRecord(safeResult.metadata) ? safeResult.metadata : undefined
       const resultAttributes = readAttributesRecord(resultMetadata?.attributes)
       const attributes = resultAttributes ?? this.resolveAttributes()
       fallbackResultAttributes = attributes
-      const fallbackRunId = process.env.AGENT_QA_RUN_ID || undefined
+      const fallbackRunId = process.env.ETUS_AGENT_RUN_ID || undefined
 
       let testFileContent: string | undefined
       if (result.filePath) {
@@ -911,7 +911,7 @@ export class DashboardReporter implements Reporter {
     })
 
     if (safeStep.trace?.tokenUsage && (safeStep.trace.tokenUsage.promptTokens > 0 || safeStep.trace.tokenUsage.completionTokens > 0)) {
-      const modelName = process.env.AGENT_QA_LLM_MODEL ?? 'unknown'
+      const modelName = process.env.ETUS_AGENT_LLM_MODEL ?? 'unknown'
       this.db.insertTokenEvent({
         modelName,
         promptTokens: safeStep.trace.tokenUsage.promptTokens,

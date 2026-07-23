@@ -4,7 +4,7 @@ import { join } from 'node:path'
 import { Command } from 'commander'
 import { parse as parseYaml } from 'yaml'
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { isCanonicalSuiteId } from '@etus/agent-qa-ids'
+import { isCanonicalSuiteId } from '@etus/agent-ids'
 import { createCreateSuiteCommand } from '../commands/create-suite.js'
 
 const tempDirs: string[] = []
@@ -25,7 +25,7 @@ async function runCreateSuite(outputPath: string): Promise<void> {
 
 describe('create-suite command', () => {
   it('writes a canonical 10-word suite-id into new YAML files', async () => {
-    const rootDir = await mkdtemp(join(tmpdir(), 'agent-qa-create-suite-'))
+    const rootDir = await mkdtemp(join(tmpdir(), 'etus-agent-create-suite-'))
     tempDirs.push(rootDir)
     const suitePath = join(rootDir, 'tests', 'smoke.suite.yaml')
 

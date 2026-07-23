@@ -1,9 +1,9 @@
 import { existsSync, mkdirSync, renameSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
-import { DEFAULT_AGENT_QA_RUNS_DB_PATH, LEGACY_AGENT_QA_DASHBOARD_DB_PATH } from '@etus/agent-qa-core'
+import { DEFAULT_ETUS_AGENT_RUNS_DB_PATH, LEGACY_ETUS_AGENT_DASHBOARD_DB_PATH } from '@etus/agent-core'
 
-const RUNS_DB_PATH_FALLBACK = DEFAULT_AGENT_QA_RUNS_DB_PATH || '.agent-qa/runs.db'
-const LEGACY_DB_PATH_FALLBACK = LEGACY_AGENT_QA_DASHBOARD_DB_PATH || '.agent-qa/dashboard.db'
+const RUNS_DB_PATH_FALLBACK = DEFAULT_ETUS_AGENT_RUNS_DB_PATH || '.etus-agent/runs.db'
+const LEGACY_DB_PATH_FALLBACK = LEGACY_ETUS_AGENT_DASHBOARD_DB_PATH || '.etus-agent/dashboard.db'
 
 export interface ResolveDashboardDbPathOptions {
   configDir: string

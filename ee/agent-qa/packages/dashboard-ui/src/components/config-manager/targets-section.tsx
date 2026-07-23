@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react"
 import { Loader2, Pencil, Plus, Trash2 } from "lucide-react"
 import { toast } from "sonner"
-import { selectApprovedSaasPlaceholderSlug } from "@etus/agent-qa-ids"
+import { selectApprovedSaasPlaceholderSlug } from "@etus/agent-ids"
 
 import { updateSettings } from "@/lib/api"
 import {

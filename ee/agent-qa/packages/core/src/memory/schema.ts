@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { isCanonicalObservationId, isObservationId } from '@etus/agent-qa-ids'
+import { isCanonicalObservationId, isObservationId } from '@etus/agent-ids'
 
 const ObservationIdSchema = z.string().refine((value) => isObservationId(value), {
   message: 'Observation ID must be obs_ followed by either 10 canonical words or a legacy 6-word body',

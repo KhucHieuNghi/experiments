@@ -66,7 +66,7 @@ async function readProjectFile(relativePath: string): Promise<string> {
 function analyticsRelatedLines(source: string): string {
   return source
     .split('\n')
-    .filter((line) => line.includes('trackDashboard') || line.includes('agent-qa.dashboard'))
+    .filter((line) => line.includes('trackDashboard') || line.includes('etus-agent.dashboard'))
     .join('\n')
 }
 
@@ -96,7 +96,7 @@ describe('dashboard analytics browser helper', () => {
     expect(sendBeacon).toHaveBeenCalledTimes(1)
     expect(sendBeacon).toHaveBeenCalledWith('/api/analytics/events', expect.any(Blob))
     await expect(readBeaconPayload(sendBeacon)).resolves.toEqual({
-      name: 'agent-qa.dashboard.opened',
+      name: 'etus-agent.dashboard.opened',
       properties: {},
     })
   })
@@ -109,14 +109,14 @@ describe('dashboard analytics browser helper', () => {
     trackDashboardLiveModeStarted({ platform: 'desktop', entityType: 'run' })
 
     await expect(readBeaconPayload(sendBeacon, 0)).resolves.toEqual({
-      name: 'agent-qa.dashboard.live_mode.started',
+      name: 'etus-agent.dashboard.live_mode.started',
       properties: {
         platform: 'android',
         entity_type: 'test',
       },
     })
     await expect(readBeaconPayload(sendBeacon, 1)).resolves.toEqual({
-      name: 'agent-qa.dashboard.live_mode.started',
+      name: 'etus-agent.dashboard.live_mode.started',
       properties: {
         platform: 'unknown',
         entity_type: 'unknown',
@@ -131,7 +131,7 @@ describe('dashboard analytics browser helper', () => {
     trackDashboardEntityCreated('hook')
 
     await expect(readBeaconPayload(sendBeacon)).resolves.toEqual({
-      name: 'agent-qa.dashboard.entity.created',
+      name: 'etus-agent.dashboard.entity.created',
       properties: {
         entity_type: 'hook',
         outcome: 'created',
@@ -155,7 +155,7 @@ describe('dashboard analytics browser helper', () => {
       body: expect.any(String),
     })
     expect(readFetchPayload(fetchMock)).toEqual({
-      name: 'agent-qa.dashboard.live_mode.started',
+      name: 'etus-agent.dashboard.live_mode.started',
       properties: {
         platform: 'ios',
         entity_type: 'suite',
@@ -199,9 +199,9 @@ describe('dashboard analytics browser helper', () => {
       sendBeacon.mock.calls.map(async ([, blob]) => await (blob as Blob).text()),
     )
 
-    expect(serializedPayloads.join('\n')).toContain('agent-qa.dashboard.opened')
-    expect(serializedPayloads.join('\n')).toContain('agent-qa.dashboard.live_mode.started')
-    expect(serializedPayloads.join('\n')).toContain('agent-qa.dashboard.entity.created')
+    expect(serializedPayloads.join('\n')).toContain('etus-agent.dashboard.opened')
+    expect(serializedPayloads.join('\n')).toContain('etus-agent.dashboard.live_mode.started')
+    expect(serializedPayloads.join('\n')).toContain('etus-agent.dashboard.entity.created')
     for (const field of forbiddenPayloadFields) {
       expect(serializedPayloads.join('\n')).not.toContain(field)
     }
@@ -247,15 +247,15 @@ describe('dashboard analytics browser helper', () => {
     }
 
     const dashboardEventNames = Array.from(new Set(
-      analyticsSource.match(/agent-qa\.dashboard\.[a-z_.]+/g) ?? [],
+      analyticsSource.match(/etus-agent\.dashboard\.[a-z_.]+/g) ?? [],
     )).sort()
     expect(dashboardEventNames).toEqual([
-      'agent-qa.dashboard.entity.created',
-      'agent-qa.dashboard.live_mode.started',
-      'agent-qa.dashboard.opened',
+      'etus-agent.dashboard.entity.created',
+      'etus-agent.dashboard.live_mode.started',
+      'etus-agent.dashboard.opened',
     ])
-    expect(analyticsSource).not.toContain('agent-qa.dashboard.route')
-    expect(analyticsSource).not.toContain('agent-qa.dashboard.page')
+    expect(analyticsSource).not.toContain('etus-agent.dashboard.route')
+    expect(analyticsSource).not.toContain('etus-agent.dashboard.page')
     expect(analyticsSource).not.toContain('route.viewed')
     expect(analyticsSource).not.toContain('page.accessed')
   })

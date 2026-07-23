@@ -1,8 +1,8 @@
 export type RunAttributes = Record<string, string>
 
-export const INTERNAL_ATTRIBUTE_PREFIX = 'agent-qa.'
-export const ATTR_TRIGGER = 'agent-qa.trigger'
-export const ATTR_RUNNER = 'agent-qa.runner'
+export const INTERNAL_ATTRIBUTE_PREFIX = 'etus-agent.'
+export const ATTR_TRIGGER = 'etus-agent.trigger'
+export const ATTR_RUNNER = 'etus-agent.runner'
 
 export type RunAttributeTrigger = 'cli' | 'dashboard' | 'api' | 'mcp'
 export type RunAttributeRunner = 'local' | 'browserstack'

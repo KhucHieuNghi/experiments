@@ -1,5 +1,5 @@
 {
-  "name": "@etus/agent-qa-dashboard",
+  "name": "@etus/agent-dashboard",
   "version": "0.1.21",
   "private": false,
   "description": "ETUS local dashboard server, APIs, run queue, and artifact services.",
@@ -48,12 +48,12 @@
     "clean": "rm -rf dist .turbo"
   },
   "dependencies": {
-    "@etus/agent-qa-android": "workspace:*",
-    "@etus/agent-qa-core": "workspace:*",
-    "@etus/agent-qa-ids": "workspace:*",
-    "@etus/agent-qa-ios": "workspace:*",
-    "@etus/agent-qa-mcp": "workspace:*",
-    "@etus/agent-qa-web": "workspace:*",
+    "@etus/agent-android": "workspace:*",
+    "@etus/agent-core": "workspace:*",
+    "@etus/agent-ids": "workspace:*",
+    "@etus/agent-ios": "workspace:*",
+    "@etus/agent-mcp": "workspace:*",
+    "@etus/agent-web": "workspace:*",
     "ai": "6.0.174",
     "better-sqlite3": "12.9.0",
     "id-agent": "1.0.3",

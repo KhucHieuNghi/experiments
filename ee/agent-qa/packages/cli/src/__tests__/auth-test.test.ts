@@ -21,7 +21,7 @@ vi.mock('@inquirer/select', () => ({
   default: vi.fn(() => Promise.resolve('anthropic-subscription')),
 }))
 
-vi.mock('@etus/agent-qa-core', () => ({
+vi.mock('@etus/agent-core', () => ({
   createModel: vi.fn(() => ({})),
   getProviderOptions: vi.fn(() => undefined),
   getCredential: vi.fn(() => null),
@@ -97,7 +97,7 @@ import {
   getLLMAuthProviderPlugin,
   removeAuth,
   writeAuth,
-} from '@etus/agent-qa-core'
+} from '@etus/agent-core'
 import { exec } from 'node:child_process'
 import input from '@inquirer/input'
 import password from '@inquirer/password'
@@ -139,7 +139,7 @@ async function runAuthCommandWithRealRoot(args: string[] = []): Promise<void> {
   const parent = new Command()
   parent.exitOverride()
   parent.enablePositionalOptions()
-  parent.option('--config <path>', 'config file path', 'agent-qa.config.yaml')
+  parent.option('--config <path>', 'config file path', 'etus-agent.config.yaml')
   const auth = createAuthCommand()
   auth.exitOverride()
   parent.addCommand(auth)
@@ -251,11 +251,11 @@ describe('auth provider mode contract', () => {
       })
 
     await expect(runAuthCommand(['login', '--config', 'remote-anthropic'])).resolves.toBeUndefined()
-    expect(getOutput()).toContain('agent-qa auth set --config <name> --type api-key')
+    expect(getOutput()).toContain('etus-agent auth set --config <name> --type api-key')
     expect(getOutput()).toContain('--type bearer-token')
 
     await expect(runAuthCommand(['login', '--config', 'gemini-fast'])).resolves.toBeUndefined()
-    expect(getOutput()).toContain('agent-qa auth set --config <name> --type api-key')
+    expect(getOutput()).toContain('etus-agent auth set --config <name> --type api-key')
     expect(getOutput()).not.toContain(['openai', 'codex'].join('-'))
   })
 
@@ -274,16 +274,16 @@ describe('auth provider mode contract', () => {
 
     await expect(runAuthCommand(['login', '--config', 'codex'])).resolves.toBeUndefined()
     expect(getOutput()).toContain('Provider "openai-subscription" is configured for "codex", but no auth plugin is registered.')
-    expect(getOutput()).toContain('"devDependencies": { "@etus/agent-qa-subscription-auth": "<ETUS version>" }')
+    expect(getOutput()).toContain('"devDependencies": { "@etus/agent-subscription-auth": "<ETUS version>" }')
     expect(getOutput()).toContain('plugins.auth')
-    expect(getOutput()).toContain('agent-qa dashboard')
+    expect(getOutput()).toContain('etus-agent dashboard')
     expect(getOutput()).not.toContain('requires an auth plugin')
 
     await expect(runAuthCommand(['login', '--config', 'claude'])).resolves.toBeUndefined()
     expect(getOutput()).toContain('Provider "anthropic-subscription" is configured for "claude", but no auth plugin is registered.')
-    expect(getOutput()).toContain('"devDependencies": { "@etus/agent-qa-subscription-auth": "<ETUS version>" }')
+    expect(getOutput()).toContain('"devDependencies": { "@etus/agent-subscription-auth": "<ETUS version>" }')
     expect(getOutput()).toContain('plugins.auth')
-    expect(getOutput()).toContain('agent-qa dashboard')
+    expect(getOutput()).toContain('etus-agent dashboard')
     expect(getOutput()).not.toContain('requires an auth plugin')
 
     expect(mockWriteAuth).not.toHaveBeenCalled()
@@ -384,7 +384,7 @@ describe('auth provider mode contract', () => {
 
     await expect(runAuthCommand(['login', '--config', 'claude-subscription'])).resolves.toBeUndefined()
 
-    expect(getOutput()).toContain('Provider "anthropic-subscription" does not support CLI code exchange. Use agent-qa dashboard.')
+    expect(getOutput()).toContain('Provider "anthropic-subscription" does not support CLI code exchange. Use etus-agent dashboard.')
     expect(mockWriteAuth).not.toHaveBeenCalled()
   })
 
@@ -396,7 +396,7 @@ describe('auth provider mode contract', () => {
     })
 
     await expect(runAuthCommandWithRealRoot(['auth', 'login', '--config', 'codex'])).resolves.toBeUndefined()
-    expect(mockResolveNamedConfig).toHaveBeenLastCalledWith('codex', 'agent-qa.config.yaml')
+    expect(mockResolveNamedConfig).toHaveBeenLastCalledWith('codex', 'etus-agent.config.yaml')
     expect(getOutput()).toContain('Provider "openai-subscription" is configured for "codex", but no auth plugin is registered.')
 
     mockResolveNamedConfig.mockClear()
@@ -576,13 +576,13 @@ describe('auth provider mode contract', () => {
 
     await runAuthCommand(
       ['set', '--config', 'remote-openai', '--type', 'api-key', 'sk-remote'],
-      'custom-agent-qa.yaml',
+      'custom-etus-agent.yaml',
     )
-    expect(mockResolveNamedConfig).toHaveBeenLastCalledWith('remote-openai', 'custom-agent-qa.yaml')
+    expect(mockResolveNamedConfig).toHaveBeenLastCalledWith('remote-openai', 'custom-etus-agent.yaml')
 
     mockResolveNamedConfig.mockClear()
-    await runAuthTest(['--config', 'remote-openai'], 'custom-agent-qa.yaml')
-    expect(mockResolveNamedConfig).toHaveBeenLastCalledWith('remote-openai', 'custom-agent-qa.yaml')
+    await runAuthTest(['--config', 'remote-openai'], 'custom-etus-agent.yaml')
+    expect(mockResolveNamedConfig).toHaveBeenLastCalledWith('remote-openai', 'custom-etus-agent.yaml')
 
     mockResolveNamedConfig.mockClear()
     setNamedConfig({
@@ -590,11 +590,11 @@ describe('auth provider mode contract', () => {
       provider: 'openai-subscription',
       model: 'gpt-5.3-codex',
     })
-    await runAuthCommand(['login', '--config', 'codex'], 'custom-agent-qa.yaml')
-    expect(mockResolveNamedConfig).toHaveBeenLastCalledWith('codex', 'custom-agent-qa.yaml')
+    await runAuthCommand(['login', '--config', 'codex'], 'custom-etus-agent.yaml')
+    expect(mockResolveNamedConfig).toHaveBeenLastCalledWith('codex', 'custom-etus-agent.yaml')
 
-    await runAuthStatus('custom-agent-qa.yaml')
-    expect(mockLoadConfigFile).toHaveBeenLastCalledWith('custom-agent-qa.yaml')
+    await runAuthStatus('custom-etus-agent.yaml')
+    expect(mockLoadConfigFile).toHaveBeenLastCalledWith('custom-etus-agent.yaml')
   })
 
   it('auth logout deletes by config name', async () => {
@@ -667,7 +667,7 @@ describe('auth test', () => {
       provider: 'openai-compatible',
       model: 'model-name',
       baseURL: 'https://remote.example/v1',
-      providerHeaders: { 'x-workspace': 'agent-qa' },
+      providerHeaders: { 'x-workspace': 'etus-agent' },
     })
     mockResolveModelAuth.mockResolvedValue({
       kind: 'api-key',
@@ -694,20 +694,20 @@ describe('auth test', () => {
       provider: 'anthropic-compatible',
       model: 'claude-remote',
       baseURL: 'https://anthropic.example/messages',
-      providerHeaders: { 'x-workspace': 'agent-qa' },
+      providerHeaders: { 'x-workspace': 'etus-agent' },
     })
 
     await runAuthTest()
 
     expect(mockResolveModelAuth).toHaveBeenCalledWith('default', expect.objectContaining({
       provider: 'anthropic-compatible',
-      providerHeaders: { 'x-workspace': 'agent-qa' },
+      providerHeaders: { 'x-workspace': 'etus-agent' },
     }))
     expect(mockCreateModel).toHaveBeenCalledWith({
       provider: 'anthropic-compatible',
       model: 'claude-remote',
       baseURL: 'https://anthropic.example/messages',
-      providerHeaders: { 'x-workspace': 'agent-qa' },
+      providerHeaders: { 'x-workspace': 'etus-agent' },
       authToken: 'bearer-default',
     })
   })

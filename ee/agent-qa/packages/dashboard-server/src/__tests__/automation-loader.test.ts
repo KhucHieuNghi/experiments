@@ -82,7 +82,7 @@ describe('AutomationLoader', () => {
   let tmpDir: string
 
   beforeEach(async () => {
-    tmpDir = await mkdtemp(join(tmpdir(), 'agent-qa-loader-'))
+    tmpDir = await mkdtemp(join(tmpdir(), 'etus-agent-loader-'))
   })
 
   afterEach(async () => {

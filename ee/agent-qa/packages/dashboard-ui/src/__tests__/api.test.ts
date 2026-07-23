@@ -98,8 +98,8 @@ describe('auth state API', () => {
     mockFetch.mockReturnValue(ok({
       authStates: [{
         ...metadata,
-        storageStatePath: '.agent-qa/auth-states/staging-web/admin/storage-state.json',
-        payloadPath: '.agent-qa/auth-states/staging-web/admin/metadata.json',
+        storageStatePath: '.etus-agent/auth-states/staging-web/admin/storage-state.json',
+        payloadPath: '.etus-agent/auth-states/staging-web/admin/metadata.json',
         payload: { cookies: [{ name: 'sid', value: 'secret-session' }] },
         cookieCount: 1,
         localStorage: 'unsafe-storage-value',
@@ -118,7 +118,7 @@ describe('auth state API', () => {
     expect(result).toEqual({ authStates: [metadata] })
     expect(Object.keys(result.authStates[0])).toEqual(['version', 'kind', 'target', 'name', 'capturedAt'])
     const serialized = JSON.stringify(result)
-    expect(serialized).not.toContain('.agent-qa/auth-states')
+    expect(serialized).not.toContain('.etus-agent/auth-states')
     expect(serialized).not.toContain('.json')
     expect(serialized).not.toContain('payload')
     expect(serialized).not.toContain('cookie')
@@ -416,7 +416,7 @@ describe('runHook', () => {
       variables: { TOKEN: 'abc' },
       sandbox: {
         runtime: 'bun',
-        image: 'etus/agent-qa-hook-runner-bun',
+        image: 'etus/etus-agent-hook-bun',
         networkMode: 'disabled',
         dockerVersion: null,
         networkLogsAvailable: false,

@@ -46,7 +46,7 @@ export function CacheSection({ config, onConfigChange }: CacheSectionProps) {
           <Label htmlFor="cache-dir">Cache Directory</Label>
           <Input
             id="cache-dir"
-            placeholder=".agent-qa/cache"
+            placeholder=".etus-agent/cache"
             value={dir}
             onChange={(e) => setDir(e.target.value)}
           />

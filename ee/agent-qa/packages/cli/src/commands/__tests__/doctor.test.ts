@@ -15,12 +15,12 @@ vi.mock('picocolors', () => ({
   },
 }))
 
-vi.mock('@etus/agent-qa-core', () => ({
+vi.mock('@etus/agent-core', () => ({
   checkDockerAvailable: vi.fn(),
   AgentQaConfigSchema: { safeParse: vi.fn().mockReturnValue({ success: true }) },
 }))
 
-import { checkDockerAvailable } from '@etus/agent-qa-core'
+import { checkDockerAvailable } from '@etus/agent-core'
 const mockCheckDocker = vi.mocked(checkDockerAvailable)
 
 describe('doctor Docker check', () => {

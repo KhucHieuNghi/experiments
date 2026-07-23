@@ -147,7 +147,7 @@ describe('runSuite startup navigation', () => {
   })
 
   afterEach(() => {
-    delete process.env.AGENT_QA_SUITE_QUEUE_ID
+    delete process.env.ETUS_AGENT_SUITE_QUEUE_ID
   })
 
   it('interpolates suite target urls before initial navigation', async () => {
@@ -592,10 +592,10 @@ describe('runSuite startup navigation', () => {
     ]))
   })
 
-  it('preserves queued suite parent run ID from AGENT_QA_SUITE_QUEUE_ID', async () => {
+  it('preserves queued suite parent run ID from ETUS_AGENT_SUITE_QUEUE_ID', async () => {
     const { adapter } = createMockAdapter()
     const queuedRunId = 'r_queue-alpha-bravo-charlie-delta-echo-foxtrot-golf-hotel-india'
-    process.env.AGENT_QA_SUITE_QUEUE_ID = queuedRunId
+    process.env.ETUS_AGENT_SUITE_QUEUE_ID = queuedRunId
 
     const result = await runSuite(
       makeSuite(),

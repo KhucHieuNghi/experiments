@@ -24,7 +24,7 @@ async function writeFixtureFile(root: string, relativePath: string, content = ''
 }
 
 export async function createSampleWorkspaceConfigFixture(): Promise<SampleWorkspaceConfigFixture> {
-  const root = await mkdtemp(path.join(os.tmpdir(), 'agent-qa-workspace-paths-'))
+  const root = await mkdtemp(path.join(os.tmpdir(), 'etus-agent-workspace-paths-'))
   tempRoots.push(root)
 
   const config: AgentQaConfig = {
@@ -39,10 +39,10 @@ export async function createSampleWorkspaceConfigFixture(): Promise<SampleWorksp
     services: {
       dashboard: {
         port: 3470,
-        artifactsDir: '.agent-qa/custom-artifacts',
+        artifactsDir: '.etus-agent/custom-artifacts',
       },
       cache: {
-        dir: '.agent-qa/custom-cache',
+        dir: '.etus-agent/custom-cache',
         ttl: 604_800_000,
       },
       logging: {
@@ -57,7 +57,7 @@ export async function createSampleWorkspaceConfigFixture(): Promise<SampleWorksp
       memory: {
         enabled: true,
         provider: 'local',
-        dir: '.agent-qa/custom-memory',
+        dir: '.etus-agent/custom-memory',
         minTrust: 0.3,
         maxInjections: 3,
         curatorEnabled: true,
@@ -87,7 +87,7 @@ export async function createSampleWorkspaceConfigFixture(): Promise<SampleWorksp
 
   return {
     config,
-    configPath: path.join(root, 'agent-qa.config.yaml'),
+    configPath: path.join(root, 'etus-agent.config.yaml'),
     root,
   }
 }
@@ -118,15 +118,15 @@ describe('workspace path resolver', () => {
   it('keeps service runtime path fixture values relative before runtime resolution', async () => {
     const fixture = await createSampleWorkspaceConfigFixture()
 
-    expect(fixture.config.services?.dashboard?.artifactsDir).toBe('.agent-qa/custom-artifacts')
-    expect(fixture.config.services?.cache?.dir).toBe('.agent-qa/custom-cache')
+    expect(fixture.config.services?.dashboard?.artifactsDir).toBe('.etus-agent/custom-artifacts')
+    expect(fixture.config.services?.cache?.dir).toBe('.etus-agent/custom-cache')
     expect(fixture.config.services?.cache?.ttl).toBe(604_800_000)
     expect(fixture.config.services?.logging?.level).toBe('warn')
     expect(fixture.config.services?.recording?.enabled).toBe(false)
     expect(fixture.config.services?.accessibility?.enabled).toBe(false)
     expect(fixture.config.services?.memory?.provider).toBe('local')
     expect(fixture.config.services?.memory?.curatorEnabled).toBe(true)
-    expect(fixture.config.services?.memory?.dir).toBe('.agent-qa/custom-memory')
+    expect(fixture.config.services?.memory?.dir).toBe('.etus-agent/custom-memory')
   })
 
   it('discovers test files from non-default testMatch patterns only', async () => {

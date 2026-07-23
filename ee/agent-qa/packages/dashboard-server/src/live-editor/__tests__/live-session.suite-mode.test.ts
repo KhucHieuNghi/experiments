@@ -16,7 +16,7 @@ const mockResolveMobileRunConfig = vi.fn()
 // which lets us assert "same adapter reused across steps" (D-01).
 const sharedAdapterRef: { current: unknown } = { current: null }
 
-vi.mock('@etus/agent-qa-web', () => ({
+vi.mock('@etus/agent-web', () => ({
   WebPlatformAdapter: vi.fn().mockImplementation(function () {
     const adapter = {
       platform: 'web',
@@ -33,7 +33,7 @@ vi.mock('@etus/agent-qa-web', () => ({
   }),
 }))
 
-vi.mock('@etus/agent-qa-android', () => ({
+vi.mock('@etus/agent-android', () => ({
   AndroidPlatformAdapter: vi.fn().mockImplementation(function () {
     return {
       platform: 'android',
@@ -63,7 +63,7 @@ const mockVariableStoreInstance = {
   snapshot: vi.fn().mockReturnValue({}),
 }
 
-vi.mock('@etus/agent-qa-core', () => ({
+vi.mock('@etus/agent-core', () => ({
   MobileSetupError: class MobileSetupError extends Error {
     category: string
     constructor(options: { category: string; message: string }) {
@@ -492,7 +492,7 @@ describe('LiveSession.executeTestCommand (suite-mode orchestration)', () => {
           },
         }),
       } as any,
-      configPath: '/tmp/agent-qa.config.yaml',
+      configPath: '/tmp/etus-agent.config.yaml',
     })
     mockAndroidSetup.mockRejectedValueOnce(new Error('app not installed'))
 

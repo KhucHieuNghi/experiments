@@ -9,7 +9,7 @@ import {
 } from '@/lib/support-links'
 
 const FORBIDDEN_SENTINELS = [
-  'agent-qa.config.yaml',
+  'etus-agent.config.yaml',
   'https://app.example.test',
   'checkout flow',
   'memory observation',
@@ -17,7 +17,7 @@ const FORBIDDEN_SENTINELS = [
   'auth-state-prod',
   'r_secret-run-id',
   '/Users/pranshu/project',
-  'AGENT_QA_SECRET',
+  'ETUS_AGENT_SECRET',
   'localStorage',
   'screenshot.png',
   'recording.webm',

@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { validateAction, ActionValidationError } from '../action-validator.js'
-import type { Action } from '@etus/agent-qa-core'
+import type { Action } from '@etus/agent-core'
 
 describe('validateAction', () => {
   it('fill on textbox → valid', () => {

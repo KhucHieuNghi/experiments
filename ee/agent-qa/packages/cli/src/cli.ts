@@ -9,12 +9,12 @@ const program = new Command()
 program.enablePositionalOptions()
 
 program
-  .name('agent-qa')
+  .name('etus-agent')
   .description('The self-improving Agentic QA harness with Memory')
   .version(VERSION)
 
 program
-  .option('--config <path>', 'config file path', 'agent-qa.config.yaml')
+  .option('--config <path>', 'config file path', 'etus-agent.config.yaml')
   .option('--log-level <level>', 'log verbosity: silent|error|warn|info|debug')
   .option('--verbose', 'shorthand for --log-level debug')
   .option('--quiet', 'shorthand for --log-level silent')

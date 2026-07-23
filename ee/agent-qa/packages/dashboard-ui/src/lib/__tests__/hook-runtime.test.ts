@@ -24,26 +24,26 @@ describe("hook runtime metadata", () => {
     expect(getHookRuntimeMeta("bash").icon).toBe(HOOK_RUNTIME_ICONS.bash)
   })
 
-  it("uses starter snippets that write emitted variables to /tmp/agent-qa.env and show stdout/stderr examples", () => {
-    expect(getHookRuntimeMeta("node").template).toContain("/tmp/agent-qa.env")
+  it("uses starter snippets that write emitted variables to /tmp/etus-agent.env and show stdout/stderr examples", () => {
+    expect(getHookRuntimeMeta("node").template).toContain("/tmp/etus-agent.env")
     expect(getHookRuntimeMeta("node").template).toContain("HOOK_STATUS=ready")
     expect(getHookRuntimeMeta("node").template).toContain("HOOK_RUNTIME=node")
     expect(getHookRuntimeMeta("node").template).toContain("console.log")
     expect(getHookRuntimeMeta("node").template).toContain("console.error")
 
-    expect(getHookRuntimeMeta("bun").template).toContain("/tmp/agent-qa.env")
+    expect(getHookRuntimeMeta("bun").template).toContain("/tmp/etus-agent.env")
     expect(getHookRuntimeMeta("bun").template).toContain("HOOK_STATUS=ready")
     expect(getHookRuntimeMeta("bun").template).toContain("HOOK_RUNTIME=bun")
     expect(getHookRuntimeMeta("bun").template).toContain("console.log")
     expect(getHookRuntimeMeta("bun").template).toContain("console.error")
 
-    expect(getHookRuntimeMeta("python").template).toContain("/tmp/agent-qa.env")
+    expect(getHookRuntimeMeta("python").template).toContain("/tmp/etus-agent.env")
     expect(getHookRuntimeMeta("python").template).toContain("HOOK_STATUS=ready")
     expect(getHookRuntimeMeta("python").template).toContain("HOOK_RUNTIME=python")
     expect(getHookRuntimeMeta("python").template).toContain("print(")
     expect(getHookRuntimeMeta("python").template).toContain("file=sys.stderr")
 
-    expect(getHookRuntimeMeta("bash").template).toContain("/tmp/agent-qa.env")
+    expect(getHookRuntimeMeta("bash").template).toContain("/tmp/etus-agent.env")
     expect(getHookRuntimeMeta("bash").template).toContain("HOOK_STATUS=ready")
     expect(getHookRuntimeMeta("bash").template).toContain("HOOK_RUNTIME=bash")
     expect(getHookRuntimeMeta("bash").template).toContain(">&2")

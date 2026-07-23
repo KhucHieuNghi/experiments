@@ -2,7 +2,7 @@ import { X } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 
-export const UPDATE_BANNER_DISMISS_COOKIE = "agent_qa_update_notice_dismissed"
+export const UPDATE_BANNER_DISMISS_COOKIE = "etus_agent_update_notice_dismissed"
 export const UPDATE_BANNER_DISMISS_MS = 24 * 60 * 60 * 1000
 
 export interface UpdateBannerDismissal {

@@ -51,7 +51,7 @@ describe('buildMemoryIndex', () => {
   let root: string
 
   beforeEach(async () => {
-    root = await mkdtemp(join(tmpdir(), 'agent-qa-memidx-'))
+    root = await mkdtemp(join(tmpdir(), 'etus-agent-memidx-'))
   })
 
   afterEach(async () => {

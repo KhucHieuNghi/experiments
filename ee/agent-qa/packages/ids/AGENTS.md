@@ -1,4 +1,4 @@
-# ETUS package instructions: @etus/agent-qa-ids
+# ETUS package instructions: @etus/agent-ids
 
 Inherit the root ETUS branding, security, and release rules.
 
@@ -19,9 +19,9 @@ dashboard authoring surfaces.
 
 ## Commands
 
-- Test: `pnpm --filter @etus/agent-qa-ids test`
-- Typecheck: `pnpm --filter @etus/agent-qa-ids typecheck`
-- Build: `pnpm --filter @etus/agent-qa-ids build`
+- Test: `pnpm --filter @etus/agent-ids test`
+- Typecheck: `pnpm --filter @etus/agent-ids typecheck`
+- Build: `pnpm --filter @etus/agent-ids build`
 
 ## Local Rules
 
@@ -37,6 +37,6 @@ dashboard authoring surfaces.
 Run focused ID tests after any change:
 
 ```bash
-pnpm --filter @etus/agent-qa-ids test
-pnpm --filter @etus/agent-qa-ids typecheck
+pnpm --filter @etus/agent-ids test
+pnpm --filter @etus/agent-ids typecheck
 ```

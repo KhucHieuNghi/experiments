@@ -90,12 +90,12 @@ function resolveModuleSpecifier(declaration: AuthPluginDeclaration, baseDir: str
     const packageImport = resolvePackageImportFromBase(packageName, baseDir)
     if (packageImport) return packageImport
 
-    const parentUrl = pathToFileURL(resolve(baseDir, 'agent-qa.config.yaml')).href
+    const parentUrl = pathToFileURL(resolve(baseDir, 'etus-agent.config.yaml')).href
     try {
       const resolveImport = import.meta.resolve as (specifier: string, parent?: string) => string
       return resolveImport(packageName, parentUrl)
     } catch {
-      const require = createRequire(resolve(baseDir, 'agent-qa.config.yaml'))
+      const require = createRequire(resolve(baseDir, 'etus-agent.config.yaml'))
       return pathToFileURL(require.resolve(packageName)).href
     }
   }

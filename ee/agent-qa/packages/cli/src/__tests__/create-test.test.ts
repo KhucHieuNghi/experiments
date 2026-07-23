@@ -4,7 +4,7 @@ import { join } from 'node:path'
 import { Command } from 'commander'
 import { parse as parseYaml } from 'yaml'
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { isCanonicalTestId } from '@etus/agent-qa-ids'
+import { isCanonicalTestId } from '@etus/agent-ids'
 import { createCreateTestCommand } from '../commands/create-test.js'
 
 const tempDirs: string[] = []
@@ -25,7 +25,7 @@ async function runCreateTest(outputPath: string): Promise<void> {
 
 describe('create-test command', () => {
   it('writes a canonical 10-word test-id into new YAML files', async () => {
-    const rootDir = await mkdtemp(join(tmpdir(), 'agent-qa-create-test-'))
+    const rootDir = await mkdtemp(join(tmpdir(), 'etus-agent-create-test-'))
     tempDirs.push(rootDir)
     const testPath = join(rootDir, 'tests', 'login.yaml')
 

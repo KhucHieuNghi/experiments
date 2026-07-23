@@ -111,7 +111,7 @@ test('release workflow publishes subscription auth from the main release version
   const workflow = readWorkflow()
   const orderedCommands = [
     'gh workflow run release.yml',
-    '--repo etus/agent-qa-subscription-auth',
+    '--repo etus/etus-agent-subscription-auth',
     '-f target_version="$SUBSCRIPTION_AUTH_TARGET_VERSION"',
     'gh run list',
     'gh run watch "$run_id"',
@@ -123,7 +123,7 @@ test('release workflow publishes subscription auth from the main release version
   assert.match(workflow, /SUBSCRIPTION_AUTH_TARGET_VERSION:\s*\$\{\{ inputs\.subscription_auth_target_version \|\| needs\.npm\.outputs\.version \}\}/)
   assert.match(workflow, /GH_TOKEN:\s*\$\{\{ secrets\.SUBSCRIPTION_AUTH_RELEASE_TOKEN \}\}/)
   assert.match(workflow, /Actions: read and write/)
-  assert.doesNotMatch(workflow, /working-directory:\s*agent-qa-subscription-auth/)
+  assert.doesNotMatch(workflow, /working-directory:\s*etus-agent-subscription-auth/)
   assert.match(workflow, /docker:\s*\n\s+name:\s*Publish Docker images\s*\n\s+if:\s*\$\{\{ inputs\.subscription_auth_target_version == '' && inputs\.github_release_target_version == '' \}\}\s*\n\s+needs:\s*\n\s+- npm\s*\n\s+- subscription-auth/)
   for (const command of orderedCommands) assert.match(workflow, new RegExp(command.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')))
   for (let index = 0; index < orderedCommands.length - 1; index += 1) {

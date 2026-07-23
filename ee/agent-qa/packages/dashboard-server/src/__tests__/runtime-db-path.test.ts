@@ -12,22 +12,22 @@ afterEach(async () => {
 })
 
 async function createWorkspace(): Promise<string> {
-  const dir = await mkdtemp(join(tmpdir(), 'agent-qa-runtime-db-path-'))
+  const dir = await mkdtemp(join(tmpdir(), 'etus-agent-runtime-db-path-'))
   tempDirs.push(dir)
   return dir
 }
 
 describe('resolveDashboardDbPath', () => {
-  it('resolves the default dashboard database to .agent-qa/runs.db', async () => {
+  it('resolves the default dashboard database to .etus-agent/runs.db', async () => {
     const workspaceDir = await createWorkspace()
 
-    expect(resolveDashboardDbPath({ configDir: workspaceDir })).toBe(join(workspaceDir, '.agent-qa', 'runs.db'))
+    expect(resolveDashboardDbPath({ configDir: workspaceDir })).toBe(join(workspaceDir, '.etus-agent', 'runs.db'))
   })
 
   it('honors an explicit configured relative path without migrating legacy defaults', async () => {
     const workspaceDir = await createWorkspace()
-    const legacyPath = join(workspaceDir, '.agent-qa', 'dashboard.db')
-    await mkdir(join(workspaceDir, '.agent-qa'), { recursive: true })
+    const legacyPath = join(workspaceDir, '.etus-agent', 'dashboard.db')
+    await mkdir(join(workspaceDir, '.etus-agent'), { recursive: true })
     await writeFile(legacyPath, 'legacy')
 
     expect(resolveDashboardDbPath({ configDir: workspaceDir, configuredDbPath: 'custom/dashboard.db' }))
@@ -37,9 +37,9 @@ describe('resolveDashboardDbPath', () => {
 
   it('moves a legacy default dashboard database to the runs database when no new file exists', async () => {
     const workspaceDir = await createWorkspace()
-    const legacyPath = join(workspaceDir, '.agent-qa', 'dashboard.db')
-    const defaultPath = join(workspaceDir, '.agent-qa', 'runs.db')
-    await mkdir(join(workspaceDir, '.agent-qa'), { recursive: true })
+    const legacyPath = join(workspaceDir, '.etus-agent', 'dashboard.db')
+    const defaultPath = join(workspaceDir, '.etus-agent', 'runs.db')
+    await mkdir(join(workspaceDir, '.etus-agent'), { recursive: true })
     await writeFile(legacyPath, 'legacy-runs')
 
     expect(resolveDashboardDbPath({ configDir: workspaceDir })).toBe(defaultPath)
@@ -50,9 +50,9 @@ describe('resolveDashboardDbPath', () => {
 
   it('prefers the runs database and leaves legacy untouched when both files exist', async () => {
     const workspaceDir = await createWorkspace()
-    const legacyPath = join(workspaceDir, '.agent-qa', 'dashboard.db')
-    const defaultPath = join(workspaceDir, '.agent-qa', 'runs.db')
-    await mkdir(join(workspaceDir, '.agent-qa'), { recursive: true })
+    const legacyPath = join(workspaceDir, '.etus-agent', 'dashboard.db')
+    const defaultPath = join(workspaceDir, '.etus-agent', 'runs.db')
+    await mkdir(join(workspaceDir, '.etus-agent'), { recursive: true })
     await writeFile(legacyPath, 'legacy-runs')
     await writeFile(defaultPath, 'current-runs')
 

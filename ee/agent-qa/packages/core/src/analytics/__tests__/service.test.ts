@@ -7,7 +7,7 @@ import { writeAnalyticsIdentity } from '../identity.js'
 import { captureAnalytics, createAnalyticsService, flushAnalytics, resetAnalyticsServiceForTests } from '../service.js'
 import { MockAnalyticsTransport, type AnalyticsTransport } from '../transport.js'
 
-const EMPTY_KEY_WARNING = 'PostHog analytics initialization failed because AGENT_QA_POSTHOG_KEY is empty. Analytics telemetry is disabled.'
+const EMPTY_KEY_WARNING = 'PostHog analytics initialization failed because ETUS_AGENT_POSTHOG_KEY is empty. Analytics telemetry is disabled.'
 
 describe('analytics service', () => {
   let tempDir: string
@@ -15,18 +15,18 @@ describe('analytics service', () => {
   let originalPostHogEnvKey: string | undefined
 
   beforeEach(async () => {
-    tempDir = await mkdtemp(join(tmpdir(), 'agent-qa-analytics-service-'))
+    tempDir = await mkdtemp(join(tmpdir(), 'etus-agent-analytics-service-'))
     identityPath = join(tempDir, 'analytics.json')
-    originalPostHogEnvKey = process.env.AGENT_QA_POSTHOG_KEY
-    delete process.env.AGENT_QA_POSTHOG_KEY
+    originalPostHogEnvKey = process.env.ETUS_AGENT_POSTHOG_KEY
+    delete process.env.ETUS_AGENT_POSTHOG_KEY
   })
 
   afterEach(async () => {
     resetAnalyticsServiceForTests()
     if (originalPostHogEnvKey === undefined) {
-      delete process.env.AGENT_QA_POSTHOG_KEY
+      delete process.env.ETUS_AGENT_POSTHOG_KEY
     } else {
-      process.env.AGENT_QA_POSTHOG_KEY = originalPostHogEnvKey
+      process.env.ETUS_AGENT_POSTHOG_KEY = originalPostHogEnvKey
     }
     await rm(tempDir, { recursive: true, force: true })
   })
@@ -45,7 +45,7 @@ describe('analytics service', () => {
     })
 
     await expect(service.capture(buildAnalyticsEvent({
-      name: 'agent-qa.analytics.test_event',
+      name: 'etus-agent.analytics.test_event',
       properties: { surface: 'core', runtime_context: 'user' },
     }))).resolves.toBeUndefined()
     await expect(service.flush()).resolves.toBeUndefined()
@@ -60,11 +60,11 @@ describe('analytics service', () => {
     const service = createAnalyticsService({ projectKey: '', warningSink, identityPath })
 
     await service.capture(buildAnalyticsEvent({
-      name: 'agent-qa.analytics.test_event',
+      name: 'etus-agent.analytics.test_event',
       properties: { surface: 'core', runtime_context: 'user' },
     }))
     await service.capture(buildAnalyticsEvent({
-      name: 'agent-qa.analytics.test_event',
+      name: 'etus-agent.analytics.test_event',
       properties: { surface: 'core', runtime_context: 'user' },
     }))
     await service.flush()
@@ -84,11 +84,11 @@ describe('analytics service', () => {
     })
 
     await service.capture(buildAnalyticsEvent({
-      name: 'agent-qa.mcp.tool.invoked',
+      name: 'etus-agent.mcp.tool.invoked',
       properties: {
         surface: 'mcp',
         runtime_context: 'agent',
-        tool_name: 'agent_qa_discover',
+        tool_name: 'etus_agent_discover',
         mcp_tool_category: 'discovery',
         mcp_tool_status: 'success',
         duration_ms: 0,
@@ -106,11 +106,11 @@ describe('analytics service', () => {
     const transport = new MockAnalyticsTransport()
     const service = createAnalyticsService({ transport, identityPath, env: {} })
     const event = buildAnalyticsEvent({
-      name: 'agent-qa.analytics.test_event',
+      name: 'etus-agent.analytics.test_event',
       properties: {
         surface: 'cli',
         runtime_context: 'user',
-        agent_qa_version: '0.1.0',
+        etus_agent_version: '0.1.0',
         prompt: 'phase242-service-sensitive-sentinel',
       },
     })
@@ -122,11 +122,11 @@ describe('analytics service', () => {
     expect(transport.events[0]).toEqual(expect.objectContaining({
       distinctId: expect.stringMatching(/^u_([a-z]+-){9}[a-z]+$/),
       event: expect.objectContaining({
-        name: 'agent-qa.analytics.test_event',
+        name: 'etus-agent.analytics.test_event',
         properties: expect.objectContaining({
           surface: 'cli',
           runtime_context: 'user',
-          agent_qa_version: '0.1.0',
+          etus_agent_version: '0.1.0',
           $process_person_profile: false,
         }),
       }),
@@ -148,7 +148,7 @@ describe('analytics service', () => {
     })
 
     await service.capture(buildAnalyticsEvent({
-      name: 'agent-qa.analytics.test_event',
+      name: 'etus-agent.analytics.test_event',
       properties: { surface: 'core', runtime_context: 'user' },
     }))
     await service.flush()
@@ -167,7 +167,7 @@ describe('analytics service', () => {
     const service = createAnalyticsService({ transport, identityPath, env: {} })
 
     await service.capture(buildAnalyticsEvent({
-      name: 'agent-qa.analytics.test_event',
+      name: 'etus-agent.analytics.test_event',
       properties: { surface: 'core', runtime_context: 'user' },
     }))
 
@@ -188,7 +188,7 @@ describe('analytics service', () => {
     })
 
     await expect(service.capture(buildAnalyticsEvent({
-      name: 'agent-qa.analytics.test_event',
+      name: 'etus-agent.analytics.test_event',
       properties: { surface: 'core', runtime_context: 'user' },
     }))).resolves.toBeUndefined()
   })
@@ -225,7 +225,7 @@ describe('analytics service', () => {
   })
 
   it('does not read a PostHog key from environment variables when the source key is empty', () => {
-    process.env.AGENT_QA_POSTHOG_KEY = 'phc_should_not_be_used'
+    process.env.ETUS_AGENT_POSTHOG_KEY = 'phc_should_not_be_used'
     const warningSink = vi.fn()
     const posthogTransportFactory = vi.fn(() => new MockAnalyticsTransport())
 
@@ -247,12 +247,12 @@ describe('analytics service', () => {
       identityPath,
       posthogTransportFactory: vi.fn(() => new MockAnalyticsTransport()),
     }).capture(buildAnalyticsEvent({
-      name: 'agent-qa.analytics.test_event',
+      name: 'etus-agent.analytics.test_event',
       properties: { surface: 'core', runtime_context: 'user' },
     }))
 
     await expect(captureAnalytics(buildAnalyticsEvent({
-      name: 'agent-qa.analytics.test_event',
+      name: 'etus-agent.analytics.test_event',
       properties: { surface: 'core', runtime_context: 'user' },
     }), {
       config: { analytics: { privacy: true } },

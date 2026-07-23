@@ -22,8 +22,8 @@ export interface HookResult {
 }
 
 export const RUNTIME_IMAGE_MAP: Record<HookRuntime, string> = {
-  node: 'etus/agent-qa-hook-runner-node',
-  bun: 'etus/agent-qa-hook-runner-bun',
-  python: 'etus/agent-qa-hook-runner-python',
-  bash: 'etus/agent-qa-hook-runner-bash',
+  node: 'etus/etus-agent-hook-node',
+  bun: 'etus/etus-agent-hook-bun',
+  python: 'etus/etus-agent-hook-python',
+  bash: 'etus/etus-agent-hook-bash',
 }

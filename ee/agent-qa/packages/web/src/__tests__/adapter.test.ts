@@ -175,7 +175,7 @@ describe('WebPlatformAdapter', () => {
     )
   })
 
-  it('replaces Playwright missing-browser launch errors with agent-qa install guidance', async () => {
+  it('replaces Playwright missing-browser launch errors with etus-agent install guidance', async () => {
     const { webkit } = await import('playwright-core')
     const launch = webkit.launch as unknown as ReturnType<typeof vi.fn>
     launch.mockRejectedValueOnce(new Error([
@@ -186,7 +186,7 @@ describe('WebPlatformAdapter', () => {
     ].join('\n')))
 
     await expect(adapter.setup({ platform: 'web', browser: { name: 'webkit', headless: true } }))
-      .rejects.toThrow('agent-qa install-browsers --webkit')
+      .rejects.toThrow('etus-agent install-browsers --webkit')
   })
 
   describe('clipboard-write permission grant', () => {

@@ -21,7 +21,7 @@ function createPosthogFixture(rootDir, distKey = 'phc_test_key', packagePath = '
     join(sourceDir, 'service.ts'),
     'import { NoopAnalyticsTransport } from "./transport.js"\nexport const marker = "noop transport stays local"\n',
   )
-  const runtimeText = `var AGENT_QA_POSTHOG_KEY = "${distKey}"\nvar AGENT_QA_POSTHOG_HOST = "https://us.i.posthog.com"\n`
+  const runtimeText = `var ETUS_AGENT_POSTHOG_KEY = "${distKey}"\nvar ETUS_AGENT_POSTHOG_HOST = "https://us.i.posthog.com"\n`
   writeFileSync(join(distDir, 'index.js'), runtimeText)
   writeFileSync(join(distDir, 'index.cjs'), runtimeText)
 }
@@ -29,19 +29,19 @@ function createPosthogFixture(rootDir, distKey = 'phc_test_key', packagePath = '
 test('renders and redacts POSTHOG_PROJECT_KEY safely', () => {
   assert.equal(
     renderPosthogProjectFile('phc_test_key'),
-    'export const AGENT_QA_POSTHOG_KEY = "phc_test_key"\nexport const AGENT_QA_POSTHOG_HOST = "https://us.i.posthog.com"\n',
+    'export const ETUS_AGENT_POSTHOG_KEY = "phc_test_key"\nexport const ETUS_AGENT_POSTHOG_HOST = "https://us.i.posthog.com"\n',
   )
   const escapedKey = 'phc_"quoted"\\key\nnext'
   assert.equal(
     renderPosthogProjectFile(escapedKey),
-    `export const AGENT_QA_POSTHOG_KEY = ${JSON.stringify(escapedKey)}\nexport const AGENT_QA_POSTHOG_HOST = ${JSON.stringify('https://us.i.posthog.com')}\n`,
+    `export const ETUS_AGENT_POSTHOG_KEY = ${JSON.stringify(escapedKey)}\nexport const ETUS_AGENT_POSTHOG_HOST = ${JSON.stringify('https://us.i.posthog.com')}\n`,
   )
   assert.throws(() => renderPosthogProjectFile(''), /POSTHOG_PROJECT_KEY is required/)
   assert.equal(redactSecret('phc_test_key'), '[redacted POSTHOG_PROJECT_KEY]')
 })
 
 test('validates built PostHog release artifacts and raw secret leakage', async () => {
-  const rootDir = await mkdtemp(join(tmpdir(), 'agent-qa-release-posthog-'))
+  const rootDir = await mkdtemp(join(tmpdir(), 'etus-agent-release-posthog-'))
   try {
     createPosthogFixture(rootDir)
     assert.doesNotThrow(() => validatePosthogReleaseArtifacts({ rootDir, projectKey: 'phc_test_key', logText: 'safe [redacted POSTHOG_PROJECT_KEY]' }))
@@ -58,8 +58,8 @@ test('validates built PostHog release artifacts and raw secret leakage', async (
 })
 
 test('validates staged core package PostHog runtime artifacts', async () => {
-  const rootDir = await mkdtemp(join(tmpdir(), 'agent-qa-release-posthog-staged-root-'))
-  const stagedDir = await mkdtemp(join(tmpdir(), 'agent-qa-release-posthog-staged-packages-'))
+  const rootDir = await mkdtemp(join(tmpdir(), 'etus-agent-release-posthog-staged-root-'))
+  const stagedDir = await mkdtemp(join(tmpdir(), 'etus-agent-release-posthog-staged-packages-'))
   try {
     createPosthogFixture(rootDir)
     createPosthogFixture(stagedDir, 'phc_test_key', 'core')
@@ -78,7 +78,7 @@ test('parses and dispatches node scripts/release/posthog.mjs --write', async () 
   assert.throws(() => parsePosthogArgs([]), /missing --write/)
   assert.throws(() => parsePosthogArgs(['--write', '--bad']), /invalid args/)
 
-  const rootDir = await mkdtemp(join(tmpdir(), 'agent-qa-release-posthog-write-'))
+  const rootDir = await mkdtemp(join(tmpdir(), 'etus-agent-release-posthog-write-'))
   try {
     await runPosthogCli(['--write'], {
       rootDir,
@@ -87,8 +87,8 @@ test('parses and dispatches node scripts/release/posthog.mjs --write', async () 
     })
     const target = join(rootDir, 'packages/core/src/analytics/posthog-project.ts')
     assert.equal(existsSync(target), true)
-    assert.match(readFileSync(target, 'utf8'), /AGENT_QA_POSTHOG_KEY = "phc_test_key"/)
-    assert.match(readFileSync(target, 'utf8'), /AGENT_QA_POSTHOG_HOST = "https:\/\/us\.i\.posthog\.com"/)
+    assert.match(readFileSync(target, 'utf8'), /ETUS_AGENT_POSTHOG_KEY = "phc_test_key"/)
+    assert.match(readFileSync(target, 'utf8'), /ETUS_AGENT_POSTHOG_HOST = "https:\/\/us\.i\.posthog\.com"/)
 
     await assert.rejects(runPosthogCli(['--write'], { rootDir, env: {}, log: () => {} }), /POSTHOG_PROJECT_KEY is required/)
   } finally {

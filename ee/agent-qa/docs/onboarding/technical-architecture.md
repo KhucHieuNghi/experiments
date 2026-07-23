@@ -126,7 +126,7 @@ Responsibilities:
 - Create API router.
 - Resolve CLI binary.
 - Spawn CLI child process for live runs.
-- Parse `AGENT_QA_EVENT:` stdout messages.
+- Parse `ETUS_AGENT_EVENT:` stdout messages.
 - Maintain pending/running queue.
 - Serialize mobile jobs per platform.
 - Finalize run artifacts best-effort on abnormal process close.
@@ -283,7 +283,7 @@ Messaging:
 - Server-sent execution events.
 - WebSocket live editor sessions.
 - MCP tool protocol.
-- Child process live events prefixed with `AGENT_QA_EVENT:`.
+- Child process live events prefixed with `ETUS_AGENT_EVENT:`.
 
 Error boundaries:
 

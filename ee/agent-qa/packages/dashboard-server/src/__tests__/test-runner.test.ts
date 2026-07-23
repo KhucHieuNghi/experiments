@@ -26,7 +26,7 @@ afterEach(() => {
 })
 
 function createTempScript(name: string, body: string): string {
-  const dir = mkdtempSync(join(tmpdir(), 'agent-qa-runner-'))
+  const dir = mkdtempSync(join(tmpdir(), 'etus-agent-runner-'))
   tempDirs.push(dir)
   const script = join(dir, name)
   writeFileSync(script, body)
@@ -85,8 +85,8 @@ describe('TestRunner', () => {
 
   it('kill requests graceful cancellation before force-kill fallback', async () => {
     const gracefulScript = createTempScript('graceful-cancel.sh', `#!/bin/sh
-trap "echo 'AGENT_QA_EVENT:{\\"type\\":\\"test-complete\\",\\"testName\\":\\"test\\",\\"status\\":\\"cancelled\\"}'; exit 130" INT TERM
-echo 'AGENT_QA_EVENT:{"type":"test-start","testName":"test"}'
+trap "echo 'ETUS_AGENT_EVENT:{\\"type\\":\\"test-complete\\",\\"testName\\":\\"test\\",\\"status\\":\\"cancelled\\"}'; exit 130" INT TERM
+echo 'ETUS_AGENT_EVENT:{"type":"test-start","testName":"test"}'
 while true; do sleep 1; done
 `)
     const processKill = vi.spyOn(process, 'kill')
@@ -194,29 +194,29 @@ while true; do sleep 1; done
   }, 10_000)
 
   it('resolveCliBin uses env var first', () => {
-    const original = process.env.AGENT_QA_CLI_BIN
-    process.env.AGENT_QA_CLI_BIN = '/usr/local/bin/agent-qa'
+    const original = process.env.ETUS_AGENT_CLI_BIN
+    process.env.ETUS_AGENT_CLI_BIN = '/usr/local/bin/etus-agent'
     try {
-      expect(TestRunner.resolveCliBin()).toBe('/usr/local/bin/agent-qa')
+      expect(TestRunner.resolveCliBin()).toBe('/usr/local/bin/etus-agent')
     } finally {
       if (original === undefined) {
-        delete process.env.AGENT_QA_CLI_BIN
+        delete process.env.ETUS_AGENT_CLI_BIN
       } else {
-        process.env.AGENT_QA_CLI_BIN = original
+        process.env.ETUS_AGENT_CLI_BIN = original
       }
     }
   })
 
   it('resolveCliBin falls back to node_modules path', () => {
-    const original = process.env.AGENT_QA_CLI_BIN
-    delete process.env.AGENT_QA_CLI_BIN
+    const original = process.env.ETUS_AGENT_CLI_BIN
+    delete process.env.ETUS_AGENT_CLI_BIN
     try {
       const result = TestRunner.resolveCliBin()
       expect(typeof result).toBe('string')
       expect(result.length).toBeGreaterThan(0)
     } finally {
       if (original !== undefined) {
-        process.env.AGENT_QA_CLI_BIN = original
+        process.env.ETUS_AGENT_CLI_BIN = original
       }
     }
   })
@@ -265,7 +265,7 @@ while true; do sleep 1; done
 
   it('exit zero without reporter completion is failed', async () => {
     const incompleteScript = createTempScript('incomplete.sh', `#!/bin/sh
-echo 'AGENT_QA_EVENT:{"type":"test-start","testName":"test"}'
+echo 'ETUS_AGENT_EVENT:{"type":"test-start","testName":"test"}'
 exit 0
 `)
     const onClose = vi.fn()

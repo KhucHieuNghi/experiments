@@ -53,7 +53,7 @@ async function waitForCondition(predicate: () => boolean, attempts = 20) {
 describe('suite runner member ordering', () => {
   it('keeps suite members sequential when suite use.parallel is true', async () => {
     mockRunTest.mockReset()
-    const dir = await mkdtemp(join(tmpdir(), 'agent-qa-suite-member-order-'))
+    const dir = await mkdtemp(join(tmpdir(), 'etus-agent-suite-member-order-'))
     try {
       const firstPath = join(dir, 'first.yaml')
       const secondPath = join(dir, 'second.yaml')
@@ -118,7 +118,7 @@ describe('suite runner member ordering', () => {
       steps: [],
       duration: 100,
     })
-    const dir = await mkdtemp(join(tmpdir(), 'agent-qa-suite-memory-root-'))
+    const dir = await mkdtemp(join(tmpdir(), 'etus-agent-suite-memory-root-'))
     try {
       const testPath = join(dir, 'memory.yaml')
       await writeFile(testPath, 'name: Memory member\n')
@@ -141,7 +141,7 @@ describe('suite runner member ordering', () => {
           plannerModel: {},
           verifierModel: {},
           memoryProvider: { getInjectedObservations: vi.fn(() => []) },
-          memoryRoot: '/tmp/custom-agent-qa-memory',
+          memoryRoot: '/tmp/custom-etus-agent-memory',
           memoryConfig: { enabled: true, curatorEnabled: false, ablationEnabled: false },
           product: 'custom-product',
         } as any,
@@ -151,7 +151,7 @@ describe('suite runner member ordering', () => {
         expect.anything(),
         expect.objectContaining({
           memoryInitParams: expect.objectContaining({
-            memoryRoot: '/tmp/custom-agent-qa-memory',
+            memoryRoot: '/tmp/custom-etus-agent-memory',
             product: 'custom-product',
             testId: 'Memory member',
           }),

@@ -68,7 +68,7 @@ export class LogManager {
 
   private emitNdjson(entry: LogEntry): void {
     process.stdout.write(
-      `AGENT_QA_EVENT:${JSON.stringify({ type: 'log', ...entry })}\n`,
+      `ETUS_AGENT_EVENT:${JSON.stringify({ type: 'log', ...entry })}\n`,
     )
   }
 

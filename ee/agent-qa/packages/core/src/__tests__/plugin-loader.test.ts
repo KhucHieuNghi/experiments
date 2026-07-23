@@ -13,7 +13,7 @@ describe('loadLLMAuthPlugins', () => {
   let tempDir: string
 
   beforeEach(async () => {
-    tempDir = await mkdtemp(join(tmpdir(), 'agent-qa-auth-plugin-loader-'))
+    tempDir = await mkdtemp(join(tmpdir(), 'etus-agent-auth-plugin-loader-'))
   })
 
   afterEach(async () => {

@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hooks - ETUS Documentation</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+  <div class="docs-layout">
+    <aside class="docs-sidebar">
+      <div class="docs-logo">ETUS <span>docs</span></div>
+      <nav class="docs-nav">
+        <div class="docs-nav-group">
+          <div class="docs-nav-label">Getting Started</div>
+          <a href="index.html">Overview</a>
+          <a href="quickstart.html">Quickstart</a>
+        </div>
+        <div class="docs-nav-group">
+          <div class="docs-nav-label">Core Concepts</div>
+          <a href="configuration.html">Configuration</a>
+          <a href="tests.html">Tests</a>
+          <a href="suites.html">Suites</a>
+          <a href="hooks.html">Hooks</a>
+        </div>
+        <div class="docs-nav-group">
+          <div class="docs-nav-label">Features</div>
+          <a href="memory.html">Memory</a>
+          <a href="caching.html">Caching</a>
+          <a href="web-testing.html">Web Testing</a>
+          <a href="auth-state.html">Auth State</a>
+        </div>
+        <div class="docs-nav-group">
+          <div class="docs-nav-label">Reference</div>
+          <a href="cli.html">CLI Commands</a>
+          <a href="env-vars.html">Environment Variables</a>
+        </div>
+      </nav>
+    </aside>
+    <main class="docs-main">
+      <button class="docs-menu-btn">Menu</button>
+      <div class="docs-breadcrumb"><a href="index.html">Docs</a> / Hooks</div>
+
+      <h1>Hooks</h1>
+      <p class="docs-subtitle">Hooks are sandboxed scripts that run before or after tests. Use them for database seeding, mock servers, cleanup, and environment setup.</p>
+
+      <h2>Hook definition</h2>
+      <p>Hooks are defined in a <code>hooks.yaml</code> file:</p>
+      <pre><code># hooks/hooks.yaml
+hooks:
+  - hook-id: hook_seed_database
+    name: Seed test database
+    runtime: node
+    script: scripts/seed-db.mjs
+    timeout: 30000
+    env:
+      DATABASE_URL: "{{secret:DATABASE_URL}}"
+
+  - hook-id: hook_cleanup_data
+    name: Clean up test data
+    runtime: bash
+    script: scripts/cleanup.sh
+    timeout: 15000</code></pre>
+
+      <h2>Docker sandbox</h2>
+      <p>Hooks run inside a Docker container with strict resource limits:</p>
+      <table>
+        <thead>
+          <tr><th>Constraint</th><th>Default</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Memory limit</td><td>512 MB</td></tr>
+          <tr><td>CPU limit</td><td>1 CPU</td></tr>
+          <tr><td>Filesystem</td><td>Read-only (except <code>/tmp</code>)</td></tr>
+          <tr><td>Network</td><td>Disabled by default</td></tr>
+          <tr><td>Timeout</td><td>Defined per hook</td></tr>
+        </tbody>
+      </table>
+
+      <div class="docs-callout">
+        <strong>Info</strong><br>
+        Enable network access for a hook by adding <code>network: true</code> to its definition. Only enable when the hook needs to reach external services.
+      </div>
+
+      <h2>Supported runtimes</h2>
+      <table>
+        <thead>
+          <tr><th>Runtime</th><th>Image</th><th>Use case</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>node</code></td><td><code>etus/etus-agent-hook-node</code></td><td>JavaScript/TypeScript scripts</td></tr>
+          <tr><td><code>bun</code></td><td><code>etus/etus-agent-hook-node</code></td><td>Fast JS runtime</td></tr>
+          <tr><td><code>python</code></td><td><code>etus/etus-agent-hook-node</code></td><td>Python scripts</td></tr>
+          <tr><td><code>bash</code></td><td><code>etus/etus-agent-hook-node</code></td><td>Shell scripts</td></tr>
+        </tbody>
+      </table>
+
+      <h2>Variable output</h2>
+      <p>Hooks can export variables to subsequent tests by writing key-value pairs to <code>/tmp/etus-agent.env</code>:</p>
+      <pre><code>// scripts/seed-db.mjs
+import { writeFileSync } from 'node:fs'
+
+const userId = await seedTestUser()
+const token = await generateAuthToken(userId)
+
+writeFileSync('/tmp/etus-agent.env', [
+  `SEEDED_USER_ID=${userId}`,
+  `AUTH_TOKEN=${token}`,
+].join('\n'))</code></pre>
+
+      <p>These variables become available in test steps as <code>{{SEEDED_USER_ID}}</code> and <code>{{AUTH_TOKEN}}</code>.</p>
+
+      <h2>Hook fields reference</h2>
+      <table>
+        <thead>
+          <tr><th>Field</th><th>Type</th><th>Required</th><th>Description</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>hook-id</code></td><td>string</td><td>Yes</td><td>Unique identifier. Use ID generation helpers.</td></tr>
+          <tr><td><code>name</code></td><td>string</td><td>Yes</td><td>Human-readable name.</td></tr>
+          <tr><td><code>runtime</code></td><td>string</td><td>Yes</td><td>One of: node, bun, python, bash.</td></tr>
+          <tr><td><code>script</code></td><td>string</td><td>Yes</td><td>Path to the script file relative to hooks directory.</td></tr>
+          <tr><td><code>timeout</code></td><td>number</td><td>No</td><td>Max execution time in ms (default: 30000).</td></tr>
+          <tr><td><code>env</code></td><td>object</td><td>No</td><td>Environment variables passed to the container.</td></tr>
+          <tr><td><code>network</code></td><td>boolean</td><td>No</td><td>Enable network access (default: false).</td></tr>
+        </tbody>
+      </table>
+
+      <h2>Using hooks in suites</h2>
+      <p>Reference hooks by ID in a suite definition:</p>
+      <pre><code># suites/regression.yaml
+hooks:
+  setup:
+    - hook_seed_database
+  teardown:
+    - hook_cleanup_data</code></pre>
+      <p>See <a href="suites.html">Suites</a> for the complete suite format.</p>
+
+      <div class="docs-footer">
+        <p>ETUS Documentation</p>
+      </div>
+    </main>
+  </div>
+  <script src="assets/docs.js"></script>
+</body>
+</html>

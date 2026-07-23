@@ -14,7 +14,7 @@ const { mockFsWriteFile } = vi.hoisted(() => ({
   mockFsWriteFile: vi.fn(),
 }))
 
-vi.mock('@etus/agent-qa-web', () => ({
+vi.mock('@etus/agent-web', () => ({
   runAccessibilityCheck: mockRunAccessibilityCheck,
 }))
 

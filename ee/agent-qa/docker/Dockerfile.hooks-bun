@@ -5,7 +5,7 @@ LABEL org.opencontainers.image.title="ETUS Hook Runner Bun" \
       org.opencontainers.image.licenses="SEE LICENSE IN LICENSE.md" \
       org.opencontainers.image.vendor="ETUS"
 
-COPY LICENSE.md /licenses/agent-qa/LICENSE.md
+COPY LICENSE.md /licenses/etus-agent/LICENSE.md
 
 RUN groupadd -r hookuser && useradd -r -g hookuser -d /workspace -s /bin/sh hookuser
 

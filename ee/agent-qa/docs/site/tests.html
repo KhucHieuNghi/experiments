@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tests - ETUS Documentation</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+  <div class="docs-layout">
+    <aside class="docs-sidebar">
+      <div class="docs-logo">ETUS <span>docs</span></div>
+      <nav class="docs-nav">
+        <div class="docs-nav-group">
+          <div class="docs-nav-label">Getting Started</div>
+          <a href="index.html">Overview</a>
+          <a href="quickstart.html">Quickstart</a>
+        </div>
+        <div class="docs-nav-group">
+          <div class="docs-nav-label">Core Concepts</div>
+          <a href="configuration.html">Configuration</a>
+          <a href="tests.html">Tests</a>
+          <a href="suites.html">Suites</a>
+          <a href="hooks.html">Hooks</a>
+        </div>
+        <div class="docs-nav-group">
+          <div class="docs-nav-label">Features</div>
+          <a href="memory.html">Memory</a>
+          <a href="caching.html">Caching</a>
+          <a href="web-testing.html">Web Testing</a>
+          <a href="auth-state.html">Auth State</a>
+        </div>
+        <div class="docs-nav-group">
+          <div class="docs-nav-label">Reference</div>
+          <a href="cli.html">CLI Commands</a>
+          <a href="env-vars.html">Environment Variables</a>
+        </div>
+      </nav>
+    </aside>
+    <main class="docs-main">
+      <button class="docs-menu-btn">Menu</button>
+      <div class="docs-breadcrumb"><a href="index.html">Docs</a> / Tests</div>
+
+      <h1>Tests</h1>
+      <p class="docs-subtitle">Tests are YAML files that describe user journeys in natural language. ETUS interprets each step and executes it against the browser.</p>
+
+      <h2>Test file format</h2>
+      <pre><code># tests/login.yaml
+test-id: test_login_success
+name: Successful user login
+meta:
+  tags: [auth, smoke]
+  priority: high
+
+use:
+  baseUrl: http://localhost:3000
+  browser: chromium
+
+steps:
+  - Navigate to the login page
+  - Enter "user@example.com" into the email field
+  - Enter "{{secret:TEST_PASSWORD}}" into the password field
+  - Click the "Sign in" button
+  - Verify the dashboard page loads with a welcome message</code></pre>
+
+      <h2>Required fields</h2>
+      <table>
+        <thead>
+          <tr><th>Field</th><th>Type</th><th>Description</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>test-id</code></td><td>string</td><td>Unique identifier for the test. Use the ID generation helpers.</td></tr>
+          <tr><td><code>name</code></td><td>string</td><td>Human-readable test name.</td></tr>
+          <tr><td><code>steps</code></td><td>string[]</td><td>Ordered list of natural language instructions.</td></tr>
+        </tbody>
+      </table>
+
+      <h2>Optional fields</h2>
+      <table>
+        <thead>
+          <tr><th>Field</th><th>Type</th><th>Description</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>meta</code></td><td>object</td><td>Metadata: tags, priority, description.</td></tr>
+          <tr><td><code>use</code></td><td>object</td><td>Per-test config overrides (browser, baseUrl, timeout, etc.)</td></tr>
+          <tr><td><code>variables</code></td><td>object</td><td>Test-scoped variable definitions.</td></tr>
+        </tbody>
+      </table>
+
+      <h2>Variables</h2>
+      <p>Use double curly braces to reference variables in steps:</p>
+      <ul>
+        <li><code>{{variableName}}</code> &mdash; resolved from config, suite, or test variables</li>
+        <li><code>{{secret:NAME}}</code> &mdash; resolved from environment; redacted in all output and artifacts</li>
+      </ul>
+
+      <pre><code># Using variables in steps
+variables:
+  username: testuser@example.com
+
+steps:
+  - Navigate to {{baseUrl}}/login
+  - Enter "{{username}}" into the email field
+  - Enter "{{secret:USER_PASSWORD}}" into the password field
+  - Click "Sign in"</code></pre>
+
+      <div class="docs-callout">
+        <strong>Tip</strong><br>
+        Variables from hooks (output via <code>/tmp/etus-agent.env</code>) are also available in steps. See <a href="hooks.html">Hooks</a> for details.
+      </div>
+
+      <h2>Per-test overrides</h2>
+      <p>The <code>use</code> block lets you override any global config setting for a single test:</p>
+      <pre><code>use:
+  browser: firefox
+  headless: false
+  viewport: { width: 1920, height: 1080 }
+  timeout: 60000
+  video: true</code></pre>
+
+      <h2>Running a single test</h2>
+      <pre><code>npx etus-agent run tests/login.yaml</code></pre>
+      <p>See <a href="cli.html">CLI Commands</a> for additional run options like <code>--no-cache</code> and <code>--log-level</code>.</p>
+
+      <div class="docs-footer">
+        <p>ETUS Documentation</p>
+      </div>
+    </main>
+  </div>
+  <script src="assets/docs.js"></script>
+</body>
+</html>

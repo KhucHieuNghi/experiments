@@ -13,7 +13,7 @@ import sharp from 'sharp'
 export type AgentAbortScope = 'test' | 'step'
 
 export interface AgentTimeoutAbortReason {
-  type: 'agent-qa-timeout'
+  type: 'etus-agent-timeout'
   scope: AgentAbortScope
   timeoutMs: number
   message: string
@@ -22,7 +22,7 @@ export interface AgentTimeoutAbortReason {
 export function createTimeoutAbortReason(scope: AgentAbortScope, timeoutMs: number): AgentTimeoutAbortReason {
   const label = scope === 'test' ? 'Test' : 'Step'
   return {
-    type: 'agent-qa-timeout',
+    type: 'etus-agent-timeout',
     scope,
     timeoutMs,
     message: `${label} timed out after ${timeoutMs}ms`,
@@ -33,7 +33,7 @@ export function getTimeoutAbortReason(signal: AbortSignal | undefined): AgentTim
   const reason = signal?.reason
   if (!reason || typeof reason !== 'object') return undefined
   const maybeReason = reason as Partial<AgentTimeoutAbortReason>
-  return maybeReason.type === 'agent-qa-timeout'
+  return maybeReason.type === 'etus-agent-timeout'
     && (maybeReason.scope === 'test' || maybeReason.scope === 'step')
     && typeof maybeReason.timeoutMs === 'number'
     && typeof maybeReason.message === 'string'

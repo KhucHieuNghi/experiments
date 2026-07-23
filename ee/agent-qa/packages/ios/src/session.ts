@@ -6,7 +6,7 @@ export async function createIOSSession(
   farmSession?: { hostname: string; port: number; path: string; capabilities: Record<string, unknown> },
 ) {
   const match = config.device?.match ?? {}
-  const appiumUrl = process.env.AGENT_QA_APPIUM_URL ?? config.appiumUrl ?? 'http://localhost:4723'
+  const appiumUrl = process.env.ETUS_AGENT_APPIUM_URL ?? config.appiumUrl ?? 'http://localhost:4723'
   const url = new URL(appiumUrl)
   const browserName = typeof match.browserName === 'string' && match.browserName.trim().length > 0
     ? match.browserName.trim()

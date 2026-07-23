@@ -16,7 +16,7 @@ function baseConfig(overrides: Record<string, unknown> = {}) {
 }
 
 async function withTempDir<T>(fn: (dir: string) => T | Promise<T>): Promise<T> {
-  const dir = mkdtempSync(join(tmpdir(), 'agent-qa-browserstack-app-'))
+  const dir = mkdtempSync(join(tmpdir(), 'etus-agent-browserstack-app-'))
   try {
     return await fn(dir)
   } finally {

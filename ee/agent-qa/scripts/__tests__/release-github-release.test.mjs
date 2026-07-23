@@ -31,18 +31,18 @@ function generatedNotes(body = '## Changes\n\n- Shipped release automation') {
 }
 
 test('parses GitHub release CLI args with explicit or Actions repository', () => {
-  assert.deepEqual(parseGithubReleaseArgs(['--version', '0.1.1', '--repo', 'etus/agent-qa']), {
+  assert.deepEqual(parseGithubReleaseArgs(['--version', '0.1.1', '--repo', 'etus/etus-agent']), {
     version: '0.1.1',
-    repo: 'etus/agent-qa',
+    repo: 'etus/etus-agent',
   })
   assert.deepEqual(parseGithubReleaseArgs(['--version', '0.1.1'], {
-    env: { GITHUB_REPOSITORY: 'etus/agent-qa' },
+    env: { GITHUB_REPOSITORY: 'etus/etus-agent' },
   }), {
     version: '0.1.1',
-    repo: 'etus/agent-qa',
+    repo: 'etus/etus-agent',
   })
-  assert.throws(() => parseGithubReleaseArgs(['--repo', 'etus/agent-qa']), /missing --version/)
-  assert.throws(() => parseGithubReleaseArgs(['--version', '1.0.0', '--repo', 'etus/agent-qa']), /valid v0 semver/)
+  assert.throws(() => parseGithubReleaseArgs(['--repo', 'etus/etus-agent']), /missing --version/)
+  assert.throws(() => parseGithubReleaseArgs(['--version', '1.0.0', '--repo', 'etus/etus-agent']), /valid v0 semver/)
   assert.throws(() => parseGithubReleaseArgs(['--version', '0.1.1', '--repo', 'bad']), /owner\/name/)
 })
 
@@ -54,19 +54,19 @@ test('composes generated release notes before the stable public footer', () => {
   })
 
   assert.ok(notes.indexOf('## Changes') < notes.indexOf('npm package'))
-  assert.match(notes, /https:\/\/www\.npmjs\.com\/package\/agent-qa/)
+  assert.match(notes, /https:\/\/www\.npmjs\.com\/package\/etus-agent/)
   assert.match(notes, /https:\/\/hub\.docker\.com\/u\/etus/)
-  assert.match(notes, /https:\/\/etus\.com\/docs\/agent-qa/)
-  assert.doesNotMatch(notes, /\/Users|POSTHOG|TOKEN|agent-qa\.local\.yaml/)
+  assert.match(notes, /https:\/\/etus\.com\/docs\/etus-agent/)
+  assert.doesNotMatch(notes, /\/Users|POSTHOG|TOKEN|etus-agent\.local\.yaml/)
 })
 
 test('creates a missing GitHub release with generated notes and --verify-tag', async () => {
-  const tempDir = await mkdtemp(join(tmpdir(), 'agent-qa-github-release-create-'))
+  const tempDir = await mkdtemp(join(tmpdir(), 'etus-agent-github-release-create-'))
   try {
     const calls = []
     publishGithubRelease({
       version: '0.1.1',
-      repo: 'etus/agent-qa',
+      repo: 'etus/etus-agent',
     }, {
       mkdtempSync: () => tempDir,
       rmSync: () => {},
@@ -81,7 +81,7 @@ test('creates a missing GitHub release with generated notes and --verify-tag', a
     const apiCall = calls.find(([cmd, args]) => cmd === 'gh' && args[0] === 'api')
     assert.deepEqual(apiCall.slice(0, 2), [
       'gh',
-      ['api', 'repos/etus/agent-qa/releases/generate-notes', '-f', 'tag_name=v0.1.1'],
+      ['api', 'repos/etus/etus-agent/releases/generate-notes', '-f', 'tag_name=v0.1.1'],
     ])
 
     const createCall = calls.find(([cmd, args]) => cmd === 'gh' && args[0] === 'release' && args[1] === 'create')
@@ -91,7 +91,7 @@ test('creates a missing GitHub release with generated notes and --verify-tag', a
       'create',
       'v0.1.1',
       '--repo',
-      'etus/agent-qa',
+      'etus/etus-agent',
       '--title',
     ])
     assert.equal(createCall[1].includes('--verify-tag'), true)
@@ -101,9 +101,9 @@ test('creates a missing GitHub release with generated notes and --verify-tag', a
     const notesFile = createCall[1][createCall[1].indexOf('--notes-file') + 1]
     const notes = readFileSync(notesFile, 'utf8')
     assert.ok(notes.indexOf('## Changes') < notes.indexOf('npm package'))
-    assert.match(notes, /https:\/\/www\.npmjs\.com\/package\/agent-qa/)
+    assert.match(notes, /https:\/\/www\.npmjs\.com\/package\/etus-agent/)
     assert.match(notes, /https:\/\/hub\.docker\.com\/u\/etus/)
-    assert.match(notes, /https:\/\/etus\.com\/docs\/agent-qa/)
+    assert.match(notes, /https:\/\/etus\.com\/docs\/etus-agent/)
     assert.equal(calls.some(([, args]) => args.includes('edit')), false)
   } finally {
     await rm(tempDir, { recursive: true, force: true })
@@ -111,12 +111,12 @@ test('creates a missing GitHub release with generated notes and --verify-tag', a
 })
 
 test('updates an existing GitHub release instead of creating a duplicate', async () => {
-  const tempDir = await mkdtemp(join(tmpdir(), 'agent-qa-github-release-edit-'))
+  const tempDir = await mkdtemp(join(tmpdir(), 'etus-agent-github-release-edit-'))
   try {
     const calls = []
     publishGithubRelease({
       version: '0.1.1',
-      repo: 'etus/agent-qa',
+      repo: 'etus/etus-agent',
     }, {
       mkdtempSync: () => tempDir,
       rmSync: () => {},
@@ -130,7 +130,7 @@ test('updates an existing GitHub release instead of creating a duplicate', async
 
     const editCall = calls.find(([cmd, args]) => cmd === 'gh' && args[0] === 'release' && args[1] === 'edit')
     assert.ok(editCall, 'expected gh release edit call')
-    assert.deepEqual(editCall[1].slice(0, 5), ['release', 'edit', 'v0.1.1', '--repo', 'etus/agent-qa'])
+    assert.deepEqual(editCall[1].slice(0, 5), ['release', 'edit', 'v0.1.1', '--repo', 'etus/etus-agent'])
     assert.equal(editCall[1].includes('--notes-file'), true)
     assert.equal(editCall[1].includes('--latest'), true)
     assert.equal(calls.some(([, args]) => args.includes('create')), false)
@@ -140,12 +140,12 @@ test('updates an existing GitHub release instead of creating a duplicate', async
 })
 
 test('does not create a release after an unexpected gh release view failure', async () => {
-  const tempDir = await mkdtemp(join(tmpdir(), 'agent-qa-github-release-error-'))
+  const tempDir = await mkdtemp(join(tmpdir(), 'etus-agent-github-release-error-'))
   try {
     const calls = []
     assert.throws(() => publishGithubRelease({
       version: '0.1.1',
-      repo: 'etus/agent-qa',
+      repo: 'etus/etus-agent',
     }, {
       mkdtempSync: () => tempDir,
       rmSync: () => {},

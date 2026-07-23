@@ -18,8 +18,8 @@ vi.mock('node:fs/promises', () => ({
   readFile: vi.fn(() => Promise.reject({ code: 'ENOENT' })),
 }))
 
-vi.mock('@etus/agent-qa-core', async () => {
-  const actual = await vi.importActual<typeof import('@etus/agent-qa-core')>('@etus/agent-qa-core')
+vi.mock('@etus/agent-core', async () => {
+  const actual = await vi.importActual<typeof import('@etus/agent-core')>('@etus/agent-core')
   return {
     ...actual,
     AgentQaConfigSchema: {
@@ -108,7 +108,7 @@ import { createDoctorCommand } from '../commands/doctor.js'
 import { execFileSync, execSync } from 'node:child_process'
 import { existsSync } from 'node:fs'
 import { readFile } from 'node:fs/promises'
-import * as core from '@etus/agent-qa-core'
+import * as core from '@etus/agent-core'
 import { generateText } from 'ai'
 
 const mockExecSync = vi.mocked(execSync)
@@ -183,12 +183,12 @@ describe('doctor command', () => {
 
   it('Config file check passes when file exists', async () => {
     mockExistsSync.mockImplementation((p) => {
-      return (p as string).endsWith('agent-qa.config.yaml')
+      return (p as string).endsWith('etus-agent.config.yaml')
     })
 
     await runDoctor()
     const output = getOutput()
-    expect(output).toContain('agent-qa.config.yaml found')
+    expect(output).toContain('etus-agent.config.yaml found')
     expect(output).toContain('PASS')
   })
 
@@ -211,7 +211,7 @@ describe('doctor command', () => {
   })
 
   it('uses the parent global config path when loading config', async () => {
-    mockExistsSync.mockImplementation((p) => p === 'custom-agent-qa.yaml')
+    mockExistsSync.mockImplementation((p) => p === 'custom-etus-agent.yaml')
     mockReadFile.mockResolvedValue(`
 registry:
   llms:
@@ -223,10 +223,10 @@ use:
   llm: planner
 ` as never)
 
-    await runDoctor('custom-agent-qa.yaml')
+    await runDoctor('custom-etus-agent.yaml')
 
-    expect(mockExistsSync).toHaveBeenCalledWith('custom-agent-qa.yaml')
-    expect(mockReadFile).toHaveBeenCalledWith('custom-agent-qa.yaml', 'utf-8')
+    expect(mockExistsSync).toHaveBeenCalledWith('custom-etus-agent.yaml')
+    expect(mockReadFile).toHaveBeenCalledWith('custom-etus-agent.yaml', 'utf-8')
   })
 
   it('passes the secrets file check when workspace.secretsFile exists', async () => {
@@ -390,7 +390,7 @@ registry:
       model: claude-remote
       baseURL: https://remote.example/messages
       providerHeaders:
-        x-workspace: agent-qa
+        x-workspace: etus-agent
 use:
   llm: planner
 `
@@ -406,13 +406,13 @@ use:
 
     expect(mockResolveLLMAuth).toHaveBeenCalledWith('planner', expect.objectContaining({
       provider: 'anthropic-compatible',
-      providerHeaders: { 'x-workspace': 'agent-qa' },
+      providerHeaders: { 'x-workspace': 'etus-agent' },
     }))
     expect(mockCreateModel).toHaveBeenCalledWith(expect.objectContaining({
       provider: 'anthropic-compatible',
       model: 'claude-remote',
       baseURL: 'https://remote.example/messages',
-      providerHeaders: { 'x-workspace': 'agent-qa' },
+      providerHeaders: { 'x-workspace': 'etus-agent' },
       authToken: 'bearer-planner',
     }))
   })
@@ -421,7 +421,7 @@ use:
     const subscriptionConfig = `
 plugins:
   auth:
-    - package: "@etus/agent-qa-subscription-auth"
+    - package: "@etus/agent-subscription-auth"
 registry:
   llms:
     - name: codex
@@ -440,10 +440,10 @@ use:
       fetch: authFetch,
     })
 
-    await runDoctor('agent-qa.config.yaml')
+    await runDoctor('etus-agent.config.yaml')
 
     expect(mockLoadLLMAuthPlugins).toHaveBeenCalledWith(
-      [{ package: '@etus/agent-qa-subscription-auth' }],
+      [{ package: '@etus/agent-subscription-auth' }],
       expect.objectContaining({ baseDir: expect.any(String) }),
     )
     expect(mockCreateModel).toHaveBeenCalledWith(expect.objectContaining({
@@ -494,8 +494,8 @@ use:
     const output = getOutput()
     // Should show Playwright not installed
     expect(output).toContain('Playwright')
-    expect(output).toContain('agent-qa install-browsers --chromium')
-    expect(output).not.toContain('agent-qa init')
+    expect(output).toContain('etus-agent install-browsers --chromium')
+    expect(output).not.toContain('etus-agent init')
     expect(output).not.toContain('npx playwright install')
   })
 
@@ -617,7 +617,7 @@ use:
 
     const output = getOutput()
     expect(output).toContain('no drivers installed')
-    expect(output).toContain('agent-qa install-mobile-drivers --all')
+    expect(output).toContain('etus-agent install-mobile-drivers --all')
     expect(output).not.toContain('appium driver install uiautomator2')
   })
 
@@ -645,7 +645,7 @@ targets:
 
     const output = getOutput()
     expect(output).toContain('Install Appium locally with `npm install -D appium`')
-    expect(output).toContain('agent-qa install-mobile-drivers --all')
+    expect(output).toContain('etus-agent install-mobile-drivers --all')
   })
 
   it('Android SDK check validates ANDROID_HOME', async () => {
@@ -718,7 +718,7 @@ targets:
         secretsFile: '.secrets.local',
       },
       registry: { llms: [{ name: 'default', provider: 'openai-compatible', model: 'model-name', baseURL: 'https://remote.example/api/v1', screenshotSize: '1m' }] },
-      services: { cache: { dir: '.agent-qa/cache', ttl: '7d' }, logging: { level: 'warn' } },
+      services: { cache: { dir: '.etus-agent/cache', ttl: '7d' }, logging: { level: 'warn' } },
       use: {
         browser: { name: 'chromium', headless: true },
         timeout: { step: '30s', test: '10m', navigation: '10s' },

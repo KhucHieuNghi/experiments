@@ -3,7 +3,7 @@ import { readFileSync } from 'node:fs'
 import { describe, expect, it } from 'vitest'
 
 const demoConfig = readFileSync(
-  new URL('../../../../../demo-project/agent-qa.config.yaml', import.meta.url),
+  new URL('../../../../../demo-project/etus-agent.config.yaml', import.meta.url),
   'utf-8',
 )
 const sampleUploadFixture = readFileSync(

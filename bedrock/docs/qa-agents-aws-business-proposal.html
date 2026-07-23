@@ -26,6 +26,27 @@
         max-width: 58rem;
       }
 
+      .docs-nav__group {
+        display: grid;
+        gap: 0.25rem;
+      }
+
+      .docs-nav__group + .docs-nav__group {
+        border-top: 1px solid var(--border);
+        margin-top: 0.35rem;
+        padding-top: 0.75rem;
+      }
+
+      .docs-nav__group-label {
+        color: var(--text-muted);
+        font-family: var(--font-heading);
+        font-size: 0.68rem;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        padding: 0 0.75rem 0.2rem;
+        text-transform: uppercase;
+      }
+
       .section-kicker {
         color: var(--text-muted);
         margin-top: -0.75rem;
@@ -160,6 +181,53 @@
         width: 100%;
       }
 
+      .frame {
+        fill: var(--surface);
+        stroke: var(--border);
+        stroke-width: 1.4;
+      }
+
+      .frame.human {
+        fill: color-mix(in srgb, var(--brand-primary) 7%, var(--surface));
+      }
+
+      .frame.local {
+        fill: color-mix(in srgb, var(--text-muted) 8%, var(--surface));
+      }
+
+      .frame.aws {
+        fill: color-mix(in srgb, #ff9900 9%, var(--surface));
+        stroke: color-mix(in srgb, #ff9900 48%, var(--border));
+      }
+
+      .frame.third-party {
+        fill: color-mix(in srgb, var(--brand-accent) 8%, var(--surface));
+      }
+
+      .frame.target {
+        fill: color-mix(in srgb, #527fff 8%, var(--surface));
+      }
+
+      .frame-label {
+        fill: var(--text);
+        font-family: var(--font-body);
+        font-size: 14px;
+        font-weight: 800;
+      }
+
+      .aws-badge {
+        fill: #ff9900;
+        stroke: color-mix(in srgb, #ff9900 65%, #232f3e);
+        stroke-width: 1;
+      }
+
+      .aws-badge-text {
+        fill: #232f3e;
+        font-family: var(--font-body);
+        font-size: 10px;
+        font-weight: 900;
+      }
+
       .box {
         fill: var(--surface);
         stroke: var(--border);
@@ -177,6 +245,10 @@
 
       .box.warn {
         fill: var(--proposal-warn);
+      }
+
+      .box.target {
+        fill: color-mix(in srgb, #527fff 8%, var(--surface));
       }
 
       .label {
@@ -215,10 +287,57 @@
         margin-bottom: 0.45rem;
       }
 
+      .scope-table td:first-child {
+        font-weight: 800;
+      }
+
+      .doc-links {
+        display: grid;
+        gap: 0.75rem;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .doc-link {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-sm);
+        color: var(--text);
+        display: block;
+        min-height: 8rem;
+        padding: 1rem;
+        text-decoration: none;
+      }
+
+      .doc-link strong,
+      .doc-link span {
+        display: block;
+      }
+
+      .doc-link span {
+        color: var(--text-muted);
+        margin-top: 0.4rem;
+      }
+
+      .architecture-package {
+        display: grid;
+        gap: 1rem;
+      }
+
+      .architecture-package .diagram {
+        margin-top: 0.25rem;
+      }
+
+      .architecture-package .diagram-caption {
+        color: var(--text-muted);
+        font-size: 0.92rem;
+        margin: 0 0 0.75rem;
+      }
+
       @media (max-width: 900px) {
         .grid.two,
         .grid.three,
         .grid.four,
+        .doc-links,
         .layer-items,
         .stack-layer {
           grid-template-columns: 1fr;
@@ -236,14 +355,33 @@
       <aside class="docs-sidebar" id="docs-sidebar" aria-label="Documentation navigation">
         <div class="docs-sidebar__label">QA-Agents Proposal</div>
         <nav class="docs-nav" aria-label="Page sections">
-          <a href="#summary">Tóm tắt</a>
-          <a href="#business">Business problem</a>
-          <a href="#decisions">Options & rationale</a>
-          <a href="#aws-stack">AWS stack</a>
-          <a href="#architecture">Architecture</a>
-          <a href="#journey">Request journey</a>
-          <a href="#roadmap">Roadmap</a>
-          <a href="#sources">Nguồn</a>
+          <div class="docs-nav__group">
+            <div class="docs-nav__group-label">Proposal scope</div>
+            <a href="#summary">Tóm tắt</a>
+            <a href="#business">Business problem</a>
+            <a href="#scope-boundaries">Scope boundaries</a>
+            <a href="#knowledge-prerequisite">Knowledge prerequisite</a>
+            <a href="#technical-operating-model">Technical model</a>
+            <a href="#decisions">Options &amp; rationale</a>
+          </div>
+          <div class="docs-nav__group">
+            <div class="docs-nav__group-label">AWS and current architecture</div>
+            <a href="#aws-stack">AWS stack</a>
+            <a href="#bedrock-primer">Bedrock primer</a>
+            <a href="#architecture">Architecture</a>
+            <a href="#etus-architecture">ETUS architecture</a>
+            <a href="#journey">Request journey</a>
+          </div>
+          <div class="docs-nav__group">
+            <div class="docs-nav__group-label">After proposal</div>
+            <a href="#post-proposal-architecture">Implementation architecture</a>
+            <a href="#architecture-package">AWS architecture package</a>
+            <a href="#roadmap">Roadmap</a>
+          </div>
+          <div class="docs-nav__group">
+            <div class="docs-nav__group-label">References</div>
+            <a href="#sources">Nguồn</a>
+          </div>
         </nav>
       </aside>
 
@@ -389,6 +527,385 @@
           </div>
         </section>
 
+        <section id="scope-boundaries">
+          <h2>Scope boundaries: business/product vs engineer/technology</h2>
+          <p class="section-kicker">
+            QA-Agents không được trộn expected behavior với implementation guess. Document source-of-truth
+            phân định rõ ai sở hữu quyết định nào, AI được tổng hợp gì, và phần nào phải hỏi lại đúng owner.
+          </p>
+
+          <div class="grid four">
+            <article class="tile">
+              <h3>Business / Product</h3>
+              <p>
+                Sở hữu customer impact, expected behavior, acceptance criteria, business rule,
+                priority, out-of-scope và release risk acceptance.
+              </p>
+            </article>
+            <article class="tile">
+              <h3>Engineer / Technology</h3>
+              <p>
+                Sở hữu implementation shape: UI/API/database/config/permission/job/integration,
+                PR/code/test/CI signals, build/deploy constraints và technical risk.
+              </p>
+            </article>
+            <article class="tile">
+              <h3>QA / Verification</h3>
+              <p>
+                Chuyển intent và technical signal thành verification plan, evidence checklist,
+                defect wording, final QA note và final verification memory.
+              </p>
+            </article>
+            <article class="tile">
+              <h3>AI / AWS system</h3>
+              <p>
+                Retrieve approved sources, synthesize, label <code>source-backed</code>,
+                <code>inferred</code>, <code>unknown</code>, guardrail và trace. Không chốt truth.
+              </p>
+            </article>
+          </div>
+
+          <table class="scope-table">
+            <thead>
+              <tr>
+                <th>Scope group</th>
+                <th>QA-Agents được hỗ trợ</th>
+                <th>Không được tự quyết</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Business/Product</td>
+                <td>Tổng hợp intent, rule, historical decision, customer impact, release trade-off.</td>
+                <td>Chốt behavior mới, đổi business rule, accept release risk.</td>
+              </tr>
+              <tr>
+                <td>Engineer/Technology</td>
+                <td>Tóm tắt impacted layers, PR/code/test/CI signal, deploy/build constraints.</td>
+                <td>Kết luận code behavior khi không có source, quyết định architecture thay engineer.</td>
+              </tr>
+              <tr>
+                <td>Third-party systems</td>
+                <td>Dùng làm source/link: ticketing, PR, CI, docs, chat, test management, evidence store.</td>
+                <td>Write trực tiếp trong MVP; Phase 2 cần Gateway, Identity, Policy và human approval.</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <aside class="docs-callout">
+            Rule vận hành: business decision chỉ Product/Business owner chốt; technical decision chỉ
+            Engineer/Tech owner chốt; QA sign-off chỉ QA chốt. AI chỉ giúp tạo shared context có nhãn nguồn.
+          </aside>
+        </section>
+
+        <section id="knowledge-prerequisite">
+          <h2>Knowledge Base là điều kiện tiên quyết trước khi test</h2>
+          <p class="section-kicker">
+            Trước khi QA-AI agent tạo test plan, suggest verification steps hoặc hỗ trợ verify ticket,
+            agent phải hiểu rõ approved knowledge boundary của ticket. Đây là prerequisite của workflow,
+            không phải một phần hạ tầng tùy chọn.
+          </p>
+
+          <div class="grid three">
+            <article class="tile decision">
+              <h3>Agent cần biết nguồn nào được tin</h3>
+              <p>
+                Product specs, business rules, decision history, QA records, release notes và technical
+                references chỉ được dùng khi có owner, freshness và permission rõ.
+              </p>
+            </article>
+            <article class="tile risk">
+              <h3>Không có Knowledge Base thì rủi ro cao</h3>
+              <p>
+                Agent có thể dùng stale docs như current behavior, xem code path là business truth,
+                hoặc biến inference thành fact. Output đẹp nhưng không an toàn cho QA sign-off.
+              </p>
+            </article>
+            <article class="tile decision">
+              <h3>Output phải có nhãn nguồn</h3>
+              <p>
+                Mọi claim quan trọng phải là <code>source-backed</code>, <code>inferred</code>
+                hoặc <code>unknown</code>. Unknown phải thành clarification question trước execution.
+              </p>
+            </article>
+          </div>
+
+          <div class="diagram" aria-label="Knowledge Base prerequisite gate before QA-AI testing">
+            <svg viewBox="0 0 1180 620" role="img">
+              <defs>
+                <marker id="arrowhead-kb" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+                  <path d="M0,0 L0,6 L9,3 z" fill="currentColor"></path>
+                </marker>
+              </defs>
+
+              <rect class="frame human" x="28" y="36" width="205" height="520" rx="14"></rect>
+              <text class="frame-label" x="52" y="70">Human ownership</text>
+
+              <rect class="frame aws" x="270" y="36" width="410" height="520" rx="14"></rect>
+              <text class="frame-label" x="294" y="70">Knowledge Base prerequisite</text>
+              <rect class="aws-badge" x="610" y="52" width="38" height="22" rx="4"></rect>
+              <text class="aws-badge-text" x="619" y="67">AWS</text>
+
+              <rect class="frame third-party" x="716" y="36" width="210" height="520" rx="14"></rect>
+              <text class="frame-label" x="740" y="70">External sources</text>
+
+              <rect class="frame local" x="960" y="36" width="190" height="520" rx="14"></rect>
+              <text class="frame-label" x="984" y="70">QA execution</text>
+
+              <rect class="box" x="58" y="110" width="145" height="72" rx="8"></rect>
+              <text class="label" x="82" y="140">Ready-for-QA</text>
+              <text class="label small" x="82" y="160">ticket + QA input</text>
+
+              <rect class="box" x="58" y="245" width="145" height="72" rx="8"></rect>
+              <text class="label" x="82" y="275">Product</text>
+              <text class="label small" x="82" y="295">business truth owner</text>
+
+              <rect class="box" x="58" y="380" width="145" height="72" rx="8"></rect>
+              <text class="label" x="82" y="410">Engineering</text>
+              <text class="label small" x="82" y="430">technical truth owner</text>
+
+              <rect class="box" x="740" y="108" width="160" height="74" rx="8"></rect>
+              <text class="label" x="765" y="138">Approved docs</text>
+              <text class="label small" x="765" y="158">PRD, RFC, rules, QA records</text>
+
+              <rect class="box" x="740" y="220" width="160" height="74" rx="8"></rect>
+              <text class="label" x="765" y="250">Technical refs</text>
+              <text class="label small" x="765" y="270">API docs, runbooks, CI signals</text>
+
+              <rect class="box warn" x="740" y="332" width="160" height="74" rx="8"></rect>
+              <text class="label" x="765" y="362">Excluded inputs</text>
+              <text class="label small" x="765" y="382">raw chat, PII, secrets, stale docs</text>
+
+              <rect class="box primary" x="322" y="128" width="185" height="100" rx="10"></rect>
+              <text class="label light" x="348" y="162">1. Approved</text>
+              <text class="label light" x="348" y="184">retrieval boundary</text>
+              <text class="label light" x="348" y="206">with ACL + metadata</text>
+
+              <rect class="box" x="470" y="286" width="165" height="90" rx="8"></rect>
+              <text class="label" x="496" y="318">2. Source checks</text>
+              <text class="label small" x="496" y="340">owner, freshness, conflict</text>
+              <text class="label small" x="496" y="360">classification, permission</text>
+
+              <rect class="box" x="306" y="420" width="135" height="74" rx="8"></rect>
+              <text class="label" x="326" y="450">source-backed</text>
+              <text class="label small" x="326" y="470">can draft claim</text>
+
+              <rect class="box warn" x="472" y="420" width="135" height="74" rx="8"></rect>
+              <text class="label" x="492" y="450">inferred</text>
+              <text class="label small" x="492" y="470">needs review</text>
+
+              <rect class="box warn" x="306" y="520" width="301" height="58" rx="8"></rect>
+              <text class="label" x="326" y="548">unknown or conflict -> Clarification Block</text>
+
+              <rect class="box" x="980" y="108" width="145" height="74" rx="8"></rect>
+              <text class="label" x="1002" y="138">Context record</text>
+              <text class="label small" x="1002" y="158">source labels visible</text>
+
+              <rect class="box" x="980" y="235" width="145" height="74" rx="8"></rect>
+              <text class="label" x="1002" y="265">QA review</text>
+              <text class="label small" x="1002" y="285">approve or clarify</text>
+
+              <rect class="box primary" x="980" y="362" width="145" height="90" rx="10"></rect>
+              <text class="label light" x="1002" y="395">Then test</text>
+              <text class="label light" x="1002" y="417">matrix, ETUS run,</text>
+              <text class="label light" x="1002" y="439">evidence, final note</text>
+
+              <path class="arrow" marker-end="url(#arrowhead-kb)" d="M203 146 H322"></path>
+              <path class="arrow dashed" marker-end="url(#arrowhead-kb)" d="M740 145 C650 145 600 160 507 176"></path>
+              <path class="arrow dashed" marker-end="url(#arrowhead-kb)" d="M740 257 C650 250 610 280 635 310"></path>
+              <path class="arrow dashed" marker-end="url(#arrowhead-kb)" d="M740 369 C675 375 640 355 635 330"></path>
+              <path class="arrow" marker-end="url(#arrowhead-kb)" d="M415 228 C430 260 500 270 540 286"></path>
+              <path class="arrow" marker-end="url(#arrowhead-kb)" d="M552 376 C510 400 430 410 374 420"></path>
+              <path class="arrow" marker-end="url(#arrowhead-kb)" d="M552 376 C560 400 570 410 540 420"></path>
+              <path class="arrow dashed" marker-end="url(#arrowhead-kb)" d="M540 494 C532 506 510 515 455 520"></path>
+              <path class="arrow dashed" marker-end="url(#arrowhead-kb)" d="M455 578 C290 585 190 450 203 416"></path>
+              <path class="arrow dashed" marker-end="url(#arrowhead-kb)" d="M455 578 C300 560 190 305 203 281"></path>
+              <path class="arrow" marker-end="url(#arrowhead-kb)" d="M441 457 C650 455 835 150 980 145"></path>
+              <path class="arrow" marker-end="url(#arrowhead-kb)" d="M1052 182 V235"></path>
+              <path class="arrow" marker-end="url(#arrowhead-kb)" d="M1052 309 V362"></path>
+            </svg>
+          </div>
+
+          <table class="scope-table">
+            <thead>
+              <tr>
+                <th>Prerequisite check</th>
+                <th>QA-AI agent bắt buộc phải làm</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Source exists</td>
+                <td>Claim quan trọng phải cite approved source nếu có.</td>
+              </tr>
+              <tr>
+                <td>Source is allowed</td>
+                <td>Retrieval phải tôn trọng permission level và data classification.</td>
+              </tr>
+              <tr>
+                <td>Source is fresh</td>
+                <td>Source stale, deprecated hoặc ownerless không được trình bày như fact.</td>
+              </tr>
+              <tr>
+                <td>Owner is clear</td>
+                <td>Product chốt business truth, Engineering chốt technical truth, QA chốt sign-off.</td>
+              </tr>
+              <tr>
+                <td>Conflict is visible</td>
+                <td>Conflicting sources phải thành mismatch/risk, không để AI tự resolve âm thầm.</td>
+              </tr>
+              <tr>
+                <td>Unknown is explicit</td>
+                <td>Missing source phải là <code>unknown</code> và tạo Clarification Block.</td>
+              </tr>
+              <tr>
+                <td>Evidence is separate</td>
+                <td>ETUS execution evidence và memory không tự động trở thành source-of-truth.</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <aside class="docs-callout">
+            Rule vận hành: Ticket vào ready-for-QA trước tiên phải đi qua Knowledge Base/source
+            understanding. Chỉ sau khi context record được label nguồn và QA review, agent mới nên hỗ trợ
+            test matrix, evidence checklist, ETUS execution suggestion hoặc final QA note.
+          </aside>
+        </section>
+
+        <section id="technical-operating-model">
+          <h2>Technical operating model để hệ thống chạy đúng</h2>
+          <p class="section-kicker">
+            QA-AI Agents phải được thiết kế như một controlled verification platform: có source gate,
+            schema, audit, trace, eval và human authority. Đây không phải chatbot tự do và cũng chưa phải
+            autonomous QA worker.
+          </p>
+
+          <div class="grid four">
+            <article class="tile">
+              <h3>QA engineer lens</h3>
+              <p>
+                Test case phải map về requirement, business rule/current behavior, risk, priority
+                và evidence required. Final note phải link scope verified, evidence, defects và known risk.
+              </p>
+            </article>
+            <article class="tile">
+              <h3>AI engineer lens</h3>
+              <p>
+                Prompt/output contract phải versioned. Claim phải có nhãn nguồn.
+                Retrieval quality, hallucination, unknown detection và clarification usefulness phải được eval.
+              </p>
+            </article>
+            <article class="tile">
+              <h3>Software engineer lens</h3>
+              <p>
+                API/session/record cần schema validation, idempotency, draft/approved states,
+                prompt/model/source version, audit log và replayable trace ID.
+              </p>
+            </article>
+            <article class="tile">
+              <h3>Cloud engineer lens</h3>
+              <p>
+                Runtime, auth, storage, observability và policy cần IAM least privilege, KMS,
+                CloudWatch, TTL/retention, Guardrails và Gateway/Identity/Policy khi có tool action.
+              </p>
+            </article>
+          </div>
+
+          <table>
+            <thead>
+              <tr>
+                <th>Layer</th>
+                <th>Capability</th>
+                <th>Technical requirement</th>
+                <th>Exit criteria</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>MVP</td>
+                <td>Draft-only context assistant</td>
+                <td>Read-only Knowledge Base, Bedrock prompt contracts, Guardrails, draft record store.</td>
+                <td>QA accepts context record quality and can use it before testing.</td>
+              </tr>
+              <tr>
+                <td>MVP+</td>
+                <td>Evidence-aware QA workbench</td>
+                <td>Evidence metadata model, final note generation, QA review workflow.</td>
+                <td>Final notes consistently link evidence, risk and verified scope.</td>
+              </tr>
+              <tr>
+                <td>Execution integration</td>
+                <td>ETUS-assisted verification</td>
+                <td>ETUS run metadata, artifact links, memory deltas, local/cloud runner boundary.</td>
+                <td>ETUS evidence attaches to records without replacing QA sign-off.</td>
+              </tr>
+              <tr>
+                <td>Governed tools</td>
+                <td>Ticket/PR/CI/docs integrations</td>
+                <td>AgentCore Gateway, Identity, Policy, approval UX and audit trail.</td>
+                <td>Agent can read tools and draft writes only with human approval.</td>
+              </tr>
+              <tr>
+                <td>Managed memory</td>
+                <td>Cross-ticket/project learning</td>
+                <td>AgentCore Memory plus ETUS memory promotion rules.</td>
+                <td>Memory improves future context without propagating contradictions.</td>
+              </tr>
+              <tr>
+                <td>Continuous evaluation</td>
+                <td>Quality and regression loop</td>
+                <td>AgentCore/Bedrock evaluations, golden dataset, trace sampling.</td>
+                <td>Prompt/model/tool changes are evaluated before rollout.</td>
+              </tr>
+              <tr>
+                <td>Semi-automated verification</td>
+                <td>Constrained agentic workflows</td>
+                <td>Policy-gated tool plans, sandboxed execution, rollback, human checkpoints.</td>
+                <td>Agent can run bounded workflows, but QA still owns sign-off.</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="grid three">
+            <article class="tile decision">
+              <h3>MVP release gate</h3>
+              <ul>
+                <li>Knowledge Base source policy approved.</li>
+                <li>Prompt contracts and output schema versioned.</li>
+                <li>Guardrails configured.</li>
+                <li>Draft record schema and QA review workflow implemented.</li>
+                <li>No write tools enabled.</li>
+              </ul>
+            </article>
+            <article class="tile decision">
+              <h3>Phase 2 release gate</h3>
+              <ul>
+                <li>Gateway tool contracts reviewed.</li>
+                <li>Identity and credential flow approved.</li>
+                <li>Policy rules defined for every tool.</li>
+                <li>Human approval required for write actions.</li>
+                <li>Tool calls traced and auditable.</li>
+              </ul>
+            </article>
+            <article class="tile decision">
+              <h3>Memory release gate</h3>
+              <ul>
+                <li>Memory schema has owner, source, trust and contradiction.</li>
+                <li>Memory write path is reviewable.</li>
+                <li>Deprecated memory is not retrieved as fact.</li>
+                <li>ETUS memory promotion requires evidence and source test.</li>
+              </ul>
+            </article>
+          </div>
+
+          <aside class="docs-callout">
+            Technical definition of done: QA can trace every claim, Product can see pending business
+            decisions, Engineering can separate evidence from hints, Cloud/Security can audit data and access,
+            AI engineering can evaluate quality, and software engineering can replay a session by prompt version,
+            model version, source set and trace ID.
+          </aside>
+        </section>
+
         <section id="decisions">
           <h2>Options và rationale</h2>
           <p class="section-kicker">
@@ -462,7 +979,7 @@
 
           <div class="stack-map">
             <div class="stack-layer">
-              <div class="layer-label">Experience & auth</div>
+              <div class="layer-label">Experience &amp; auth</div>
               <div class="layer-items">
                 <div class="service-card"><strong>QA Workbench UI</strong><span>Form nhập ticket + QA context; review/edit context record.</span></div>
                 <div class="service-card"><strong>CloudFront + AWS WAF</strong><span>Serve UI, edge protection, request filtering.</span></div>
@@ -482,7 +999,7 @@
             </div>
 
             <div class="stack-layer">
-              <div class="layer-label">AI & retrieval</div>
+              <div class="layer-label">AI &amp; retrieval</div>
               <div class="layer-items">
                 <div class="service-card"><strong>Amazon Bedrock Converse</strong><span>Model inference for summaries, risk, test direction, final note draft.</span></div>
                 <div class="service-card"><strong>Bedrock Guardrails</strong><span>PII/sensitive filters, denied topics, contextual grounding checks.</span></div>
@@ -492,7 +1009,7 @@
             </div>
 
             <div class="stack-layer">
-              <div class="layer-label">Data & events</div>
+              <div class="layer-label">Data &amp; events</div>
               <div class="layer-items">
                 <div class="service-card"><strong>DynamoDB</strong><span>Verification sessions, status, metadata, TTL for drafts.</span></div>
                 <div class="service-card"><strong>Amazon S3</strong><span>Evidence, exported markdown/html, ingestion documents.</span></div>
@@ -502,7 +1019,7 @@
             </div>
 
             <div class="stack-layer">
-              <div class="layer-label">Security & ops</div>
+              <div class="layer-label">Security &amp; ops</div>
               <div class="layer-items">
                 <div class="service-card"><strong>IAM + KMS</strong><span>Least privilege roles, encryption keys, service access boundaries.</span></div>
                 <div class="service-card"><strong>CloudWatch</strong><span>Logs, metrics, traces, alarms, token/latency dashboard.</span></div>
@@ -513,6 +1030,29 @@
           </div>
         </section>
 
+        <section id="bedrock-primer">
+          <h2>Bedrock ecosystem primer cần đọc trước</h2>
+          <p class="section-kicker">
+            Proposal này không nên tự giải thích lại toàn bộ AWS AI ecosystem. Người review technical nên đọc
+            các tài liệu Bedrock/AWS đã có trước, rồi quay lại proposal này để hiểu QA-Agents mapping.
+          </p>
+
+          <div class="doc-links">
+            <a class="doc-link" href="aws-ai-project-stack-map.html">
+              <strong>AWS AI project stack map</strong>
+              <span>HTML visual map về Bedrock, AgentCore, app runtime, data, security và ops.</span>
+            </a>
+            <a class="doc-link" href="aws-ai-ecosystem-stack-guide.md">
+              <strong>AWS AI ecosystem stack guide</strong>
+              <span>Markdown source về cách chọn các layer AWS theo nhu cầu triển khai agent/app.</span>
+            </a>
+            <a class="doc-link" href="aws-bedrock-agent-ecosystem-research.md">
+              <strong>Bedrock Agent ecosystem research</strong>
+              <span>Research notes về Bedrock/AgentCore ecosystem và ý nghĩa technical cho agent platform.</span>
+            </a>
+          </div>
+        </section>
+
         <section id="architecture">
           <h2>Architecture overview</h2>
           <p class="section-kicker">
@@ -520,90 +1060,130 @@
             host/wrap QA Assistant, không mở Gateway/write tools cho đến Phase 2.
           </p>
 
-          <div class="diagram" aria-label="AWS architecture overview diagram">
-            <svg viewBox="0 0 1180 720" role="img">
+          <div class="diagram" aria-label="AWS architecture overview with human local AWS and third-party frames">
+            <svg viewBox="0 0 1240 760" role="img">
               <defs>
                 <marker id="arrowhead-arch" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
                   <path d="M0,0 L0,6 L9,3 z" fill="currentColor"></path>
                 </marker>
               </defs>
 
-              <rect class="box soft" x="24" y="30" width="1132" height="640" rx="14"></rect>
-              <text class="label" x="48" y="62">AWS account boundary</text>
+              <rect class="frame human" x="24" y="34" width="190" height="640" rx="14"></rect>
+              <text class="frame-label" x="48" y="66">Human workspace</text>
 
-              <rect class="box" x="60" y="100" width="170" height="90" rx="8"></rect>
-              <text class="label" x="82" y="132">QA Workbench</text>
-              <text class="label small" x="82" y="154">ticket + QA input</text>
+              <rect class="frame local" x="244" y="34" width="220" height="640" rx="14"></rect>
+              <text class="frame-label" x="268" y="66">User machine</text>
 
-              <rect class="box" x="280" y="85" width="170" height="120" rx="8"></rect>
-              <text class="label" x="305" y="117">Edge/Auth</text>
-              <text class="label small" x="305" y="140">CloudFront, WAF</text>
-              <text class="label small" x="305" y="160">Cognito/OIDC</text>
-              <text class="label small" x="305" y="180">API Gateway</text>
+              <rect class="frame aws" x="494" y="34" width="486" height="640" rx="14"></rect>
+              <text class="frame-label" x="518" y="66">AWS account / control plane</text>
+              <rect class="aws-badge" x="918" y="48" width="38" height="22" rx="4"></rect>
+              <text class="aws-badge-text" x="927" y="63">AWS</text>
 
-              <rect class="box" x="500" y="85" width="190" height="120" rx="8"></rect>
-              <text class="label" x="525" y="117">Lambda app API</text>
-              <text class="label small" x="525" y="140">validate request</text>
-              <text class="label small" x="525" y="160">assemble prompt</text>
-              <text class="label small" x="525" y="180">persist session</text>
+              <rect class="frame third-party" x="1010" y="34" width="206" height="640" rx="14"></rect>
+              <text class="frame-label" x="1034" y="66">Third-party / external</text>
 
-              <rect class="box primary" x="740" y="80" width="205" height="130" rx="10"></rect>
-              <text class="label light" x="765" y="115">AgentCore</text>
-              <text class="label light" x="765" y="138">Runtime/Harness</text>
-              <text class="label light" x="765" y="163">simple Phase 1 boundary</text>
-              <text class="label light" x="765" y="187">endpoint, session, trace</text>
+              <rect class="box" x="50" y="110" width="138" height="72" rx="8"></rect>
+              <text class="label" x="70" y="140">QA</text>
+              <text class="label small" x="70" y="160">reviews, signs off</text>
 
-              <rect class="box" x="990" y="70" width="140" height="150" rx="8"></rect>
-              <text class="label" x="1012" y="105">Amazon Bedrock</text>
-              <text class="label small" x="1012" y="130">Converse API</text>
-              <text class="label small" x="1012" y="150">Guardrails</text>
-              <text class="label small" x="1012" y="170">Knowledge Bases</text>
-              <text class="label small" x="1012" y="190">FM response</text>
+              <rect class="box" x="50" y="220" width="138" height="72" rx="8"></rect>
+              <text class="label" x="70" y="250">Product / BA</text>
+              <text class="label small" x="70" y="270">business truth</text>
 
-              <path class="arrow" marker-end="url(#arrowhead-arch)" d="M230 145 H280"></path>
-              <path class="arrow" marker-end="url(#arrowhead-arch)" d="M450 145 H500"></path>
-              <path class="arrow" marker-end="url(#arrowhead-arch)" d="M690 145 H740"></path>
-              <path class="arrow" marker-end="url(#arrowhead-arch)" d="M945 145 H990"></path>
+              <rect class="box" x="50" y="330" width="138" height="72" rx="8"></rect>
+              <text class="label" x="70" y="360">Engineer</text>
+              <text class="label small" x="70" y="380">technical truth</text>
 
-              <rect class="box" x="90" y="300" width="220" height="110" rx="8"></rect>
-              <text class="label" x="115" y="333">DynamoDB</text>
-              <text class="label small" x="115" y="356">session, record status</text>
-              <text class="label small" x="115" y="376">draft TTL, metadata</text>
+              <rect class="box" x="270" y="110" width="168" height="92" rx="8"></rect>
+              <text class="label" x="292" y="142">Browser session</text>
+              <text class="label small" x="292" y="164">QA Workbench UI</text>
+              <text class="label small" x="292" y="184">human review/edit</text>
 
-              <rect class="box" x="350" y="300" width="220" height="110" rx="8"></rect>
-              <text class="label" x="375" y="333">S3</text>
-              <text class="label small" x="375" y="356">evidence files</text>
-              <text class="label small" x="375" y="376">exported records</text>
+              <rect class="box" x="270" y="250" width="168" height="92" rx="8"></rect>
+              <text class="label" x="292" y="282">Optional ETUS</text>
+              <text class="label small" x="292" y="304">local runner/evidence</text>
+              <text class="label small" x="292" y="324">Playwright/Appium</text>
 
-              <rect class="box" x="610" y="300" width="220" height="110" rx="8"></rect>
-              <text class="label" x="635" y="333">SQS + EventBridge</text>
-              <text class="label small" x="635" y="356">async jobs, domain events</text>
-              <text class="label small" x="635" y="376">retry and fan-out</text>
+              <rect class="box" x="270" y="390" width="168" height="92" rx="8"></rect>
+              <text class="label" x="292" y="422">Local artifacts</text>
+              <text class="label small" x="292" y="444">YAML, cache, memory</text>
+              <text class="label small" x="292" y="464">device/browser data</text>
 
-              <rect class="box" x="870" y="300" width="220" height="110" rx="8"></rect>
-              <text class="label" x="895" y="333">Step Functions</text>
-              <text class="label small" x="895" y="356">longer workflow</text>
-              <text class="label small" x="895" y="376">review and publish states</text>
+              <rect class="box" x="522" y="98" width="184" height="95" rx="8"></rect>
+              <rect class="aws-badge" x="540" y="116" width="32" height="18" rx="4"></rect>
+              <text class="aws-badge-text" x="548" y="129">AWS</text>
+              <text class="label" x="585" y="130">Edge/Auth</text>
+              <text class="label small" x="548" y="154">CloudFront, WAF</text>
+              <text class="label small" x="548" y="174">Cognito, API Gateway</text>
 
-              <path class="arrow dashed" marker-end="url(#arrowhead-arch)" d="M595 205 C555 260 355 270 220 300"></path>
-              <path class="arrow dashed" marker-end="url(#arrowhead-arch)" d="M595 205 C560 260 480 270 460 300"></path>
-              <path class="arrow dashed" marker-end="url(#arrowhead-arch)" d="M595 205 C620 260 700 270 720 300"></path>
-              <path class="arrow dashed" marker-end="url(#arrowhead-arch)" d="M595 205 C710 260 900 270 980 300"></path>
+              <rect class="box" x="748" y="98" width="184" height="95" rx="8"></rect>
+              <rect class="aws-badge" x="766" y="116" width="32" height="18" rx="4"></rect>
+              <text class="aws-badge-text" x="774" y="129">AWS</text>
+              <text class="label" x="811" y="130">App API</text>
+              <text class="label small" x="774" y="154">Lambda validation</text>
+              <text class="label small" x="774" y="174">session + prompt assembly</text>
 
-              <rect class="box" x="100" y="500" width="250" height="100" rx="8"></rect>
-              <text class="label" x="125" y="532">CloudWatch</text>
-              <text class="label small" x="125" y="555">logs, metrics, traces, alarms</text>
-              <text class="label small" x="125" y="575">latency, token, quality dashboard</text>
+              <rect class="box primary" x="522" y="245" width="184" height="105" rx="10"></rect>
+              <text class="label light" x="548" y="278">AgentCore</text>
+              <text class="label light" x="548" y="300">Runtime/Harness</text>
+              <text class="label light" x="548" y="324">session, endpoint, trace</text>
 
-              <rect class="box" x="400" y="500" width="250" height="100" rx="8"></rect>
-              <text class="label" x="425" y="532">IAM, KMS, Secrets Manager</text>
-              <text class="label small" x="425" y="555">least privilege, encryption</text>
-              <text class="label small" x="425" y="575">API secrets for Phase 2 integrations</text>
+              <rect class="box" x="748" y="245" width="184" height="105" rx="8"></rect>
+              <rect class="aws-badge" x="766" y="263" width="32" height="18" rx="4"></rect>
+              <text class="aws-badge-text" x="774" y="276">AWS</text>
+              <text class="label" x="811" y="278">Amazon Bedrock</text>
+              <text class="label small" x="774" y="302">Converse + Guardrails</text>
+              <text class="label small" x="774" y="322">Knowledge Bases</text>
 
-              <rect class="box warn" x="700" y="500" width="340" height="100" rx="8"></rect>
-              <text class="label" x="725" y="532">Phase 2 expansion</text>
-              <text class="label small" x="725" y="555">AgentCore Gateway, Identity, Policy, Memory</text>
-              <text class="label small" x="725" y="575">ticket/PR/evidence tools with human approval</text>
+              <rect class="box" x="522" y="405" width="184" height="105" rx="8"></rect>
+              <rect class="aws-badge" x="540" y="423" width="32" height="18" rx="4"></rect>
+              <text class="aws-badge-text" x="548" y="436">AWS</text>
+              <text class="label" x="585" y="438">Data/workflow</text>
+              <text class="label small" x="548" y="462">DynamoDB, S3</text>
+              <text class="label small" x="548" y="482">SQS, EventBridge, SFN</text>
+
+              <rect class="box" x="748" y="405" width="184" height="105" rx="8"></rect>
+              <rect class="aws-badge" x="766" y="423" width="32" height="18" rx="4"></rect>
+              <text class="aws-badge-text" x="774" y="436">AWS</text>
+              <text class="label" x="811" y="438">Security/Ops</text>
+              <text class="label small" x="774" y="462">IAM, KMS, CloudWatch</text>
+              <text class="label small" x="774" y="482">CloudTrail, eval metrics</text>
+
+              <rect class="box warn" x="560" y="560" width="330" height="72" rx="8"></rect>
+              <text class="label" x="585" y="590">Phase 2 governed tools</text>
+              <text class="label small" x="585" y="612">AgentCore Gateway, Memory, Identity, Policy, Evaluations</text>
+
+              <rect class="box" x="1036" y="110" width="154" height="82" rx="8"></rect>
+              <text class="label" x="1058" y="142">Ticket/docs</text>
+              <text class="label small" x="1058" y="164">Jira/ClickUp/Docs</text>
+
+              <rect class="box" x="1036" y="250" width="154" height="82" rx="8"></rect>
+              <text class="label" x="1058" y="282">Repo/CI</text>
+              <text class="label small" x="1058" y="304">PR, tests, build</text>
+
+              <rect class="box" x="1036" y="390" width="154" height="82" rx="8"></rect>
+              <text class="label" x="1058" y="422">System under test</text>
+              <text class="label small" x="1058" y="444">web/mobile/API target</text>
+
+              <rect class="box" x="1036" y="530" width="154" height="82" rx="8"></rect>
+              <text class="label" x="1058" y="562">Evidence tools</text>
+              <text class="label small" x="1058" y="584">Drive/Confluence/chat</text>
+
+              <path class="arrow" marker-end="url(#arrowhead-arch)" d="M188 146 H270"></path>
+              <path class="arrow dashed" marker-end="url(#arrowhead-arch)" d="M188 256 C230 245 244 185 270 160"></path>
+              <path class="arrow dashed" marker-end="url(#arrowhead-arch)" d="M188 366 C230 355 244 310 270 296"></path>
+              <path class="arrow" marker-end="url(#arrowhead-arch)" d="M438 156 H522"></path>
+              <path class="arrow" marker-end="url(#arrowhead-arch)" d="M706 146 H748"></path>
+              <path class="arrow" marker-end="url(#arrowhead-arch)" d="M840 193 C830 225 675 225 620 245"></path>
+              <path class="arrow" marker-end="url(#arrowhead-arch)" d="M706 298 H748"></path>
+              <path class="arrow dashed" marker-end="url(#arrowhead-arch)" d="M620 350 V405"></path>
+              <path class="arrow dashed" marker-end="url(#arrowhead-arch)" d="M840 350 V405"></path>
+              <path class="arrow dashed" marker-end="url(#arrowhead-arch)" d="M438 296 H522"></path>
+              <path class="arrow dashed" marker-end="url(#arrowhead-arch)" d="M932 298 C970 270 1000 170 1036 150"></path>
+              <path class="arrow dashed" marker-end="url(#arrowhead-arch)" d="M932 298 C980 292 1000 292 1036 292"></path>
+              <path class="arrow dashed" marker-end="url(#arrowhead-arch)" d="M438 296 C650 650 950 575 1036 570"></path>
+              <path class="arrow dashed" marker-end="url(#arrowhead-arch)" d="M890 596 H1036"></path>
+              <path class="arrow dashed" marker-end="url(#arrowhead-arch)" d="M438 296 C610 350 870 425 1036 430"></path>
             </svg>
           </div>
 
@@ -623,6 +1203,190 @@
               </p>
             </article>
           </div>
+        </section>
+
+        <section id="etus-architecture">
+          <h2>ETUS QA-Agents architecture hiện có</h2>
+          <p class="section-kicker">
+            Phần này tổng hợp từ source hiện tại của repo <code>ee/agent-qa</code> và onboarding architecture.
+            ETUS không chỉ là một prompt assistant; nó đã là một local-first Agentic QA harness có CLI,
+            dashboard, MCP surface, runner, browser/mobile adapters, hook sandbox, SQLite observability
+            và curated memory. Đây là tài sản có thể dùng để củng cố proposal Bedrock thay vì xây lại từ đầu.
+          </p>
+
+          <div class="grid three">
+            <article class="tile">
+              <h3>System shape</h3>
+              <ul>
+                <li><strong>CLI</strong>: parse YAML tests/suites, resolve config, target, LLM, hooks, cache, memory và reporters.</li>
+                <li><strong>Core runtime</strong>: runner, planner/verifier loop, tool/action registry, cache, memory, hooks, analytics.</li>
+                <li><strong>Adapters</strong>: Playwright web, Appium Android/iOS, screenshots, DOM/screen observation, action execution.</li>
+              </ul>
+            </article>
+            <article class="tile">
+              <h3>Operator surface</h3>
+              <ul>
+                <li><strong>Dashboard server</strong>: local HTTP API, queue, child-process runner, SQLite run DB, live editor, artifacts.</li>
+                <li><strong>Dashboard UI</strong>: runs, tests, suites, hooks, memory, config, insights và triage views.</li>
+                <li><strong>MCP server</strong>: schema-aware tools for coding agents to author, run, inspect artifacts, cancel và triage.</li>
+              </ul>
+            </article>
+            <article class="tile">
+              <h3>Execution loop</h3>
+              <ul>
+                <li>Observe target UI, hash screen/step, read cache, call planner on miss.</li>
+                <li>Execute normalized action, capture screenshot/annotation, verify when step is complete.</li>
+                <li>Persist traces, logs, tokens, artifacts, cache outcomes và memory deltas for later review.</li>
+              </ul>
+            </article>
+          </div>
+
+          <div class="diagram" aria-label="ETUS architecture with local machine AWS and third-party frames">
+            <svg viewBox="0 0 1160 660" role="img">
+              <defs>
+                <marker id="arrowhead-etus" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+                  <path d="M0,0 L0,6 L9,3 z" fill="currentColor"></path>
+                </marker>
+              </defs>
+
+              <rect class="frame human" x="28" y="34" width="190" height="570" rx="14"></rect>
+              <text class="frame-label" x="52" y="66">Human / agent user</text>
+
+              <rect class="frame local" x="248" y="34" width="520" height="570" rx="14"></rect>
+              <text class="frame-label" x="272" y="66">User machine / local ETUS runtime</text>
+
+              <rect class="frame third-party" x="798" y="34" width="320" height="330" rx="14"></rect>
+              <text class="frame-label" x="822" y="66">Third-party / target systems</text>
+
+              <rect class="frame aws" x="798" y="398" width="320" height="206" rx="14"></rect>
+              <text class="frame-label" x="822" y="430">AWS extension/control plane</text>
+              <rect class="aws-badge" x="1048" y="412" width="38" height="22" rx="4"></rect>
+              <text class="aws-badge-text" x="1057" y="427">AWS</text>
+
+              <rect class="box" x="58" y="110" width="132" height="78" rx="8"></rect>
+              <text class="label" x="80" y="142">Human QA</text>
+              <text class="label small" x="80" y="164">dashboard, CLI</text>
+
+              <rect class="box" x="58" y="245" width="132" height="78" rx="8"></rect>
+              <text class="label" x="80" y="277">Coding agent</text>
+              <text class="label small" x="80" y="299">MCP tools, skills</text>
+
+              <rect class="box primary" x="282" y="110" width="168" height="110" rx="10"></rect>
+              <text class="label light" x="306" y="146">CLI / Dashboard</text>
+              <text class="label light" x="306" y="170">orchestration</text>
+              <text class="label light" x="306" y="194">queue, API, run control</text>
+
+              <rect class="box" x="500" y="95" width="196" height="105" rx="8"></rect>
+              <text class="label" x="525" y="128">Core runner</text>
+              <text class="label small" x="525" y="151">planner, verifier, tools</text>
+              <text class="label small" x="525" y="171">variables, hooks, cache</text>
+
+              <rect class="box" x="500" y="245" width="196" height="105" rx="8"></rect>
+              <text class="label" x="525" y="278">Curated memory</text>
+              <text class="label small" x="525" y="301">product / suite / test</text>
+              <text class="label small" x="525" y="321">trust, confirmations, contradictions</text>
+
+              <rect class="box" x="282" y="392" width="168" height="90" rx="8"></rect>
+              <text class="label" x="306" y="425">Local storage</text>
+              <text class="label small" x="306" y="447">SQLite, artifacts, YAML</text>
+              <text class="label small" x="306" y="467">logs, screenshots</text>
+
+              <rect class="box" x="500" y="392" width="196" height="90" rx="8"></rect>
+              <text class="label" x="525" y="425">Hook sandbox</text>
+              <text class="label small" x="525" y="447">Docker, fixtures, env</text>
+              <text class="label small" x="525" y="467">setup/teardown actions</text>
+
+              <rect class="box" x="832" y="100" width="240" height="82" rx="8"></rect>
+              <text class="label" x="858" y="132">LLM providers</text>
+              <text class="label small" x="858" y="154">planner/verifier/curator calls</text>
+
+              <rect class="box target" x="832" y="215" width="240" height="82" rx="8"></rect>
+              <text class="label" x="858" y="247">System under test</text>
+              <text class="label small" x="858" y="269">web, Android, iOS, API, staging</text>
+
+              <rect class="box" x="832" y="470" width="116" height="82" rx="8"></rect>
+              <rect class="aws-badge" x="850" y="488" width="32" height="18" rx="4"></rect>
+              <text class="aws-badge-text" x="858" y="501">AWS</text>
+              <text class="label" x="858" y="526">Bedrock</text>
+
+              <rect class="box" x="978" y="470" width="116" height="82" rx="8"></rect>
+              <rect class="aws-badge" x="996" y="488" width="32" height="18" rx="4"></rect>
+              <text class="aws-badge-text" x="1004" y="501">AWS</text>
+              <text class="label" x="1004" y="526">AgentCore</text>
+
+              <path class="arrow" marker-end="url(#arrowhead-etus)" d="M190 149 H282"></path>
+              <path class="arrow" marker-end="url(#arrowhead-etus)" d="M190 284 C230 260 250 205 282 178"></path>
+              <path class="arrow" marker-end="url(#arrowhead-etus)" d="M450 164 H500"></path>
+              <path class="arrow" marker-end="url(#arrowhead-etus)" d="M598 200 V245"></path>
+              <path class="arrow dashed" marker-end="url(#arrowhead-etus)" d="M598 350 C590 375 520 400 450 430"></path>
+              <path class="arrow dashed" marker-end="url(#arrowhead-etus)" d="M598 350 V392"></path>
+              <path class="arrow" marker-end="url(#arrowhead-etus)" d="M696 148 C745 130 780 125 832 132"></path>
+              <path class="arrow" marker-end="url(#arrowhead-etus)" d="M696 170 C750 210 780 245 832 252"></path>
+              <path class="arrow dashed" marker-end="url(#arrowhead-etus)" d="M696 437 C750 420 786 276 832 256"></path>
+              <path class="arrow dashed" marker-end="url(#arrowhead-etus)" d="M696 148 C760 315 815 455 848 470"></path>
+              <path class="arrow dashed" marker-end="url(#arrowhead-etus)" d="M696 298 C760 370 935 450 1000 470"></path>
+            </svg>
+          </div>
+
+          <h3>Memory implementation: điểm nên giữ lại</h3>
+          <p>
+            ETUS memory hiện là QA behavioral memory, không phải chỉ là conversation history.
+            Sau run, curator dùng A.U.D.N. framework: <strong>ADD</strong> observation mới,
+            <strong>UPDATE</strong> observation đúng/relevant, <strong>DEPRECATE</strong> observation bị contradicted,
+            hoặc <strong>NOOP</strong>. Observation được lưu dạng Markdown frontmatter dưới các scope
+            <code>products</code>, <code>suites</code>, <code>tests</code>, có <code>trust</code>,
+            <code>confirmed_count</code>, <code>contradicted_count</code>, <code>source_test</code>,
+            và security scan trước khi hiển thị/ghi lại.
+          </p>
+
+          <table>
+            <thead>
+              <tr>
+                <th>ETUS capability hiện có</th>
+                <th>Ý nghĩa cho QA-Agents proposal</th>
+                <th>AWS/Bedrock mapping nên dùng</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Natural-language test runner với planner/verifier loop</td>
+                <td>Có execution engine để biến context record thành runnable verification, không chỉ document.</td>
+                <td>AgentCore Runtime nếu deploy runner như service; AgentCore Evaluations để score trace/session quality.</td>
+              </tr>
+              <tr>
+                <td>Curated product/suite/test memory</td>
+                <td>Đây là business/behavioral QA memory có trust, confirmation và contradiction signal.</td>
+                <td>AgentCore Memory cho managed short/long-term store; giữ ETUS schema làm domain memory taxonomy.</td>
+              </tr>
+              <tr>
+                <td>Dashboard run DB, logs, traces, token events, artifacts</td>
+                <td>Có operating evidence để tạo release confidence record và audit QA decisions.</td>
+                <td>CloudWatch/OTEL + S3 + DynamoDB; map run/session IDs sang AgentCore traces.</td>
+              </tr>
+              <tr>
+                <td>MCP server và packaged skills</td>
+                <td>Có local agent-facing contract để author tests, enqueue runs, inspect logs/artifacts và triage failures.</td>
+                <td>AgentCore Gateway can front MCP/OpenAPI tools in Phase 2 with Identity/Policy/human approval.</td>
+              </tr>
+              <tr>
+                <td>Web/mobile adapters, screenshots, DOM extraction, Appium</td>
+                <td>Có evidence capture và execution layer cho browser/mobile verification.</td>
+                <td>AgentCore Browser/Code Interpreter có thể bổ sung managed browser/data sandbox; không thay ngay adapter nếu local/device-specific vẫn cần.</td>
+              </tr>
+              <tr>
+                <td>Hook sandbox bằng Docker</td>
+                <td>Cho phép setup/teardown data, call internal APIs, seed fixtures trước/sau QA run.</td>
+                <td>Gateway tools, Lambda, Step Functions hoặc Code Interpreter tùy mức isolation, audit và network policy.</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <aside class="docs-callout">
+            Khuyến nghị kiến trúc: dùng ETUS như execution/evidence harness và dùng Bedrock/AgentCore như
+            production control plane. Phase 1 nên đưa ETUS memory vào RFC như domain source-of-truth,
+            còn AgentCore Memory/Gateway/Evaluations là đường nâng cấp khi cần managed multi-user, cloud audit,
+            policy và tool orchestration.
+          </aside>
         </section>
 
         <section id="journey">
@@ -738,6 +1502,389 @@
           </table>
         </section>
 
+        <section id="post-proposal-architecture">
+          <h2>Implementation architecture sau proposal</h2>
+          <p class="section-kicker">
+            Group này được tách riêng để không trộn phần triển khai sâu vào proposal hiện tại.
+            Sau khi proposal được chốt, đây là backlog triển khai và target architecture outline
+            để team đào sâu thành implementation plan.
+          </p>
+
+          <div class="grid three">
+            <article class="tile decision">
+              <h3>MVP blueprint</h3>
+              <ul>
+                <li>QA nhập ticket, environment, current behavior, risk, notes và source links.</li>
+                <li>System validate schema, auth, PII/secrets policy và source eligibility.</li>
+                <li>Bedrock tạo draft Verification Context Record từ approved sources.</li>
+                <li>QA review, edit, approve trước khi execute manual/automation/ETUS tests.</li>
+              </ul>
+            </article>
+            <article class="tile">
+              <h3>Core contracts</h3>
+              <ul>
+                <li>Ticket intake, source registry, retrieval và prompt/output contract.</li>
+                <li>Verification Context Record, evidence, memory và escalation contract.</li>
+                <li>Tool contract cho read-only, draft-write và approved-write integrations.</li>
+                <li>Evaluation contract cho golden tickets, citations và blocked actions.</li>
+              </ul>
+            </article>
+            <article class="tile">
+              <h3>Enhancement gates</h3>
+              <ul>
+                <li>Knowledge Base chỉ bật khi source registry đã có owner, trust và freshness policy.</li>
+                <li>Gateway tools chỉ bật khi identity, approval, audit và rollback path rõ ràng.</li>
+                <li>Managed memory chỉ bật khi promotion, contradiction và expiry rules được test.</li>
+                <li>Write-back chỉ bật sau human approval UX và policy enforcement.</li>
+              </ul>
+            </article>
+          </div>
+
+          <table>
+            <thead>
+              <tr>
+                <th>Architecture layer</th>
+                <th>MVP responsibility</th>
+                <th>Enhanced responsibility</th>
+                <th>Decision cần chốt</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Human workspace</td>
+                <td>QA reviews artifact; Product/Engineer answer clarification.</td>
+                <td>Approval workflow and routed escalation.</td>
+                <td>Ai sở hữu business rule, implementation risk và release risk?</td>
+              </tr>
+              <tr>
+                <td>User machine / ETUS</td>
+                <td>Optional local execution, evidence capture, artifacts, local memory.</td>
+                <td>Packaged QA workbench, local runner, browser/mobile/device adapters.</td>
+                <td>Run nào bắt buộc local, run nào có thể điều phối qua cloud?</td>
+              </tr>
+              <tr>
+                <td>AWS control plane</td>
+                <td>Bedrock call, optional Knowledge Bases, S3/DynamoDB records, CloudWatch traces.</td>
+                <td>AgentCore Runtime, Gateway, Identity, Memory, Policy, Evaluations.</td>
+                <td>Component AgentCore nào thật sự cần ở từng phase?</td>
+              </tr>
+              <tr>
+                <td>Third-party systems</td>
+                <td>Read-only links or manual copy for ClickUp/Jira/GitHub/CI/docs.</td>
+                <td>Governed tools through Gateway with identity and approval policy.</td>
+                <td>System nào read-only, draft-write, approved-write?</td>
+              </tr>
+              <tr>
+                <td>Target system</td>
+                <td>Manual or ETUS-driven test target.</td>
+                <td>Controlled browser/API/mobile automation flows.</td>
+                <td>Environment nào an toàn cho AI-assisted execution?</td>
+              </tr>
+              <tr>
+                <td>Governance and audit</td>
+                <td>Prompt version, model version, source set, trace id, user approval.</td>
+                <td>Policy-as-code, CloudTrail/CloudWatch, evaluation dashboard.</td>
+                <td>Cần gì để replay và audit một QA decision?</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="grid two">
+            <article class="tile">
+              <h3>Implementation workstreams</h3>
+              <ul>
+                <li><strong>Product/QA workflow:</strong> intake form, clarification flow, final QA note.</li>
+                <li><strong>Knowledge Base:</strong> source registry, trust levels, freshness, citation.</li>
+                <li><strong>Prompt/output:</strong> versioned prompts, JSON schema, unknown/refusal rules.</li>
+                <li><strong>Evidence:</strong> ETUS artifacts, CI/manual evidence, defect references.</li>
+                <li><strong>Cloud runtime:</strong> API boundary, auth, Bedrock invocation, storage, logs.</li>
+                <li><strong>Evaluation:</strong> golden tickets, grounding metrics, regression suite.</li>
+              </ul>
+            </article>
+            <article class="tile">
+              <h3>Runtime flow to design next</h3>
+              <ol>
+                <li>QA submits ticket and known context.</li>
+                <li>System blocks secrets/PII and validates project permission.</li>
+                <li>Approved Knowledge Base retrieval runs with citation requirement.</li>
+                <li>Bedrock creates structured Verification Context Record.</li>
+                <li>Grounding check flags unsupported claims and unknowns.</li>
+                <li>QA approves, then runs manual/automation/ETUS tests.</li>
+                <li>Evidence is attached to final QA note.</li>
+                <li>Confirmed observations are promoted to memory.</li>
+                <li>Sampled sessions feed evaluation and regression datasets.</li>
+              </ol>
+            </article>
+          </div>
+
+          <table>
+            <thead>
+              <tr>
+                <th>Layer</th>
+                <th>Capability</th>
+                <th>When to add</th>
+                <th>Risk if too early</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>0</td>
+                <td>Manual artifact and prompt</td>
+                <td>Proposal and pilot alignment</td>
+                <td>Slow, but safe.</td>
+              </tr>
+              <tr>
+                <td>1</td>
+                <td>QA workbench with structured output</td>
+                <td>MVP start</td>
+                <td>UX can drift without schema discipline.</td>
+              </tr>
+              <tr>
+                <td>2</td>
+                <td>Knowledge Base over approved docs</td>
+                <td>Source registry is ready</td>
+                <td>Wrong sources create false confidence.</td>
+              </tr>
+              <tr>
+                <td>3</td>
+                <td>AgentCore Runtime session and trace</td>
+                <td>Service endpoint and observability are needed</td>
+                <td>Runtime complexity before contract maturity.</td>
+              </tr>
+              <tr>
+                <td>4</td>
+                <td>Gateway read-only tools</td>
+                <td>Tool schemas and identity are ready</td>
+                <td>Tool hallucination or unauthorized access.</td>
+              </tr>
+              <tr>
+                <td>5</td>
+                <td>Managed memory</td>
+                <td>Promotion and contradiction rules are tested</td>
+                <td>Stale memory becomes hidden false truth.</td>
+              </tr>
+              <tr>
+                <td>6</td>
+                <td>Controlled write-back</td>
+                <td>Approval UX, audit and rollback exist</td>
+                <td>Agent creates production workflow noise.</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <aside class="docs-callout">
+            Next documentation package: component architecture diagram, runtime/container boundary diagram,
+            ticket-to-final-QA-note sequence, Verification Context Record data model, Evidence data model,
+            Memory policy, Knowledge Base policy, IAM/security boundary, tool governance matrix,
+            evaluation plan và MVP implementation milestones.
+          </aside>
+        </section>
+
+        <section id="architecture-package">
+          <h2>After Proposal: AWS architecture package</h2>
+          <p class="section-kicker">
+            Đây là architecture package dành cho Cloud, QA, AI và Software team khi bắt đầu triển khai.
+            Markdown source nằm ở
+            <a href="qa-agents-aws-after-proposal-architecture.md">qa-agents-aws-after-proposal-architecture.md</a>.
+            Các diagram dưới đây dùng frame để phân định user machine, ETUS, AWS account/VPC,
+            third-party và target environment.
+          </p>
+
+          <div class="architecture-package">
+            <article class="tile decision">
+              <h3>Chosen deployment model: production-shaped hybrid</h3>
+              <p>
+                ETUS giữ local execution và evidence capture. AWS giữ control plane cho intake,
+                retrieval, Bedrock inference, policy, records, observability và evaluation.
+                AgentCore Gateway, Memory, private connectivity và write-back chỉ được bật sau gate tương ứng.
+              </p>
+              <p><strong>Legend:</strong> red is human ownership, gray is user machine/ETUS, orange is AWS, red-tint is third-party, blue-tint is target environment.</p>
+            </article>
+
+            <article class="tile">
+              <h3>1. AWS deployment and network boundary</h3>
+              <p class="diagram-caption">Required for Cloud configuration: account, region, VPC, subnets, security groups, endpoints and traffic classes.</p>
+              <div class="diagram">
+                <svg viewBox="0 0 1120 530" role="img" aria-label="AWS deployment and network boundary diagram">
+                  <defs>
+                    <marker id="arch-arrowhead-1" markerHeight="7" markerWidth="7" orient="auto" refX="6" refY="3.5" viewBox="0 0 7 7">
+                      <path d="M0,0 L7,3.5 L0,7 z" fill="currentColor" />
+                    </marker>
+                  </defs>
+                  <rect class="frame human" height="430" rx="10" width="190" x="18" y="54" />
+                  <text class="frame-label" x="34" y="80">USER MACHINE</text>
+                  <rect class="box" height="70" rx="6" width="150" x="38" y="104" />
+                  <text class="label" x="52" y="132">QA / Product /</text>
+                  <text class="label" x="52" y="150">Engineer</text>
+                  <rect class="box" height="84" rx="6" width="150" x="38" y="198" />
+                  <text class="label" x="52" y="226">ETUS runner</text>
+                  <text class="label small" x="52" y="246">CLI, dashboard, adapters</text>
+                  <rect class="box soft" height="70" rx="6" width="150" x="38" y="304" />
+                  <text class="label" x="52" y="332">Local evidence</text>
+                  <text class="label small" x="52" y="350">logs, screenshots, video</text>
+
+                  <rect class="frame third-party" height="210" rx="10" width="180" x="230" y="54" />
+                  <text class="frame-label" x="246" y="80">THIRD PARTY</text>
+                  <text class="label" x="250" y="120">ClickUp / Jira</text>
+                  <text class="label" x="250" y="148">GitHub / Git</text>
+                  <text class="label" x="250" y="176">CI / reports</text>
+                  <text class="label" x="250" y="204">Source documents</text>
+                  <text class="label small" x="250" y="238">approved read paths</text>
+
+                  <rect class="frame aws" height="466" rx="10" width="674" x="426" y="28" />
+                  <rect class="aws-badge" height="24" rx="4" width="42" x="446" y="45" />
+                  <text class="aws-badge-text" x="454" y="61">AWS</text>
+                  <text class="frame-label" x="500" y="62">ACCOUNT &lt;account-id&gt; / REGION &lt;aws-region&gt;</text>
+                  <rect class="box" height="390" rx="8" width="420" x="448" y="88" />
+                  <text class="frame-label" x="466" y="114">VPC &lt;vpc-id&gt;</text>
+                  <rect class="frame target" height="190" rx="8" width="380" x="468" y="136" />
+                  <text class="frame-label" x="484" y="162">PRIVATE SUBNETS + SECURITY GROUPS</text>
+                  <rect class="box" height="58" rx="6" width="164" x="488" y="182" />
+                  <text class="label" x="502" y="207">AgentCore Runtime</text>
+                  <text class="label small" x="502" y="225">MVP session boundary</text>
+                  <rect class="box" height="58" rx="6" width="164" x="672" y="182" />
+                  <text class="label" x="686" y="207">Private endpoints</text>
+                  <text class="label small" x="686" y="225">VPC / Lattice optional</text>
+                  <rect class="box" height="58" rx="6" width="164" x="488" y="260" />
+                  <text class="label" x="502" y="285">Private test APIs</text>
+                  <text class="label small" x="502" y="303">internal services</text>
+                  <rect class="box" height="58" rx="6" width="164" x="672" y="260" />
+                  <text class="label" x="686" y="285">Gateway tools</text>
+                  <text class="label small" x="686" y="303">Phase 2 read-only</text>
+                  <text class="label small" x="468" y="350">Network boundary: SG rules, route tables, VPC endpoints</text>
+                  <rect class="box" height="62" rx="6" width="180" x="900" y="116" />
+                  <text class="label" x="916" y="142">Bedrock</text>
+                  <text class="label small" x="916" y="162">Converse + Guardrails</text>
+                  <rect class="box" height="62" rx="6" width="180" x="900" y="200" />
+                  <text class="label" x="916" y="226">Knowledge Bases</text>
+                  <text class="label small" x="916" y="246">approved retrieval</text>
+                  <rect class="box" height="62" rx="6" width="180" x="900" y="284" />
+                  <text class="label" x="916" y="310">S3 / DynamoDB</text>
+                  <text class="label small" x="916" y="330">records and artifacts</text>
+                  <rect class="box" height="62" rx="6" width="180" x="900" y="368" />
+                  <text class="label" x="916" y="394">CloudWatch</text>
+                  <text class="label small" x="916" y="414">logs, metrics, traces</text>
+
+                  <path class="arrow" d="M190 140 L426 140" style="color:#cb222a" marker-end="url(#arch-arrowhead-1)" />
+                  <text class="label small" x="260" y="132">HTTPS authenticated</text>
+                  <path class="arrow dashed" d="M190 240 L448 210" style="color:#777" marker-end="url(#arch-arrowhead-1)" />
+                  <text class="label small" x="244" y="274">bounded request</text>
+                  <path class="arrow dashed" d="M230 150 L180 350" style="color:#b91c1c" marker-end="url(#arch-arrowhead-1)" />
+                  <text class="label small" x="230" y="330">approved read</text>
+                  <path class="arrow" d="M868 210 L900 150" style="color:#ff9900" marker-end="url(#arch-arrowhead-1)" />
+                  <path class="arrow" d="M868 230 L900 230" style="color:#ff9900" marker-end="url(#arch-arrowhead-1)" />
+                  <path class="arrow" d="M868 250 L900 314" style="color:#ff9900" marker-end="url(#arch-arrowhead-1)" />
+                  <path class="arrow" d="M868 270 L900 398" style="color:#ff9900" marker-end="url(#arch-arrowhead-1)" />
+                  <text class="label small" x="736" y="468">orange = AWS service API; dashed = optional / Phase 2</text>
+                </svg>
+              </div>
+            </article>
+
+            <article class="tile">
+              <h3>2. Component and container boundary</h3>
+              <p class="diagram-caption">Logical ownership and AWS implementation mapping.</p>
+              <div class="diagram">
+                <svg viewBox="0 0 1120 430" role="img" aria-label="Component and container boundary diagram">
+                  <defs>
+                    <marker id="arch-arrowhead-2" markerHeight="7" markerWidth="7" orient="auto" refX="6" refY="3.5" viewBox="0 0 7 7"><path d="M0,0 L7,3.5 L0,7 z" fill="currentColor" /></marker>
+                  </defs>
+                  <rect class="frame human" height="350" rx="10" width="170" x="20" y="42" />
+                  <text class="frame-label" x="36" y="68">HUMAN</text>
+                  <rect class="box" height="72" rx="6" width="132" x="38" y="96" /><text class="label" x="54" y="124">QA workbench</text><text class="label small" x="54" y="144">review / approve</text>
+                  <rect class="box" height="72" rx="6" width="132" x="38" y="196" /><text class="label" x="54" y="224">Product / Engineer</text><text class="label small" x="54" y="244">clarification</text>
+                  <rect class="frame aws" height="350" rx="10" width="760" x="208" y="42" />
+                  <text class="frame-label" x="226" y="68">AWS CONTROL PLANE</text>
+                  <rect class="box" height="62" rx="6" width="150" x="228" y="98" /><text class="label" x="244" y="124">API + precheck</text><text class="label small" x="244" y="144">auth / redaction</text>
+                  <rect class="box" height="62" rx="6" width="150" x="398" y="98" /><text class="label" x="414" y="124">AgentCore Runtime</text><text class="label small" x="414" y="144">orchestration</text>
+                  <rect class="box" height="62" rx="6" width="150" x="568" y="98" /><text class="label" x="584" y="124">Retrieval</text><text class="label small" x="584" y="144">KB + citations</text>
+                  <rect class="box" height="62" rx="6" width="150" x="738" y="98" /><text class="label" x="754" y="124">Bedrock</text><text class="label small" x="754" y="144">Converse + Guardrails</text>
+                  <rect class="box" height="62" rx="6" width="150" x="313" y="220" /><text class="label" x="329" y="246">Output validator</text><text class="label small" x="329" y="266">JSON + grounding</text>
+                  <rect class="box" height="62" rx="6" width="150" x="483" y="220" /><text class="label" x="499" y="246">Record store</text><text class="label small" x="499" y="266">DynamoDB + S3</text>
+                  <rect class="box" height="62" rx="6" width="150" x="653" y="220" /><text class="label" x="669" y="246">Gateway + Policy</text><text class="label small" x="669" y="266">Phase 2 tools</text>
+                  <rect class="box soft" height="48" rx="6" width="320" x="398" y="320" /><text class="label" x="420" y="349">CloudWatch / CloudTrail / Evaluations</text>
+                  <rect class="frame local" height="350" rx="10" width="140" x="986" y="42" /><text class="frame-label" x="1002" y="68">ETUS</text><text class="label" x="1002" y="118">local runner</text><text class="label small" x="1002" y="140">evidence bridge</text><text class="label small" x="1002" y="194">QA automation</text>
+                  <path class="arrow" d="M170 132 L228 132" style="color:#cb222a" marker-end="url(#arch-arrowhead-2)" /><path class="arrow" d="M378 132 L398 132" style="color:#ff9900" marker-end="url(#arch-arrowhead-2)" /><path class="arrow" d="M548 132 L568 132" style="color:#ff9900" marker-end="url(#arch-arrowhead-2)" /><path class="arrow" d="M718 132 L738 132" style="color:#ff9900" marker-end="url(#arch-arrowhead-2)" /><path class="arrow" d="M483 160 L388 220" style="color:#ff9900" marker-end="url(#arch-arrowhead-2)" /><path class="arrow" d="M463 282 L483 282" style="color:#ff9900" marker-end="url(#arch-arrowhead-2)" /><path class="arrow dashed" d="M633 282 L653 282" style="color:#b91c1c" marker-end="url(#arch-arrowhead-2)" /><path class="arrow dashed" d="M838 252 L986 170" style="color:#777" marker-end="url(#arch-arrowhead-2)" /><text class="label small" x="850" y="210">bounded execution</text>
+                </svg>
+              </div>
+            </article>
+
+            <article class="tile">
+              <h3>3. Ticket-to-final-QA-note sequence</h3>
+              <p class="diagram-caption">Human approval is explicit; failure paths stop unsafe synthesis or incomplete sign-off.</p>
+              <div class="diagram">
+                <svg viewBox="0 0 1120 520" role="img" aria-label="Ticket to final QA note sequence diagram">
+                  <defs><marker id="arch-arrowhead-3" markerHeight="7" markerWidth="7" orient="auto" refX="6" refY="3.5" viewBox="0 0 7 7"><path d="M0,0 L7,3.5 L0,7 z" fill="currentColor" /></marker></defs>
+                  <text class="frame-label" x="42" y="32">QA</text><text class="frame-label" x="190" y="32">API / PRECHECK</text><text class="frame-label" x="388" y="32">RUNTIME</text><text class="frame-label" x="560" y="32">BEDROCK / KB</text><text class="frame-label" x="760" y="32">ETUS</text><text class="frame-label" x="930" y="32">RECORD / OBS</text>
+                  <path class="arrow" d="M52 68 L188 68" style="color:#cb222a" marker-end="url(#arch-arrowhead-3)" /><text class="label small" x="54" y="58">1 intake</text>
+                  <path class="arrow" d="M202 104 L386 104" style="color:#ff9900" marker-end="url(#arch-arrowhead-3)" /><text class="label small" x="208" y="94">2 auth + redaction</text>
+                  <path class="arrow" d="M400 140 L558 140" style="color:#ff9900" marker-end="url(#arch-arrowhead-3)" /><text class="label small" x="410" y="130">3 retrieve citations</text>
+                  <path class="arrow" d="M572 176 L386 176" style="color:#ff9900" marker-end="url(#arch-arrowhead-3)" /><text class="label small" x="430" y="166">4 grounded model call</text>
+                  <path class="arrow" d="M400 212 L928 212" style="color:#ff9900" marker-end="url(#arch-arrowhead-3)" /><text class="label small" x="620" y="202">5 structured record + grounding check</text>
+                  <path class="arrow dashed" d="M928 248 L52 248" style="color:#cb222a" marker-end="url(#arch-arrowhead-3)" /><text class="label small" x="270" y="238">6 QA review / clarification if unknown</text>
+                  <path class="arrow" d="M52 284 L758 284" style="color:#777" marker-end="url(#arch-arrowhead-3)" /><text class="label small" x="300" y="274">7 approved bounded test intent</text>
+                  <path class="arrow" d="M772 320 L928 320" style="color:#777" marker-end="url(#arch-arrowhead-3)" /><text class="label small" x="786" y="310">8 evidence record</text>
+                  <path class="arrow" d="M942 356 L52 356" style="color:#cb222a" marker-end="url(#arch-arrowhead-3)" /><text class="label small" x="338" y="346">9 QA interprets evidence and signs final note</text>
+                  <rect class="box warn" height="54" rx="6" width="220" x="42" y="412" /><text class="label" x="58" y="436">Missing source / blocked</text><text class="label small" x="58" y="454">clarification required</text>
+                  <rect class="box warn" height="54" rx="6" width="220" x="292" y="412" /><text class="label" x="308" y="436">Unsupported claim</text><text class="label small" x="308" y="454">mark unknown, no sign-off</text>
+                  <rect class="box warn" height="54" rx="6" width="220" x="542" y="412" /><text class="label" x="558" y="436">Denied tool action</text><text class="label small" x="558" y="454">policy result, no bypass</text>
+                  <rect class="box warn" height="54" rx="6" width="220" x="792" y="412" /><text class="label" x="808" y="436">Incomplete evidence</text><text class="label small" x="808" y="454">needs_evidence state</text>
+                  <path class="arrow dashed" d="M390 212 L180 412" style="color:#b91c1c" marker-end="url(#arch-arrowhead-3)" /><path class="arrow dashed" d="M390 212 L400 412" style="color:#b91c1c" marker-end="url(#arch-arrowhead-3)" /><path class="arrow dashed" d="M760 284 L650 412" style="color:#b91c1c" marker-end="url(#arch-arrowhead-3)" /><path class="arrow dashed" d="M928 320 L900 412" style="color:#b91c1c" marker-end="url(#arch-arrowhead-3)" />
+                </svg>
+              </div>
+            </article>
+
+            <article class="tile">
+              <h3>4. Knowledge Base and memory lifecycle</h3>
+              <p class="diagram-caption">Model output never becomes authoritative memory without confirmation or execution evidence.</p>
+              <div class="diagram">
+                <svg viewBox="0 0 1120 390" role="img" aria-label="Knowledge Base and memory lifecycle diagram">
+                  <defs><marker id="arch-arrowhead-4" markerHeight="7" markerWidth="7" orient="auto" refX="6" refY="3.5" viewBox="0 0 7 7"><path d="M0,0 L7,3.5 L0,7 z" fill="currentColor" /></marker></defs>
+                  <rect class="frame third-party" height="260" rx="10" width="220" x="20" y="48" /><text class="frame-label" x="38" y="76">SOURCE INGESTION</text><rect class="box" height="60" rx="6" width="178" x="40" y="100" /><text class="label" x="56" y="126">Docs / ticket / evidence</text><text class="label small" x="56" y="146">owner and scope</text><rect class="box" height="60" rx="6" width="178" x="40" y="178" /><text class="label" x="56" y="204">Source Registry</text><text class="label small" x="56" y="224">trust + freshness</text>
+                  <rect class="frame aws" height="260" rx="10" width="250" x="270" y="48" /><text class="frame-label" x="288" y="76">RETRIEVAL</text><rect class="box" height="60" rx="6" width="208" x="290" y="100" /><text class="label" x="306" y="126">S3 snapshot</text><text class="label small" x="306" y="146">versioned source</text><rect class="box" height="60" rx="6" width="208" x="290" y="178" /><text class="label" x="306" y="204">Knowledge Bases</text><text class="label small" x="306" y="224">citations + source_set_id</text>
+                  <rect class="frame human" height="260" rx="10" width="250" x="550" y="48" /><text class="frame-label" x="568" y="76">SESSION AND REVIEW</text><rect class="box" height="60" rx="6" width="208" x="570" y="100" /><text class="label" x="586" y="126">Session context</text><text class="label small" x="586" y="146">ticket + trace</text><rect class="box" height="60" rx="6" width="208" x="570" y="178" /><text class="label" x="586" y="204">Candidate memory</text><text class="label small" x="586" y="224">not authoritative</text>
+                  <rect class="frame target" height="260" rx="10" width="270" x="830" y="48" /><text class="frame-label" x="848" y="76">MEMORY STATE</text><rect class="box" height="54" rx="6" width="228" x="850" y="100" /><text class="label" x="866" y="126">Confirmed memory</text><text class="label small" x="866" y="144">evidence-backed</text><rect class="box warn" height="54" rx="6" width="228" x="850" y="172" /><text class="label" x="866" y="198">Expired / contradicted</text><text class="label small" x="866" y="216">excluded from retrieval</text>
+                  <path class="arrow" d="M220 130 L270 130" style="color:#b91c1c" marker-end="url(#arch-arrowhead-4)" /><path class="arrow" d="M220 208 L270 208" style="color:#b91c1c" marker-end="url(#arch-arrowhead-4)" /><path class="arrow" d="M520 208 L550 208" style="color:#ff9900" marker-end="url(#arch-arrowhead-4)" /><path class="arrow" d="M800 208 L830 208" style="color:#cb222a" marker-end="url(#arch-arrowhead-4)" /><path class="arrow dashed" d="M800 208 L830 130" style="color:#cb222a" marker-end="url(#arch-arrowhead-4)" /><text class="label small" x="604" y="284">human confirmation or execution evidence</text><text class="label small" x="604" y="306">required before promotion</text>
+                </svg>
+              </div>
+            </article>
+
+            <article class="tile">
+              <h3>5. ETUS execution and evidence flow</h3>
+              <p class="diagram-caption">Cloud sends a bounded intent; ETUS owns local adapters and returns evidence for human interpretation.</p>
+              <div class="diagram">
+                <svg viewBox="0 0 1120 360" role="img" aria-label="ETUS execution and evidence flow diagram">
+                  <defs><marker id="arch-arrowhead-5" markerHeight="7" markerWidth="7" orient="auto" refX="6" refY="3.5" viewBox="0 0 7 7"><path d="M0,0 L7,3.5 L0,7 z" fill="currentColor" /></marker></defs>
+                  <rect class="frame aws" height="248" rx="10" width="300" x="20" y="54" /><text class="frame-label" x="38" y="82">AWS CONTROL PLANE</text><rect class="box" height="64" rx="6" width="258" x="40" y="110" /><text class="label" x="56" y="136">Test Intent</text><text class="label small" x="56" y="156">project, ticket, bounded actions</text><rect class="box" height="64" rx="6" width="258" x="40" y="190" /><text class="label" x="56" y="216">Identity + Policy approval</text><text class="label small" x="56" y="236">expiry, actor, trace_id</text>
+                  <rect class="frame local" height="248" rx="10" width="300" x="410" y="54" /><text class="frame-label" x="428" y="82">USER MACHINE / ETUS</text><rect class="box" height="64" rx="6" width="258" x="430" y="110" /><text class="label" x="446" y="136">ETUS runner</text><text class="label small" x="446" y="156">local execution boundary</text><rect class="box" height="64" rx="6" width="258" x="430" y="190" /><text class="label" x="446" y="216">Browser / API / mobile / device</text><text class="label small" x="446" y="236">adapters and artifacts</text>
+                  <rect class="frame target" height="248" rx="10" width="300" x="800" y="54" /><text class="frame-label" x="818" y="82">TARGET ENVIRONMENT</text><rect class="box target" height="64" rx="6" width="258" x="820" y="110" /><text class="label" x="836" y="136">QA or staging application</text><text class="label small" x="836" y="156">cloud-accessible target</text><rect class="box target" height="64" rx="6" width="258" x="820" y="190" /><text class="label" x="836" y="216">Local device / device farm</text><text class="label small" x="836" y="236">local-only path where required</text>
+                  <path class="arrow" d="M300 142 L410 142" style="color:#ff9900" marker-end="url(#arch-arrowhead-5)" /><text class="label small" x="310" y="130">bounded request</text><path class="arrow" d="M710 142 L800 142" style="color:#777" marker-end="url(#arch-arrowhead-5)" /><path class="arrow" d="M710 222 L800 222" style="color:#777" marker-end="url(#arch-arrowhead-5)" /><path class="arrow dashed" d="M560 270 L188 322" style="color:#777" marker-end="url(#arch-arrowhead-5)" /><text class="label small" x="300" y="320">Evidence Record: link, checksum, result</text><path class="arrow dashed" d="M188 322 L930 322" style="color:#cb222a" marker-end="url(#arch-arrowhead-5)" /><text class="label small" x="474" y="348">QA owns final interpretation and sign-off</text>
+                </svg>
+              </div>
+            </article>
+
+            <article class="tile">
+              <h3>6. Security, observability and evaluation flow</h3>
+              <p class="diagram-caption">Cross-cutting controls protect every tool call, model call, record and release change.</p>
+              <div class="diagram">
+                <svg viewBox="0 0 1120 360" role="img" aria-label="Security observability and evaluation flow diagram">
+                  <defs><marker id="arch-arrowhead-6" markerHeight="7" markerWidth="7" orient="auto" refX="6" refY="3.5" viewBox="0 0 7 7"><path d="M0,0 L7,3.5 L0,7 z" fill="currentColor" /></marker></defs>
+                  <rect class="frame human" height="230" rx="10" width="180" x="20" y="54" /><text class="frame-label" x="38" y="82">IDENTITY</text><rect class="box" height="62" rx="6" width="140" x="40" y="112" /><text class="label" x="56" y="138">IAM / federated user</text><text class="label small" x="56" y="158">workload identity</text><rect class="box" height="62" rx="6" width="140" x="40" y="188" /><text class="label" x="56" y="214">Runtime identity</text><text class="label small" x="56" y="234">downstream role</text>
+                  <rect class="frame aws" height="230" rx="10" width="230" x="230" y="54" /><text class="frame-label" x="248" y="82">POLICY</text><rect class="box" height="62" rx="6" width="190" x="250" y="112" /><text class="label" x="266" y="138">Gateway authentication</text><text class="label small" x="266" y="158">ingress / egress</text><rect class="box" height="62" rx="6" width="190" x="250" y="188" /><text class="label" x="266" y="214">Cedar decision</text><text class="label small" x="266" y="234">allow / deny + audit</text>
+                  <rect class="frame aws" height="230" rx="10" width="230" x="500" y="54" /><text class="frame-label" x="518" y="82">MODEL SAFETY</text><rect class="box" height="62" rx="6" width="190" x="520" y="112" /><text class="label" x="536" y="138">Bedrock Guardrails</text><text class="label small" x="536" y="158">input / output</text><rect class="box" height="62" rx="6" width="190" x="520" y="188" /><text class="label" x="536" y="214">Converse response</text><text class="label small" x="536" y="234">structured output</text>
+                  <rect class="frame local" height="230" rx="10" width="330" x="770" y="54" /><text class="frame-label" x="788" y="82">OPERATIONS AND RELEASE</text><rect class="box" height="52" rx="6" width="140" x="790" y="112" /><text class="label" x="806" y="138">CloudWatch</text><text class="label small" x="806" y="154">logs / traces</text><rect class="box" height="52" rx="6" width="140" x="940" y="112" /><text class="label" x="956" y="138">CloudTrail</text><text class="label small" x="956" y="154">audit</text><rect class="box soft" height="52" rx="6" width="290" x="790" y="188" /><text class="label" x="806" y="214">AgentCore Evaluations + golden cases</text><text class="label small" x="806" y="230">grounding, task, tool quality</text>
+                  <path class="arrow" d="M200 142 L230 142" style="color:#cb222a" marker-end="url(#arch-arrowhead-6)" /><path class="arrow" d="M460 142 L500 142" style="color:#ff9900" marker-end="url(#arch-arrowhead-6)" /><path class="arrow" d="M730 142 L770 142" style="color:#ff9900" marker-end="url(#arch-arrowhead-6)" /><path class="arrow" d="M730 214 L790 214" style="color:#ff9900" marker-end="url(#arch-arrowhead-6)" /><path class="arrow dashed" d="M460 214 L940 164" style="color:#777" marker-end="url(#arch-arrowhead-6)" /><text class="label small" x="404" y="286">Release gate: prompt, model, source, policy and tool versions must pass evaluation before rollout.</text>
+                </svg>
+              </div>
+            </article>
+
+            <aside class="docs-callout">
+              Cloud configuration note: the diagrams describe required boundaries, not a final account-specific IaC template.
+              The next implementation artifact should translate the placeholders into CDK or Terraform, define IAM/resource policies,
+              configure private connectivity only where required, and validate service availability in the selected AWS region.
+            </aside>
+          </div>
+        </section>
+
         <section id="roadmap">
           <h2>Roadmap triển khai</h2>
           <div class="grid three">
@@ -819,9 +1966,17 @@
             <li><a href="https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/agents-tools-runtime.html">Host agent or tools with AgentCore Runtime</a></li>
             <li><a href="https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/harness.html">AgentCore Harness</a></li>
             <li><a href="https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/gateway.html">AgentCore Gateway</a></li>
+            <li><a href="https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/memory-get-started.html">AgentCore Memory get started</a></li>
+            <li><a href="https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/memory-strategies.html">AgentCore Memory strategies</a></li>
             <li><a href="https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/identity.html">AgentCore Identity</a></li>
             <li><a href="https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/policy.html">AgentCore Policy</a></li>
+            <li><a href="https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/browser-tool.html">AgentCore Browser</a></li>
+            <li><a href="https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/code-interpreter-tool.html">AgentCore Code Interpreter</a></li>
             <li><a href="https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/observability.html">AgentCore Observability</a></li>
+            <li><a href="https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/evaluations.html">AgentCore Evaluations</a></li>
+            <li><a href="https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/release-notes.html">AgentCore release notes</a></li>
+            <li><a href="https://aws.amazon.com/architecture/icons/">AWS Architecture Icons</a></li>
+            <li><a href="https://docs.aws.amazon.com/bedrock/latest/userguide/agents-how.html">Amazon Bedrock Agents Classic runtime process and maintenance note</a></li>
             <li><a href="https://docs.aws.amazon.com/bedrock/latest/userguide/what-is-bedrock.html">Amazon Bedrock overview</a></li>
             <li><a href="https://docs.aws.amazon.com/bedrock/latest/userguide/guardrails.html">Amazon Bedrock Guardrails</a></li>
             <li><a href="https://docs.aws.amazon.com/bedrock/latest/userguide/knowledge-base.html">Amazon Bedrock Knowledge Bases</a></li>

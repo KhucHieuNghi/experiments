@@ -12,7 +12,7 @@ const runtimeAuthState = {
   targetName: 'staging-web',
   stateName: 'admin',
   capturedAt: '2026-05-17T00:00:00.000Z',
-  storageStatePath: '/Users/me/project/.agent-qa/auth-states/staging-web/admin/storage-state.json',
+  storageStatePath: '/Users/me/project/.etus-agent/auth-states/staging-web/admin/storage-state.json',
 }
 
 const storageState = {
@@ -58,11 +58,11 @@ describe('auth-state redaction', () => {
 
     expect(redactAuthStateValue({
       authState: metadata,
-      services: { authState: { dir: '.agent-qa/auth-states' } },
+      services: { authState: { dir: '.etus-agent/auth-states' } },
       authStates: [metadata],
     })).toEqual({
       authState: metadata,
-      services: { authState: { dir: '.agent-qa/auth-states' } },
+      services: { authState: { dir: '.etus-agent/auth-states' } },
       authStates: [metadata],
     })
   })
@@ -74,13 +74,13 @@ describe('auth-state redaction', () => {
       target: 'staging-web',
       name: 'admin',
       capturedAt: '2026-05-17T00:00:00.000Z',
-      storageStatePath: '/workspace/.agent-qa-auth-state/storage-state.json',
+      storageStatePath: '/workspace/.etus-agent-auth-state/storage-state.json',
     })
     const storageJson = JSON.stringify(storageState)
 
     expect(redactAuthStateString(hookJson)).toBe(AUTH_STATE_REDACTION_MARKER)
     expect(redactAuthStateString(storageJson)).toBe(AUTH_STATE_REDACTION_MARKER)
-    expect(redactAuthStateString(`path=/workspace/.agent-qa-auth-state/storage-state.json`))
+    expect(redactAuthStateString(`path=/workspace/.etus-agent-auth-state/storage-state.json`))
       .toBe(`path=${AUTH_STATE_REDACTION_MARKER}`)
   })
 

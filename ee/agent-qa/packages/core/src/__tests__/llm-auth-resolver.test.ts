@@ -37,7 +37,7 @@ describe('resolveLLMAuth', () => {
   const originalFetch = globalThis.fetch
 
   beforeEach(async () => {
-    tempDir = await mkdtemp(join(tmpdir(), 'agent-qa-llm-auth-test-'))
+    tempDir = await mkdtemp(join(tmpdir(), 'etus-agent-llm-auth-test-'))
     authPath = join(tempDir, 'auth.json')
   })
 

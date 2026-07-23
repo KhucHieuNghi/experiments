@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Memory - ETUS Documentation</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+  <div class="docs-layout">
+    <aside class="docs-sidebar">
+      <div class="docs-logo">ETUS <span>docs</span></div>
+      <nav class="docs-nav">
+        <div class="docs-nav-group">
+          <div class="docs-nav-label">Getting Started</div>
+          <a href="index.html">Overview</a>
+          <a href="quickstart.html">Quickstart</a>
+        </div>
+        <div class="docs-nav-group">
+          <div class="docs-nav-label">Core Concepts</div>
+          <a href="configuration.html">Configuration</a>
+          <a href="tests.html">Tests</a>
+          <a href="suites.html">Suites</a>
+          <a href="hooks.html">Hooks</a>
+        </div>
+        <div class="docs-nav-group">
+          <div class="docs-nav-label">Features</div>
+          <a href="memory.html">Memory</a>
+          <a href="caching.html">Caching</a>
+          <a href="web-testing.html">Web Testing</a>
+          <a href="auth-state.html">Auth State</a>
+        </div>
+        <div class="docs-nav-group">
+          <div class="docs-nav-label">Reference</div>
+          <a href="cli.html">CLI Commands</a>
+          <a href="env-vars.html">Environment Variables</a>
+        </div>
+      </nav>
+    </aside>
+    <main class="docs-main">
+      <button class="docs-menu-btn">Menu</button>
+      <div class="docs-breadcrumb"><a href="index.html">Docs</a> / Memory</div>
+
+      <h1>Memory</h1>
+      <p class="docs-subtitle">Memory is ETUS's persistent observation layer. It stores what the agent learns about your product across runs and feeds that context back into future test planning.</p>
+
+      <h2>What is memory?</h2>
+      <p>Memory is a file-backed collection of observations the agent makes during test execution. These observations capture knowledge about your application's behavior, structure, and patterns. Over time, memory helps the agent make better decisions, recover from failures faster, and produce more reliable tests.</p>
+
+      <h2>Memory tiers</h2>
+      <p>Observations are organized into three tiers based on scope:</p>
+      <table>
+        <thead>
+          <tr><th>Tier</th><th>Directory</th><th>Scope</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Product</td><td><code>etus-agent-memory/products/</code></td><td>Cross-cutting knowledge about the entire application</td></tr>
+          <tr><td>Suite</td><td><code>etus-agent-memory/suites/</code></td><td>Patterns specific to a test suite</td></tr>
+          <tr><td>Test</td><td><code>etus-agent-memory/tests/</code></td><td>Observations tied to a specific test</td></tr>
+        </tbody>
+      </table>
+
+      <h2>How it works</h2>
+      <div class="docs-steps">
+        <div class="docs-step">
+          <h3>Run a test</h3>
+          <p>ETUS executes the test steps and observes the application's behavior, DOM structure, timing, and outcomes.</p>
+        </div>
+        <div class="docs-step">
+          <h3>Generate observations</h3>
+          <p>The agent produces candidate observations about what it learned during the run.</p>
+        </div>
+        <div class="docs-step">
+          <h3>Curate</h3>
+          <p>The memory curator evaluates each observation and decides to <strong>add</strong>, <strong>update</strong>, <strong>deprecate</strong>, or <strong>do nothing</strong>.</p>
+        </div>
+        <div class="docs-step">
+          <h3>Persist</h3>
+          <p>Accepted observations are written to the appropriate tier directory as YAML files.</p>
+        </div>
+        <div class="docs-step">
+          <h3>Feed back</h3>
+          <p>On the next run, relevant memory is loaded and provided as context during test planning and execution.</p>
+        </div>
+      </div>
+
+      <h2>The curator</h2>
+      <p>The memory curator is the gatekeeper. For each candidate observation, it decides:</p>
+      <ul>
+        <li><strong>Add</strong> &mdash; new, valuable knowledge not yet captured</li>
+        <li><strong>Update</strong> &mdash; refines or corrects an existing observation</li>
+        <li><strong>Deprecate</strong> &mdash; marks outdated observations that no longer apply</li>
+        <li><strong>Do nothing</strong> &mdash; the observation is redundant or low-value</li>
+      </ul>
+
+      <h2>Trust scores</h2>
+      <p>Each observation carries a trust score (0.0&ndash;1.0) that reflects confidence. Scores increase when observations are confirmed across multiple runs and decrease when contradicted. Low-trust observations are weighted less during planning.</p>
+
+      <h2>Memory vs cache vs config</h2>
+      <table>
+        <thead>
+          <tr><th>Concept</th><th>What it stores</th><th>Lifetime</th><th>Purpose</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Memory</td><td>Behavioral observations</td><td>Persistent, curated</td><td>Make the agent smarter over time</td></tr>
+          <tr><td>Cache</td><td>Action plans (sub-step sequences)</td><td>TTL-based, invalidated on change</td><td>Speed up repeat runs, reduce tokens</td></tr>
+          <tr><td>Config</td><td>Settings and overrides</td><td>Static until changed by user</td><td>Control agent behavior</td></tr>
+        </tbody>
+      </table>
+
+      <h2>Configuration</h2>
+      <pre><code># etus-agent.config.yaml
+services:
+  memory:
+    dir: etus-agent-memory</code></pre>
+      <p>Use <code>npx etus-agent clean-memory</code> to remove deprecated observations. See <a href="cli.html">CLI Commands</a>.</p>
+
+      <div class="docs-callout">
+        <strong>Tip</strong><br>
+        Commit your <code>etus-agent-memory/</code> directory to version control. Memory is part of your test infrastructure and improves team-wide test quality.
+      </div>
+
+      <div class="docs-footer">
+        <p>ETUS Documentation</p>
+      </div>
+    </main>
+  </div>
+  <script src="assets/docs.js"></script>
+</body>
+</html>

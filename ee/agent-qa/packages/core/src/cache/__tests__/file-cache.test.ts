@@ -23,7 +23,7 @@ describe('FileActionCache', () => {
   let cache: FileActionCache
 
   beforeEach(async () => {
-    cacheDir = await mkdtemp(join(tmpdir(), 'agent-qa-cache-test-'))
+    cacheDir = await mkdtemp(join(tmpdir(), 'etus-agent-cache-test-'))
     cache = new FileActionCache({ dir: cacheDir, ttl: '7d' })
   })
 
@@ -146,7 +146,7 @@ describe('FileActionCache schema versioning', () => {
   let cache: FileActionCache
 
   beforeEach(async () => {
-    cacheDir = await mkdtemp(join(tmpdir(), 'agent-qa-cache-version-test-'))
+    cacheDir = await mkdtemp(join(tmpdir(), 'etus-agent-cache-version-test-'))
     cache = new FileActionCache({ dir: cacheDir, ttl: '7d' })
   })
 
@@ -323,7 +323,7 @@ describe('prefix cache invalidation', () => {
   })
 
   it('setSubAction is not guarded by cacheState — writes always continue (D-04, D-05)', async () => {
-    const cacheDir = await mkdtemp(join(tmpdir(), 'agent-qa-prefix-test-'))
+    const cacheDir = await mkdtemp(join(tmpdir(), 'etus-agent-prefix-test-'))
     try {
       const cache = new FileActionCache({ dir: cacheDir, ttl: '7d' })
       const plan = makePlan({ reasoning: 'Written after invalidation' })

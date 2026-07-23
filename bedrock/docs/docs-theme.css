@@ -1,15 +1,15 @@
 :root {
-  --brand-primary: #275d8c;
-  --brand-secondary: #536271;
-  --brand-accent: #9a563a;
+  --brand-primary: #cb222a;
+  --brand-secondary: #313331;
+  --brand-accent: #b91c1c;
   --on-brand-primary: #ffffff;
   --surface: #ffffff;
-  --surface-muted: #f5f8fb;
-  --border: #d8e1ea;
-  --text: #17212b;
-  --text-muted: #536271;
-  --font-heading: ui-sans-serif, system-ui, sans-serif;
-  --font-body: ui-sans-serif, system-ui, sans-serif;
+  --surface-muted: #f8f8f8;
+  --border: #c2c2c2;
+  --text: #313331;
+  --text-muted: #777777;
+  --font-heading: Lato, ui-sans-serif, system-ui, sans-serif;
+  --font-body: Lato, ui-sans-serif, system-ui, sans-serif;
   --heading-size: 3rem;
   --heading-weight: 700;
   --heading-line-height: 1.1;
@@ -23,7 +23,7 @@
     var(--brand-primary) 12%,
     var(--surface)
   );
-  --shadow: 0 12px 30px rgb(30 60 90 / 8%);
+  --shadow: 0 12px 30px rgb(49 51 49 / 8%);
   color: var(--text);
   background: var(--surface-muted);
   font-family: var(--font-body);

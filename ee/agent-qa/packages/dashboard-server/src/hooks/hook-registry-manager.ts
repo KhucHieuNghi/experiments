@@ -1,9 +1,9 @@
 import { mkdir, readFile, rm, stat, writeFile } from 'node:fs/promises'
 import { basename, dirname, isAbsolute, relative, resolve } from 'node:path'
 
-import { HooksFileSchema, isPathInsideDir, parseHooksFile, resolveWorkspacePaths } from '@etus/agent-qa-core'
-import type { AgentQaConfig, HooksFileConfig } from '@etus/agent-qa-core'
-import { generateHookId } from '@etus/agent-qa-ids'
+import { HooksFileSchema, isPathInsideDir, parseHooksFile, resolveWorkspacePaths } from '@etus/agent-core'
+import type { AgentQaConfig, HooksFileConfig } from '@etus/agent-core'
+import { generateHookId } from '@etus/agent-ids'
 import { parse as parseYaml, parseDocument } from 'yaml'
 
 import type { ConfigManager } from '../config/config-manager.js'

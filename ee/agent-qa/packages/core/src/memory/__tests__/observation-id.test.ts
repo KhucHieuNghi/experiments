@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { idAgent } from 'id-agent'
-import { isCanonicalObservationId, isObservationId, LEGACY_OBSERVATION_ID_WORDS } from '@etus/agent-qa-ids'
+import { isCanonicalObservationId, isObservationId, LEGACY_OBSERVATION_ID_WORDS } from '@etus/agent-ids'
 import { generateObservationId } from '../observation-id.js'
 import { BaseObservationSchema } from '../schema.js'
 

@@ -1,4 +1,4 @@
-import { isCanonicalHookId } from '@etus/agent-qa-ids'
+import { isCanonicalHookId } from '@etus/agent-ids'
 
 const RUNHOOK_RE = /\{\{runHook:"([^"]+)"\}\}/g
 

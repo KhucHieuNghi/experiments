@@ -31,7 +31,7 @@ describe('LocalMemoryProvider', () => {
   let root: string
 
   beforeEach(async () => {
-    root = await mkdtemp(join(tmpdir(), 'agent-qa-lmp-'))
+    root = await mkdtemp(join(tmpdir(), 'etus-agent-lmp-'))
   })
 
   afterEach(async () => {

@@ -1,6 +1,6 @@
 import { z } from 'zod'
 import ms from 'ms'
-import { isCanonicalHookId } from '@etus/agent-qa-ids'
+import { isCanonicalHookId } from '@etus/agent-ids'
 
 const HookDurationString = z.string()
   .refine((v) => ms(v as ms.StringValue) !== undefined, {

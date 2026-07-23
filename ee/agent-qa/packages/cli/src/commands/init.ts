@@ -7,10 +7,10 @@ import select from '@inquirer/select'
 import input from '@inquirer/input'
 import checkbox from '@inquirer/checkbox'
 import {
-  DEFAULT_AGENT_QA_AUTH_STATES_DIR,
-  DEFAULT_AGENT_QA_CACHE_DIR,
-  DEFAULT_AGENT_QA_RUNTIME_DIR,
-} from '@etus/agent-qa-core'
+  DEFAULT_ETUS_AGENT_AUTH_STATES_DIR,
+  DEFAULT_ETUS_AGENT_CACHE_DIR,
+  DEFAULT_ETUS_AGENT_RUNTIME_DIR,
+} from '@etus/agent-core'
 import { DEFAULT_ANTHROPIC_MODEL, DEFAULT_GEMINI_MODEL, DEFAULT_OPENAI_MODEL } from '../model-defaults.js'
 
 type Platform = 'web' | 'android' | 'ios' | 'web+android' | 'web+ios'
@@ -28,10 +28,10 @@ type InitLLMConfig = {
   model: string
   baseURL?: string
 }
-const INIT_CACHE_DIR = DEFAULT_AGENT_QA_CACHE_DIR || '.agent-qa/cache'
-const INIT_AUTH_STATES_DIR = DEFAULT_AGENT_QA_AUTH_STATES_DIR || '.agent-qa/auth-states'
-const INIT_RUNTIME_DIR = DEFAULT_AGENT_QA_RUNTIME_DIR || '.agent-qa'
-const SUBSCRIPTION_AUTH_PACKAGE = '@etus/agent-qa-subscription-auth'
+const INIT_CACHE_DIR = DEFAULT_ETUS_AGENT_CACHE_DIR || '.etus-agent/cache'
+const INIT_AUTH_STATES_DIR = DEFAULT_ETUS_AGENT_AUTH_STATES_DIR || '.etus-agent/auth-states'
+const INIT_RUNTIME_DIR = DEFAULT_ETUS_AGENT_RUNTIME_DIR || '.etus-agent'
+const SUBSCRIPTION_AUTH_PACKAGE = '@etus/agent-subscription-auth'
 const PACKAGE_JSON_FILE = 'package.json'
 const DEFAULT_SCREENSHOT_SIZE = '50kb'
 const DEFAULT_EFFECTIVE_RESOLUTION = 500
@@ -247,7 +247,7 @@ if (!title) {
   throw new Error(\`HN item \${firstStoryId} returned no title\`)
 }
 
-await writeFile('/tmp/agent-qa.env', [
+await writeFile('/tmp/etus-agent.env', [
   \`HN_FIRST_STORY_TITLE="\${escapeEnvValue(title)}"\`,
   \`HN_FIRST_STORY_ID=\${firstStoryId}\`,
   '',
@@ -421,7 +421,7 @@ export function buildDefaultConfig(
       secretsFile: '.env.secrets.local',
     },
     services: {
-      dashboard: { port: 3100, artifactsDir: '.agent-qa/artifacts' },
+      dashboard: { port: 3100, artifactsDir: '.etus-agent/artifacts' },
       mcp: { enabled: true, transport: 'http', host: '127.0.0.1', port: 3471, path: '/mcp' },
       cache: { dir: INIT_CACHE_DIR, ttl: '7d' },
       authState: { dir: INIT_AUTH_STATES_DIR },
@@ -436,7 +436,7 @@ export function buildDefaultConfig(
           }
         : {}),
       recording: { enabled: true },
-      memory: { enabled: true, provider: 'local', dir: 'agent-qa-memory' },
+      memory: { enabled: true, provider: 'local', dir: 'etus-agent-memory' },
       logging: { level: 'warn' },
     },
     registry: {
@@ -487,9 +487,9 @@ function addYamlComments(yamlStr: string): string {
       result += '# Optional: ignore archived or generated tests.\n'
       result += '  # testPathIgnore:\n'
       result += '  #   - tests/archive/**/*.yaml\n'
-    } else if (line === '    artifactsDir: .agent-qa/artifacts') {
+    } else if (line === '    artifactsDir: .etus-agent/artifacts') {
       result += '    # Optional: persist dashboard state to a custom SQLite path.\n'
-      result += '    # dbPath: .agent-qa/dashboard.sqlite\n'
+      result += '    # dbPath: .etus-agent/dashboard.sqlite\n'
     } else if (line === '    ttl: 7d') {
       if (yamlStr.includes('\n  accessibility:\n')) {
         result += '  # Accessibility checks power the W3C BAD demo test.\n'
@@ -530,7 +530,7 @@ const DEFAULT_HOOKS_FILE = 'hooks.yaml'
 const DEFAULT_AGENT_RULES_FILE = 'agent-rules.md'
 const DEFAULT_ENV_FILE = '.env'
 const DEFAULT_SECRETS_FILE = '.env.secrets.local'
-const DEFAULT_LOCAL_CONFIG_FILE = 'agent-qa.local.yaml'
+const DEFAULT_LOCAL_CONFIG_FILE = 'etus-agent.local.yaml'
 
 function directoryGitignoreEntry(value: string): string {
   return value.endsWith('/') ? value : `${value}/`
@@ -550,7 +550,7 @@ function buildGitignoreEntries(): string[] {
 function buildLocalConfigTemplate(): string {
   return `# This file is for machine-specific device, app, and provider bindings.
 # Keep it out of git.
-# Add agent-qa.local.yaml to .gitignore.
+# Add etus-agent.local.yaml to .gitignore.
 
 devices:
   # Example local device binding:
@@ -591,13 +591,13 @@ function appendGitignore(dir: string): void {
 }
 
 function browserSetupCommand(platform: InitPlatformInput): string | null {
-  return hasWeb(platform) ? 'agent-qa install-browsers --chromium' : null
+  return hasWeb(platform) ? 'etus-agent install-browsers --chromium' : null
 }
 
 function mobileDriverSetupCommand(platform: InitPlatformInput): string | null {
   const runtimes = normalizePlatformSelection(platform).mobileRuntimes
   if (runtimes.length === 0) return null
-  return 'agent-qa install-mobile-drivers --all'
+  return 'etus-agent install-mobile-drivers --all'
 }
 
 function initNextSteps(platform: InitPlatformInput): Array<{ command: string; description: string }> {
@@ -613,10 +613,10 @@ function initNextSteps(platform: InitPlatformInput): Array<{ command: string; de
   }
 
   steps.push(
-    { command: 'agent-qa doctor', description: 'Verify your environment' },
+    { command: 'etus-agent doctor', description: 'Verify your environment' },
     { command: 'Edit tests/example-pass.yaml', description: 'Write your first test' },
-    { command: 'agent-qa run', description: 'Run all tests' },
-    { command: 'agent-qa dashboard', description: 'View results in browser' },
+    { command: 'etus-agent run', description: 'Run all tests' },
+    { command: 'etus-agent dashboard', description: 'View results in browser' },
   )
 
   return steps
@@ -624,7 +624,7 @@ function initNextSteps(platform: InitPlatformInput): Array<{ command: string; de
 
 export function createInitCommand(): Command {
   const cmd = new Command('init')
-    .description('Initialize a new agent-qa project')
+    .description('Initialize a new etus-agent project')
     .option('--dir <path>', 'target directory', process.cwd())
     .option('--platform <type>', 'platform to configure (web, android, ios, web+android, web+ios)')
     .option('--skip-install', 'deprecated no-op; setup commands are shown after init')
@@ -702,7 +702,7 @@ export function createInitCommand(): Command {
         model = DEFAULT_ANTHROPIC_MODEL
       }
 
-      const configPath = join(dir, 'agent-qa.config.yaml')
+      const configPath = join(dir, 'etus-agent.config.yaml')
 
       // Check existing config
       if (existsSync(configPath) && !force) {
@@ -819,7 +819,7 @@ export function createInitCommand(): Command {
       console.log(pc.green(pc.bold('✓ ETUS project initialized!')))
       console.log('')
       console.log('  Created:')
-      console.log(`    ${pc.dim('•')} agent-qa.config.yaml`)
+      console.log(`    ${pc.dim('•')} etus-agent.config.yaml`)
       if (subscriptionAuthDependency) {
         console.log(`    ${pc.dim('•')} ${PACKAGE_JSON_FILE} dependency for ${SUBSCRIPTION_AUTH_PACKAGE}@${subscriptionAuthDependency.range}`)
       }
@@ -846,14 +846,14 @@ export function createInitCommand(): Command {
       const generatedLLMs = ((config.registry as Record<string, unknown> | undefined)?.llms ?? []) as InitLLMConfig[]
       const subscriptionLLMs = generatedLLMs.filter(llm => isSubscriptionProvider(String(llm.provider)))
       if (subscriptionLLMs.length === 0) {
-        console.log(`    ${pc.dim('•')} Save credentials with ${pc.cyan('agent-qa auth set --config default --type api-key')}`)
+        console.log(`    ${pc.dim('•')} Save credentials with ${pc.cyan('etus-agent auth set --config default --type api-key')}`)
         if (provider === 'anthropic-compatible') {
-          console.log(`    ${pc.dim('•')} Bearer tokens use ${pc.cyan('agent-qa auth set --config default --type bearer-token')}`)
+          console.log(`    ${pc.dim('•')} Bearer tokens use ${pc.cyan('etus-agent auth set --config default --type bearer-token')}`)
         }
       } else {
         console.log(`    ${pc.dim('•')} Fetch ${SUBSCRIPTION_AUTH_PACKAGE} with your package manager install command`)
         for (const llm of subscriptionLLMs) {
-          console.log(`    ${pc.dim('•')} Authenticate ${pc.cyan(String(llm.name))} from ${pc.cyan('agent-qa dashboard')}`)
+          console.log(`    ${pc.dim('•')} Authenticate ${pc.cyan(String(llm.name))} from ${pc.cyan('etus-agent dashboard')}`)
         }
       }
       console.log('')

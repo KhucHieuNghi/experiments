@@ -14,7 +14,7 @@ const {
   mockResolveConfig: vi.fn(),
   mockDashboardDatabase: vi.fn(),
   mockResolveDashboardDbPath: vi.fn(({ configuredDbPath }: { configuredDbPath?: string }) =>
-    configuredDbPath || '.agent-qa/runs.db',
+    configuredDbPath || '.etus-agent/runs.db',
   ),
   mockStartServer: vi.fn(),
   mockFlushAnalytics: vi.fn(),
@@ -24,14 +24,14 @@ vi.mock('../config.js', () => ({
   resolveConfig: mockResolveConfig,
 }))
 
-vi.mock('@etus/agent-qa-dashboard', () => ({
+vi.mock('@etus/agent-dashboard', () => ({
   DashboardDatabase: mockDashboardDatabase,
   resolveDashboardDbPath: mockResolveDashboardDbPath,
   startServer: mockStartServer,
 }))
 
-vi.mock('@etus/agent-qa-core', async importOriginal => {
-  const actual = await importOriginal<typeof import('@etus/agent-qa-core')>()
+vi.mock('@etus/agent-core', async importOriginal => {
+  const actual = await importOriginal<typeof import('@etus/agent-core')>()
   return {
     ...actual,
     flushAnalytics: mockFlushAnalytics,
@@ -45,7 +45,7 @@ vi.mock('@etus/agent-qa-core', async importOriginal => {
 })
 
 import { createDashboardCommand, createServeCommand } from '../commands/dashboard.js'
-import { resolveLLMAuth } from '@etus/agent-qa-core'
+import { resolveLLMAuth } from '@etus/agent-core'
 
 let exitSpy: any
 let logSpy: any
@@ -69,8 +69,8 @@ function makeDashboardConfig(config: Record<string, unknown> = {}): Record<strin
 }
 
 function createWorkspaceFiles(): void {
-  workspaceRoot = mkdtempSync(join(tmpdir(), 'agent-qa-dashboard-test-'))
-  configPath = join(workspaceRoot, 'agent-qa.config.yaml')
+  workspaceRoot = mkdtempSync(join(tmpdir(), 'etus-agent-dashboard-test-'))
+  configPath = join(workspaceRoot, 'etus-agent.config.yaml')
   writeFileSync(configPath, 'workspace:\n')
   writeFileSync(join(workspaceRoot, 'hooks.yaml'), 'hooks: []\n')
   writeFileSync(join(workspaceRoot, 'agent-rules.md'), '# Agent rules\n')
@@ -149,7 +149,7 @@ describe('createDashboardCommand', () => {
     program.addCommand(cmd)
 
     try {
-      await program.parseAsync(['node', 'agent-qa', '--config', configPath, 'dashboard'])
+      await program.parseAsync(['node', 'etus-agent', '--config', configPath, 'dashboard'])
     } catch {
       // process.exit throws in our mock
     }
@@ -184,7 +184,7 @@ describe('createDashboardCommand', () => {
     program.addCommand(cmd)
 
     try {
-      await program.parseAsync(['node', 'agent-qa', '--config', configPath, 'dashboard'])
+      await program.parseAsync(['node', 'etus-agent', '--config', configPath, 'dashboard'])
     } catch {
       // process.exit
     }
@@ -211,7 +211,7 @@ describe('createDashboardCommand', () => {
     const cmd = createDashboardCommand()
     program.addCommand(cmd)
 
-    await program.parseAsync(['node', 'agent-qa', '--config', configPath, 'dashboard'])
+    await program.parseAsync(['node', 'etus-agent', '--config', configPath, 'dashboard'])
 
     expect(mockStartServer).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -248,7 +248,7 @@ describe('createDashboardCommand', () => {
     const cmd = createDashboardCommand()
     program.addCommand(cmd)
 
-    await program.parseAsync(['node', 'agent-qa', '--config', configPath, 'dashboard'])
+    await program.parseAsync(['node', 'etus-agent', '--config', configPath, 'dashboard'])
 
     expect(mockStartServer).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -287,7 +287,7 @@ describe('createDashboardCommand', () => {
       const cmd = createDashboardCommand()
       program.addCommand(cmd)
 
-      await program.parseAsync(['node', 'agent-qa', '--config', configPath, 'dashboard'])
+      await program.parseAsync(['node', 'etus-agent', '--config', configPath, 'dashboard'])
 
       const shutdown = signalHandlers.get('SIGINT')
       expect(shutdown).toBeDefined()
@@ -322,7 +322,7 @@ describe('createServeCommand', () => {
   it('starts configured local services through the dashboard-backed server path', async () => {
     mockResolveConfig.mockResolvedValue(makeDashboardConfig({
       services: {
-        dashboard: { port: 4100, dbPath: '.agent-qa/custom.db' },
+        dashboard: { port: 4100, dbPath: '.etus-agent/custom.db' },
         mcp: { enabled: true, port: 3472, path: '/mcp' },
       },
     }))
@@ -333,11 +333,11 @@ describe('createServeCommand', () => {
     const cmd = createServeCommand()
     program.addCommand(cmd)
 
-    await program.parseAsync(['node', 'agent-qa', '--config', configPath, 'serve'])
+    await program.parseAsync(['node', 'etus-agent', '--config', configPath, 'serve'])
 
     expect(mockResolveDashboardDbPath).toHaveBeenCalledWith({
       configDir: workspaceRoot,
-      configuredDbPath: '.agent-qa/custom.db',
+      configuredDbPath: '.etus-agent/custom.db',
     })
     expect(mockStartServer).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -369,7 +369,7 @@ describe('createServeCommand', () => {
       const cmd = createServeCommand()
       program.addCommand(cmd)
 
-      await program.parseAsync(['node', 'agent-qa', '--config', configPath, 'serve'])
+      await program.parseAsync(['node', 'etus-agent', '--config', configPath, 'serve'])
 
       const shutdown = signalHandlers.get('SIGTERM')
       expect(shutdown).toBeDefined()

@@ -10,7 +10,7 @@ import { discoverStagedRecords, validateStagedPackageManifests as defaultValidat
 import { assertAllowedBump, assertSharedPublicVersion, computeTargetVersion } from './version.mjs'
 import { validatePosthogReleaseArtifacts as defaultValidatePosthogReleaseArtifacts } from './posthog.mjs'
 
-export const subscriptionAuthPackageName = '@etus/agent-qa-subscription-auth'
+export const subscriptionAuthPackageName = '@etus/agent-subscription-auth'
 
 export function buildReleaseGatePlan(bump) {
   assertAllowedBump(bump)
@@ -51,8 +51,8 @@ function validatePackFiles(record, files) {
   if (declaresBuiltOutput && !files.some(file => file.startsWith('dist/'))) {
     throw new Error(`${name} pack must include dist/`)
   }
-  if (name === 'agent-qa' && !files.some(file => file.startsWith('skills/'))) {
-    throw new Error('agent-qa pack must include skills/')
+  if (name === 'etus-agent' && !files.some(file => file.startsWith('skills/'))) {
+    throw new Error('etus-agent pack must include skills/')
   }
 }
 
@@ -67,7 +67,7 @@ export function validateStagedPackDryRuns(options = {}) {
     stagedDir,
     targetVersion,
   })
-  const npmCache = mkdtempSync(join(tmpdir(), 'agent-qa-release-pack-cache-'))
+  const npmCache = mkdtempSync(join(tmpdir(), 'etus-agent-release-pack-cache-'))
   const npmEnv = {
     ...process.env,
     npm_config_audit: 'false',

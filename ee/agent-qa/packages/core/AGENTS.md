@@ -1,4 +1,4 @@
-# ETUS package instructions: @etus/agent-qa-core
+# ETUS package instructions: @etus/agent-core
 
 Inherit the root ETUS branding, security, and release rules.
 
@@ -23,9 +23,9 @@ artifacts, and public TypeScript exports.
 
 ## Commands
 
-- Test: `pnpm --filter @etus/agent-qa-core test`
-- Typecheck: `pnpm --filter @etus/agent-qa-core typecheck`
-- Build: `pnpm --filter @etus/agent-qa-core build`
+- Test: `pnpm --filter @etus/agent-core test`
+- Typecheck: `pnpm --filter @etus/agent-core typecheck`
+- Build: `pnpm --filter @etus/agent-core build`
 
 ## Local Rules
 
@@ -38,13 +38,13 @@ artifacts, and public TypeScript exports.
 - Keep auth, analytics, memory, reporter, and parser changes covered by focused
   tests.
 - Prefer structured parsers and Zod schemas over ad hoc string manipulation.
-- Keep runtime paths under existing `.agent-qa/` or configured workspace paths.
+- Keep runtime paths under existing `.etus-agent/` or configured workspace paths.
 
 ## Verification
 
 Run focused tests for the changed subsystem first, then package checks:
 
 ```bash
-pnpm --filter @etus/agent-qa-core test
-pnpm --filter @etus/agent-qa-core typecheck
+pnpm --filter @etus/agent-core test
+pnpm --filter @etus/agent-core typecheck
 ```

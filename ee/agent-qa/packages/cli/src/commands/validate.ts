@@ -1,5 +1,5 @@
 import { Command } from 'commander'
-import { validateProject, formatDiagnostics, resolveWorkspacePaths } from '@etus/agent-qa-core'
+import { validateProject, formatDiagnostics, resolveWorkspacePaths } from '@etus/agent-core'
 import { resolveConfig } from '../config.js'
 
 export function createValidateCommand(): Command {
@@ -7,7 +7,7 @@ export function createValidateCommand(): Command {
     .description('Validate config, test files, and suite references')
     .argument('[files...]', 'specific files to validate (default: auto-discover all)')
     .action(async (files: string[], command: Command) => {
-      const configPath = command.parent?.opts<{ config?: string }>().config ?? 'agent-qa.config.yaml'
+      const configPath = command.parent?.opts<{ config?: string }>().config ?? 'etus-agent.config.yaml'
       let workspace
 
       try {

@@ -6,7 +6,7 @@ import {
   getEntityIdContract,
   isCanonicalId,
   type EntityIdType,
-} from '@etus/agent-qa-ids'
+} from '@etus/agent-ids'
 
 function parseEntityType(value: string): EntityIdType {
   if ((ENTITY_ID_TYPES as readonly string[]).includes(value)) {

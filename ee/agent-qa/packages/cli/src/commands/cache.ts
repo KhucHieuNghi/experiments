@@ -4,10 +4,10 @@ import { readFile, readdir, rm, stat } from 'node:fs/promises'
 import { parse } from 'yaml'
 import { join, resolve, basename } from 'node:path'
 import { createInterface } from 'node:readline'
-import { DEFAULT_AGENT_QA_CACHE_DIR, hashStepInstruction } from '@etus/agent-qa-core'
+import { DEFAULT_ETUS_AGENT_CACHE_DIR, hashStepInstruction } from '@etus/agent-core'
 import { resolveConfig } from '../config.js'
 
-const CACHE_DIR_FALLBACK = DEFAULT_AGENT_QA_CACHE_DIR || '.agent-qa/cache'
+const CACHE_DIR_FALLBACK = DEFAULT_ETUS_AGENT_CACHE_DIR || '.etus-agent/cache'
 
 export async function purgeTest(testPath: string, cacheDir: string, configContent = ''): Promise<number> {
   const content = await readFile(testPath, 'utf-8')
@@ -89,7 +89,7 @@ export function createCacheCommand(): Command {
       const cacheDir = config.services?.cache?.dir ?? CACHE_DIR_FALLBACK
 
       // Read raw config file content for cache key scoping
-      const configPath = (parentOpts.config as string | undefined) ?? 'agent-qa.config.yaml'
+      const configPath = (parentOpts.config as string | undefined) ?? 'etus-agent.config.yaml'
       let configContent = ''
       try {
         configContent = await readFile(configPath, 'utf-8')

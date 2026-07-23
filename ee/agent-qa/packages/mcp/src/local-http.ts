@@ -1,6 +1,6 @@
 import type { IncomingMessage, ServerResponse } from 'node:http'
 import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js'
-import { createAgentQaMcpServer, type AgentQaMcpServerOptions } from './agent-qa-server.js'
+import { createAgentQaMcpServer, type AgentQaMcpServerOptions } from './etus-agent-server.js'
 
 export const DEFAULT_MCP_HOST = '127.0.0.1'
 export const DEFAULT_MCP_PORT = 3471

@@ -1,6 +1,6 @@
 import type { Browser, BrowserContext, Page } from 'playwright-core'
-import type { PlatformAdapter, PlatformConfig, ScreenState, Action, ActionResult, ObserveOptions, ConsoleLogEntry, NetworkLogEntry } from '@etus/agent-qa-core'
-import { convertKeysForPlatform, isMacPlatform, warnIfOutOfBounds } from '@etus/agent-qa-core'
+import type { PlatformAdapter, PlatformConfig, ScreenState, Action, ActionResult, ObserveOptions, ConsoleLogEntry, NetworkLogEntry } from '@etus/agent-core'
+import { convertKeysForPlatform, isMacPlatform, warnIfOutOfBounds } from '@etus/agent-core'
 import { observePage } from './observer.js'
 import { ElementResolver } from './element-resolver.js'
 import { validateAction } from './action-validator.js'

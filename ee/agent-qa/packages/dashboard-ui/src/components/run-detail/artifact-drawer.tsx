@@ -107,8 +107,8 @@ function getRunAttributes(response: RunArtifactResponse): Record<string, string>
 
 function sortedAttributeEntries(attributes: Record<string, string>) {
   return Object.entries(attributes).sort(([left], [right]) => {
-    const leftInternal = left.startsWith("agent-qa.")
-    const rightInternal = right.startsWith("agent-qa.")
+    const leftInternal = left.startsWith("etus-agent.")
+    const rightInternal = right.startsWith("etus-agent.")
     if (leftInternal !== rightInternal) return leftInternal ? -1 : 1
     return left.localeCompare(right)
   })

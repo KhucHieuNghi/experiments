@@ -9,26 +9,26 @@ const runId = 'r_alpha-bravo-charlie-delta-echo-foxtrot-golf-hotel-india-juliet'
 describe('analytics event builder', () => {
   it('preserves allowlisted foundation properties and disables PostHog person profiles', () => {
     const event = buildAnalyticsEvent({
-      name: 'agent-qa.analytics.test_event',
+      name: 'etus-agent.analytics.test_event',
       properties: {
         surface: 'cli',
         runtime_context: 'user',
-        agent_qa_version: '0.1.0',
+        etus_agent_version: '0.1.0',
       },
     })
 
-    expect(event.name).toBe('agent-qa.analytics.test_event')
+    expect(event.name).toBe('etus-agent.analytics.test_event')
     expect(event.properties).toMatchObject({
       surface: 'cli',
       runtime_context: 'user',
-      agent_qa_version: '0.1.0',
+      etus_agent_version: '0.1.0',
       $process_person_profile: false,
     })
   })
 
   it('allows raw canonical test, suite, and run ids', () => {
     const event = buildAnalyticsEvent({
-      name: 'agent-qa.analytics.test_event',
+      name: 'etus-agent.analytics.test_event',
       properties: {
         surface: 'core',
         runtime_context: 'user',
@@ -41,12 +41,12 @@ describe('analytics event builder', () => {
     expect(event.properties.test_id).toBe(testId)
     expect(event.properties.suite_id).toBe(suiteId)
     expect(event.properties.run_id).toBe(runId)
-    expect(event.properties.agent_qa_version).toBe(getAgentQaVersion())
+    expect(event.properties.etus_agent_version).toBe(getAgentQaVersion())
   })
 
   it('adds package version when callers omit analytics standard properties', () => {
     const event = buildAnalyticsEvent({
-      name: 'agent-qa.dashboard.opened',
+      name: 'etus-agent.dashboard.opened',
       properties: {
         surface: 'dashboard-ui',
         route: '/secret',
@@ -54,7 +54,7 @@ describe('analytics event builder', () => {
     })
 
     expect(event.properties).toMatchObject({
-      agent_qa_version: getAgentQaVersion(),
+      etus_agent_version: getAgentQaVersion(),
       surface: 'dashboard-ui',
       $process_person_profile: false,
     })
@@ -63,9 +63,9 @@ describe('analytics event builder', () => {
 
   it('builds test run completion events with safe aggregate properties', () => {
     const event = buildAnalyticsEvent({
-      name: 'agent-qa.test_run.completed',
+      name: 'etus-agent.test_run.completed',
       properties: {
-        agent_qa_version: '0.1.0',
+        etus_agent_version: '0.1.0',
         surface: 'cli',
         runtime_context: 'user',
         run_id: runId,
@@ -95,9 +95,9 @@ describe('analytics event builder', () => {
       },
     })
 
-    expect(event.name).toBe('agent-qa.test_run.completed')
+    expect(event.name).toBe('etus-agent.test_run.completed')
     expect(event.properties).toMatchObject({
-      agent_qa_version: '0.1.0',
+      etus_agent_version: '0.1.0',
       surface: 'cli',
       runtime_context: 'user',
       run_id: runId,
@@ -116,9 +116,9 @@ describe('analytics event builder', () => {
 
   it('builds suite run completion events with parent aggregate properties only', () => {
     const event = buildAnalyticsEvent({
-      name: 'agent-qa.suite_run.completed',
+      name: 'etus-agent.suite_run.completed',
       properties: {
-        agent_qa_version: '0.1.0',
+        etus_agent_version: '0.1.0',
         surface: 'cli',
         runtime_context: 'ci',
         run_id: runId,
@@ -139,7 +139,7 @@ describe('analytics event builder', () => {
       },
     })
 
-    expect(event.name).toBe('agent-qa.suite_run.completed')
+    expect(event.name).toBe('etus-agent.suite_run.completed')
     expect(event.properties).toMatchObject({
       run_id: runId,
       suite_id: suiteId,
@@ -158,7 +158,7 @@ describe('analytics event builder', () => {
 
   it('rejects invalid runtime context values', () => {
     expect(() => buildAnalyticsEvent({
-      name: 'agent-qa.analytics.test_event',
+      name: 'etus-agent.analytics.test_event',
       properties: {
         surface: 'cli',
         runtime_context: 'local',
@@ -168,7 +168,7 @@ describe('analytics event builder', () => {
 
   it('rejects invalid agent product values', () => {
     expect(() => buildAnalyticsEvent({
-      name: 'agent-qa.analytics.test_event',
+      name: 'etus-agent.analytics.test_event',
       properties: {
         surface: 'cli',
         runtime_context: 'agent',
@@ -179,7 +179,7 @@ describe('analytics event builder', () => {
 
   it('drops sensitive unsupported fields before PostHog capture', () => {
     const event = buildAnalyticsEvent({
-      name: 'agent-qa.test_run.completed',
+      name: 'etus-agent.test_run.completed',
       properties: {
         surface: 'cli',
         runtime_context: 'agent',
@@ -247,7 +247,7 @@ describe('analytics event builder', () => {
 
   it('rejects negative aggregate counts', () => {
     expect(() => buildAnalyticsEvent({
-      name: 'agent-qa.test_run.completed',
+      name: 'etus-agent.test_run.completed',
       properties: {
         surface: 'cli',
         runtime_context: 'user',
@@ -261,7 +261,7 @@ describe('analytics event builder', () => {
 
   it('drops raw dashboard route URLs and MCP payload objects', () => {
     const event = buildAnalyticsEvent({
-      name: 'agent-qa.analytics.test_event',
+      name: 'etus-agent.analytics.test_event',
       properties: {
         surface: 'dashboard-server',
         runtime_context: 'user',
@@ -278,7 +278,7 @@ describe('analytics event builder', () => {
 
   it('drops raw agent strings while allowing normalized agent products', () => {
     const event = buildAnalyticsEvent({
-      name: 'agent-qa.analytics.test_event',
+      name: 'etus-agent.analytics.test_event',
       properties: {
         surface: 'cli',
         runtime_context: 'agent',
@@ -294,7 +294,7 @@ describe('analytics event builder', () => {
 
   it('rejects run event names that belong to later phases', () => {
     expect(() => buildAnalyticsEvent({
-      name: 'agent-qa.run.completed',
+      name: 'etus-agent.run.completed',
       properties: {
         surface: 'core',
         runtime_context: 'user',
@@ -304,7 +304,7 @@ describe('analytics event builder', () => {
 
   it('continues to allow canonical test and suite ids in negative cases', () => {
     const event = buildAnalyticsEvent({
-      name: 'agent-qa.analytics.test_event',
+      name: 'etus-agent.analytics.test_event',
       properties: {
         surface: 'core',
         runtime_context: 'user',
@@ -321,21 +321,21 @@ describe('analytics event builder', () => {
 
   it('accepts the exact minimal dashboard event set and rejects route/page events', () => {
     expect(buildAnalyticsEvent({
-      name: 'agent-qa.dashboard.opened',
+      name: 'etus-agent.dashboard.opened',
       properties: {
         surface: 'dashboard-ui',
         runtime_context: 'user',
-        agent_qa_version: '0.1.0',
+        etus_agent_version: '0.1.0',
       },
     }).properties).toMatchObject({
       surface: 'dashboard-ui',
       runtime_context: 'user',
-      agent_qa_version: '0.1.0',
+      etus_agent_version: '0.1.0',
       $process_person_profile: false,
     })
 
     expect(buildAnalyticsEvent({
-      name: 'agent-qa.dashboard.live_mode.started',
+      name: 'etus-agent.dashboard.live_mode.started',
       properties: {
         surface: 'dashboard-ui',
         runtime_context: 'user',
@@ -351,7 +351,7 @@ describe('analytics event builder', () => {
     })
 
     expect(buildAnalyticsEvent({
-      name: 'agent-qa.dashboard.entity.created',
+      name: 'etus-agent.dashboard.entity.created',
       properties: {
         surface: 'dashboard-ui',
         runtime_context: 'user',
@@ -367,18 +367,18 @@ describe('analytics event builder', () => {
     })
 
     expect(() => buildAnalyticsEvent({
-      name: 'agent-qa.dashboard.route.viewed',
+      name: 'etus-agent.dashboard.route.viewed',
       properties: { surface: 'dashboard-ui' },
     })).toThrow()
     expect(() => buildAnalyticsEvent({
-      name: 'agent-qa.dashboard.page.accessed',
+      name: 'etus-agent.dashboard.page.accessed',
       properties: { surface: 'dashboard-ui' },
     })).toThrow()
   })
 
   it('strips forbidden dashboard payload fields and sentinel content', () => {
     const event = buildAnalyticsEvent({
-      name: 'agent-qa.dashboard.opened',
+      name: 'etus-agent.dashboard.opened',
       properties: {
         surface: 'dashboard-ui',
         runtime_context: 'user',
@@ -448,7 +448,7 @@ describe('analytics event builder', () => {
 
   it('rejects invalid dashboard entity and outcome enum values', () => {
     expect(() => buildAnalyticsEvent({
-      name: 'agent-qa.dashboard.live_mode.started',
+      name: 'etus-agent.dashboard.live_mode.started',
       properties: {
         surface: 'dashboard-ui',
         runtime_context: 'user',
@@ -458,7 +458,7 @@ describe('analytics event builder', () => {
     })).toThrow()
 
     expect(() => buildAnalyticsEvent({
-      name: 'agent-qa.dashboard.entity.created',
+      name: 'etus-agent.dashboard.entity.created',
       properties: {
         surface: 'dashboard-ui',
         runtime_context: 'user',
@@ -470,7 +470,7 @@ describe('analytics event builder', () => {
 
   it('builds MCP lifecycle and tool invocation events with only approved metadata', () => {
     const lifecycle = buildAnalyticsEvent({
-      name: 'agent-qa.mcp.server.lifecycle',
+      name: 'etus-agent.mcp.server.lifecycle',
       properties: {
         surface: 'mcp',
         runtime_context: 'agent',
@@ -494,7 +494,7 @@ describe('analytics event builder', () => {
     })
 
     const disabled = buildAnalyticsEvent({
-      name: 'agent-qa.mcp.server.lifecycle',
+      name: 'etus-agent.mcp.server.lifecycle',
       properties: {
         surface: 'dashboard-server',
         runtime_context: 'user',
@@ -512,11 +512,11 @@ describe('analytics event builder', () => {
     })
 
     const invoked = buildAnalyticsEvent({
-      name: 'agent-qa.mcp.tool.invoked',
+      name: 'etus-agent.mcp.tool.invoked',
       properties: {
         surface: 'mcp',
         runtime_context: 'agent',
-        tool_name: 'agent_qa_get_run',
+        tool_name: 'etus_agent_get_run',
         mcp_tool_category: 'run',
         mcp_tool_status: 'success',
         duration_ms: 12,
@@ -527,7 +527,7 @@ describe('analytics event builder', () => {
     expect(invoked.properties).toMatchObject({
       surface: 'mcp',
       runtime_context: 'agent',
-      tool_name: 'agent_qa_get_run',
+      tool_name: 'etus_agent_get_run',
       mcp_tool_category: 'run',
       mcp_tool_status: 'success',
       duration_ms: 12,
@@ -538,7 +538,7 @@ describe('analytics event builder', () => {
 
   it('rejects invalid MCP lifecycle, transport, tool status, and error category values', () => {
     expect(() => buildAnalyticsEvent({
-      name: 'agent-qa.mcp.server.lifecycle',
+      name: 'etus-agent.mcp.server.lifecycle',
       properties: {
         surface: 'mcp',
         mcp_server_state: 'enabled',
@@ -547,7 +547,7 @@ describe('analytics event builder', () => {
     })).toThrow()
 
     expect(() => buildAnalyticsEvent({
-      name: 'agent-qa.mcp.server.lifecycle',
+      name: 'etus-agent.mcp.server.lifecycle',
       properties: {
         surface: 'mcp',
         mcp_server_state: 'started',
@@ -556,20 +556,20 @@ describe('analytics event builder', () => {
     })).toThrow()
 
     expect(() => buildAnalyticsEvent({
-      name: 'agent-qa.mcp.tool.invoked',
+      name: 'etus-agent.mcp.tool.invoked',
       properties: {
         surface: 'mcp',
-        tool_name: 'agent_qa_get_run',
+        tool_name: 'etus_agent_get_run',
         mcp_tool_category: 'run',
         mcp_tool_status: 'ok',
       },
     })).toThrow()
 
     expect(() => buildAnalyticsEvent({
-      name: 'agent-qa.mcp.tool.invoked',
+      name: 'etus-agent.mcp.tool.invoked',
       properties: {
         surface: 'mcp',
-        tool_name: 'agent_qa_get_run',
+        tool_name: 'etus_agent_get_run',
         mcp_tool_category: 'run',
         mcp_tool_status: 'error',
         mcp_error_category: 'http_500',
@@ -579,11 +579,11 @@ describe('analytics event builder', () => {
 
   it('strips forbidden MCP payload, endpoint, file, memory, config, and error fields', () => {
     const event = buildAnalyticsEvent({
-      name: 'agent-qa.mcp.tool.invoked',
+      name: 'etus-agent.mcp.tool.invoked',
       properties: {
         surface: 'mcp',
         runtime_context: 'agent',
-        tool_name: 'agent_qa_create_test',
+        tool_name: 'etus_agent_create_test',
         mcp_tool_category: 'authoring',
         mcp_tool_status: 'error',
         mcp_error_category: 'validation',
@@ -683,7 +683,7 @@ describe('analytics event builder', () => {
     }
     const eventInputs = [
       {
-        name: 'agent-qa.analytics.initialized',
+        name: 'etus-agent.analytics.initialized',
         properties: {
           surface: 'core',
           runtime_context: 'user',
@@ -692,14 +692,14 @@ describe('analytics event builder', () => {
         },
       },
       {
-        name: 'agent-qa.analytics.test_event',
+        name: 'etus-agent.analytics.test_event',
         properties: {
           surface: 'core',
           runtime_context: 'user',
         },
       },
       {
-        name: 'agent-qa.test_run.completed',
+        name: 'etus-agent.test_run.completed',
         properties: {
           surface: 'cli',
           runtime_context: 'user',
@@ -709,7 +709,7 @@ describe('analytics event builder', () => {
         },
       },
       {
-        name: 'agent-qa.suite_run.completed',
+        name: 'etus-agent.suite_run.completed',
         properties: {
           surface: 'cli',
           runtime_context: 'user',
@@ -719,14 +719,14 @@ describe('analytics event builder', () => {
         },
       },
       {
-        name: 'agent-qa.dashboard.opened',
+        name: 'etus-agent.dashboard.opened',
         properties: {
           surface: 'dashboard-ui',
           runtime_context: 'user',
         },
       },
       {
-        name: 'agent-qa.dashboard.live_mode.started',
+        name: 'etus-agent.dashboard.live_mode.started',
         properties: {
           surface: 'dashboard-ui',
           runtime_context: 'user',
@@ -735,7 +735,7 @@ describe('analytics event builder', () => {
         },
       },
       {
-        name: 'agent-qa.dashboard.entity.created',
+        name: 'etus-agent.dashboard.entity.created',
         properties: {
           surface: 'dashboard-ui',
           runtime_context: 'user',
@@ -744,7 +744,7 @@ describe('analytics event builder', () => {
         },
       },
       {
-        name: 'agent-qa.mcp.server.lifecycle',
+        name: 'etus-agent.mcp.server.lifecycle',
         properties: {
           surface: 'mcp',
           runtime_context: 'agent',
@@ -753,11 +753,11 @@ describe('analytics event builder', () => {
         },
       },
       {
-        name: 'agent-qa.mcp.tool.invoked',
+        name: 'etus-agent.mcp.tool.invoked',
         properties: {
           surface: 'mcp',
           runtime_context: 'agent',
-          tool_name: 'agent_qa_discover',
+          tool_name: 'etus_agent_discover',
           mcp_tool_category: 'discovery',
           mcp_tool_status: 'success',
           duration_ms: 1,

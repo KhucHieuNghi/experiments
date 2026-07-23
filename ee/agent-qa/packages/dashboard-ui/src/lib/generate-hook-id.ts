@@ -1,1 +1,1 @@
-export { generateHookId } from '@etus/agent-qa-ids'
+export { generateHookId } from '@etus/agent-ids'

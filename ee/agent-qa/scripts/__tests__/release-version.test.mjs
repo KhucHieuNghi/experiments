@@ -20,15 +20,15 @@ test('allows only patch and minor bumps on the v0 release line', () => {
 
 test('rejects public package version drift', () => {
   const records = [
-    { pkg: { name: '@etus/agent-qa-core', version: '0.1.0' } },
-    { pkg: { name: 'agent-qa', version: '0.1.0' } },
+    { pkg: { name: '@etus/agent-core', version: '0.1.0' } },
+    { pkg: { name: 'etus-agent', version: '0.1.0' } },
   ]
   assert.equal(assertSharedPublicVersion(records), '0.1.0')
 
   assert.throws(
     () => assertSharedPublicVersion([
       ...records,
-      { pkg: { name: '@etus/agent-qa-web', version: '0.2.0' } },
+      { pkg: { name: '@etus/agent-web', version: '0.2.0' } },
     ]),
     /public package versions must match/,
   )
@@ -36,32 +36,32 @@ test('rejects public package version drift', () => {
 
 test('rewrites only internal workspace ranges for staged manifests', () => {
   const manifest = {
-    name: 'agent-qa',
+    name: 'etus-agent',
     version: '0.1.0',
     dependencies: {
-      '@etus/agent-qa-core': 'workspace:*',
-      '@etus/agent-qa-ids': '^0.1.0',
+      '@etus/agent-core': 'workspace:*',
+      '@etus/agent-ids': '^0.1.0',
       zod: '4.4.2',
     },
     devDependencies: {
-      '@etus/agent-qa-web': 'workspace:*',
+      '@etus/agent-web': 'workspace:*',
       typescript: '~6.0.3',
     },
     peerDependencies: {
-      '@etus/agent-qa-mcp': 'workspace:*',
+      '@etus/agent-mcp': 'workspace:*',
     },
     optionalDependencies: {
-      '@etus/agent-qa-ios': 'workspace:*',
+      '@etus/agent-ios': 'workspace:*',
     },
   }
 
   const rewritten = rewriteInternalWorkspaceRanges(manifest, '0.1.1')
   assert.notEqual(rewritten, manifest)
-  assert.equal(rewritten.dependencies['@etus/agent-qa-core'], '0.1.1')
-  assert.equal(rewritten.dependencies['@etus/agent-qa-ids'], '^0.1.0')
+  assert.equal(rewritten.dependencies['@etus/agent-core'], '0.1.1')
+  assert.equal(rewritten.dependencies['@etus/agent-ids'], '^0.1.0')
   assert.equal(rewritten.dependencies.zod, '4.4.2')
-  assert.equal(rewritten.devDependencies['@etus/agent-qa-web'], '0.1.1')
-  assert.equal(rewritten.peerDependencies['@etus/agent-qa-mcp'], '0.1.1')
-  assert.equal(rewritten.optionalDependencies['@etus/agent-qa-ios'], '0.1.1')
-  assert.equal(manifest.dependencies['@etus/agent-qa-core'], 'workspace:*')
+  assert.equal(rewritten.devDependencies['@etus/agent-web'], '0.1.1')
+  assert.equal(rewritten.peerDependencies['@etus/agent-mcp'], '0.1.1')
+  assert.equal(rewritten.optionalDependencies['@etus/agent-ios'], '0.1.1')
+  assert.equal(manifest.dependencies['@etus/agent-core'], 'workspace:*')
 })

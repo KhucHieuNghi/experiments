@@ -1,7 +1,7 @@
 import { existsSync, readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import pc from 'picocolors'
-import { getAgentQaUpdateStatus } from '@etus/agent-qa-core'
+import { getAgentQaUpdateStatus } from '@etus/agent-core'
 
 export type AgentQaUpdateNoticeReporterSelection = {
   console: boolean
@@ -22,10 +22,10 @@ type PackageManager = 'pnpm' | 'npm' | 'yarn' | 'bun'
 
 const RELEASES_URL = 'https://www.onpoint.vn'
 const UPDATE_COMMANDS: Record<PackageManager, string> = {
-  pnpm: 'pnpm add -D agent-qa@latest',
-  npm: 'npm install --save-dev agent-qa@latest',
-  yarn: 'yarn add --dev agent-qa@latest',
-  bun: 'bun add --dev agent-qa@latest',
+  pnpm: 'pnpm add -D etus-agent@latest',
+  npm: 'npm install --save-dev etus-agent@latest',
+  yarn: 'yarn add --dev etus-agent@latest',
+  bun: 'bun add --dev etus-agent@latest',
 }
 
 const LOCKFILES: Array<{ file: string; packageManager: PackageManager }> = [
@@ -96,7 +96,7 @@ function hasAgentQaDevDependency(manifest: Record<string, unknown>): boolean {
   const devDependencies = manifest.devDependencies
   return (
     isRecord(devDependencies) &&
-    Object.prototype.hasOwnProperty.call(devDependencies, 'agent-qa')
+    Object.prototype.hasOwnProperty.call(devDependencies, 'etus-agent')
   )
 }
 

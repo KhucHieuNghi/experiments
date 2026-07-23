@@ -108,7 +108,7 @@ function waitForBetterSqlite3BuildOutput(installRoot: string, timeoutMs = 30_000
 }
 
 function acquireBetterSqlite3RebuildLock(installRoot: string): () => void {
-  const lockRoot = join(tmpdir(), 'agent-qa-better-sqlite3-rebuild-locks')
+  const lockRoot = join(tmpdir(), 'etus-agent-better-sqlite3-rebuild-locks')
   const lockKey = createHash('sha256')
     .update(`${installRoot}\0${process.version}`)
     .digest('hex')
@@ -152,8 +152,8 @@ function rebuildBetterSqlite3ForCurrentRuntime(originalError: unknown): void {
   const packageJsonPath = require.resolve('better-sqlite3/package.json')
   const installRoot = dirname(packageJsonPath)
   const rebuildCommand = resolveBetterSqliteRebuildCommand()
-  const nodeGypDevDir = join(tmpdir(), 'agent-qa-node-gyp', process.version.replace(/^v/, ''))
-  const npmCacheDir = join(tmpdir(), 'agent-qa-npm-cache')
+  const nodeGypDevDir = join(tmpdir(), 'etus-agent-node-gyp', process.version.replace(/^v/, ''))
+  const npmCacheDir = join(tmpdir(), 'etus-agent-npm-cache')
   const nodeDir = resolveCurrentRuntimeNodeDir()
   const nodeGypBinsPath = join(installRoot, 'build', 'node_gyp_bins')
   const buildRoot = join(installRoot, 'build')
@@ -177,7 +177,7 @@ function rebuildBetterSqlite3ForCurrentRuntime(originalError: unknown): void {
     rmSync(nodeGypBinsPath, { recursive: true, force: true })
 
     if (!process.env.VITEST) {
-      console.warn(`[agent-qa] Rebuilding better-sqlite3 for Node ${process.version} in ${installRoot}`)
+      console.warn(`[etus-agent] Rebuilding better-sqlite3 for Node ${process.version} in ${installRoot}`)
     }
 
     try {

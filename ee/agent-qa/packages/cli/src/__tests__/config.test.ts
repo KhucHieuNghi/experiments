@@ -4,7 +4,7 @@ import { readFile, writeFile, mkdir, rm } from 'node:fs/promises'
 import { join } from 'node:path'
 import { tmpdir } from 'node:os'
 
-const TMP_DIR = join(tmpdir(), 'agent-qa-config-test-' + process.pid)
+const TMP_DIR = join(tmpdir(), 'etus-agent-config-test-' + process.pid)
 
 function makeValidConfig(overrides: Record<string, unknown> = {}): Record<string, unknown> {
   return {
@@ -17,7 +17,7 @@ function makeValidConfig(overrides: Record<string, unknown> = {}): Record<string
       secretsFile: '.env.secrets.local',
     },
     services: {
-      cache: { dir: '.agent-qa/cache', ttl: '7d' },
+      cache: { dir: '.etus-agent/cache', ttl: '7d' },
       logging: { level: 'warn' },
     },
     registry: {
@@ -48,13 +48,13 @@ beforeEach(async () => {
 afterEach(async () => {
   await rm(TMP_DIR, { recursive: true, force: true })
   for (const key of Object.keys(process.env)) {
-    if (key.startsWith('AGENT_QA_')) delete process.env[key]
+    if (key.startsWith('ETUS_AGENT_')) delete process.env[key]
   }
 })
 
 describe('loadConfigFile', () => {
   it('parses valid YAML config', async () => {
-    const configPath = join(TMP_DIR, 'agent-qa.config.yaml')
+    const configPath = join(TMP_DIR, 'etus-agent.config.yaml')
     await writeFile(
       configPath,
       `workspace:
@@ -83,42 +83,42 @@ describe('loadConfigFile', () => {
 })
 
 describe('loadEnvOverrides', () => {
-  it('maps AGENT_QA_DASHBOARD_PORT to services.dashboard.port', () => {
-    process.env.AGENT_QA_DASHBOARD_PORT = '4000'
+  it('maps ETUS_AGENT_DASHBOARD_PORT to services.dashboard.port', () => {
+    process.env.ETUS_AGENT_DASHBOARD_PORT = '4000'
     const result = loadEnvOverrides()
     expect(result).toEqual({
       services: { dashboard: { port: 4000 } },
     })
   })
 
-  it('maps AGENT_QA_MCP_PORT to services.mcp.port', () => {
-    process.env.AGENT_QA_MCP_PORT = '3472'
+  it('maps ETUS_AGENT_MCP_PORT to services.mcp.port', () => {
+    process.env.ETUS_AGENT_MCP_PORT = '3472'
     const result = loadEnvOverrides()
     expect(result).toEqual({
       services: { mcp: { port: 3472 } },
     })
   })
 
-  it('maps AGENT_QA_CACHE_DIR to services.cache.dir', () => {
-    process.env.AGENT_QA_CACHE_DIR = '/tmp/cache'
-    process.env.AGENT_QA_CACHE_TTL = '24h'
+  it('maps ETUS_AGENT_CACHE_DIR to services.cache.dir', () => {
+    process.env.ETUS_AGENT_CACHE_DIR = '/tmp/cache'
+    process.env.ETUS_AGENT_CACHE_TTL = '24h'
     const result = loadEnvOverrides()
     expect(result).toEqual({ services: { cache: { dir: '/tmp/cache', ttl: '24h' } } })
   })
 
-  it('maps AGENT_QA_HEADLESS=true to use.browser.headless boolean true', () => {
-    process.env.AGENT_QA_HEADLESS = 'true'
+  it('maps ETUS_AGENT_HEADLESS=true to use.browser.headless boolean true', () => {
+    process.env.ETUS_AGENT_HEADLESS = 'true'
     const result = loadEnvOverrides()
     expect(result).toEqual({ use: { browser: { headless: true } } })
   })
 
-  it('maps AGENT_QA_HEADLESS=false to use.browser.headless boolean false', () => {
-    process.env.AGENT_QA_HEADLESS = 'false'
+  it('maps ETUS_AGENT_HEADLESS=false to use.browser.headless boolean false', () => {
+    process.env.ETUS_AGENT_HEADLESS = 'false'
     const result = loadEnvOverrides()
     expect(result).toEqual({ use: { browser: { headless: false } } })
   })
 
-  it('returns empty object when no AGENT_QA_ vars set', () => {
+  it('returns empty object when no ETUS_AGENT_ vars set', () => {
     expect(loadEnvOverrides()).toEqual({})
   })
 })
@@ -226,7 +226,7 @@ describe('mergeWithTestConfig', () => {
 
 describe('resolveConfig', () => {
   it('loads and validates a complete 4-bucket config', async () => {
-    const configPath = join(TMP_DIR, 'agent-qa.config.yaml')
+    const configPath = join(TMP_DIR, 'etus-agent.config.yaml')
     const { stringify } = await import('yaml')
     await writeFile(configPath, stringify(makeValidConfig({
       registry: {
@@ -261,7 +261,7 @@ describe('resolveConfig', () => {
       await resolveConfig({ configPath })
     } catch (err) {
       const msg = (err as Error).message
-      expect(msg).toContain('agent-qa init')
+      expect(msg).toContain('etus-agent init')
     }
   })
 
@@ -280,7 +280,7 @@ describe('resolveConfig', () => {
     const configPath = join(TMP_DIR, 'partial.yaml')
     const { stringify } = await import('yaml')
     await writeFile(configPath, stringify(makeValidConfig()))
-    process.env.AGENT_QA_CACHE_DIR = '/custom/cache'
+    process.env.ETUS_AGENT_CACHE_DIR = '/custom/cache'
     const config = await resolveConfig({ configPath })
     expect(config.services?.cache?.dir).toBe('/custom/cache')
   })
@@ -325,9 +325,9 @@ describe('config command', () => {
 
       const output = errorSpy.mock.calls.map((call) => call.join(' ')).join('\n')
       expect(output).toContain('Credential values are not written by config set.')
-      expect(output).toContain('agent-qa auth set --config <name> --type api-key|bearer-token')
+      expect(output).toContain('etus-agent auth set --config <name> --type api-key|bearer-token')
       expect(output).not.toContain('sk-test')
-      await expect(readFile(join(dir, 'agent-qa.config.yaml'), 'utf-8')).rejects.toMatchObject({ code: 'ENOENT' })
+      await expect(readFile(join(dir, 'etus-agent.config.yaml'), 'utf-8')).rejects.toMatchObject({ code: 'ENOENT' })
     } finally {
       process.chdir(cwd)
       errorSpy.mockRestore()

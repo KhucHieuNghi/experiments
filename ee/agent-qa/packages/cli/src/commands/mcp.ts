@@ -1,6 +1,6 @@
 import { Command } from 'commander'
 import pc from 'picocolors'
-import { flushAnalytics } from '@etus/agent-qa-core'
+import { flushAnalytics } from '@etus/agent-core'
 import { resolveConfig } from '../config.js'
 
 export function createMcpCommand(): Command {
@@ -17,7 +17,7 @@ export function createMcpCommand(): Command {
           config = undefined
         }
 
-        const { startMcpServer } = await import('@etus/agent-qa-mcp')
+        const { startMcpServer } = await import('@etus/agent-mcp')
         try {
           const startupOptions = { analyticsConfig: config, startupOutput: process.stderr }
           await startMcpServer(startupOptions)

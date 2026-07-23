@@ -38,8 +38,8 @@ const coreMocks = vi.hoisted(() => {
   }
 })
 
-vi.mock('@etus/agent-qa-core', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('@etus/agent-qa-core')>()
+vi.mock('@etus/agent-core', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@etus/agent-core')>()
   return {
     ...actual,
     registerAllProviders: coreMocks.registerAllProviders,
@@ -47,21 +47,21 @@ vi.mock('@etus/agent-qa-core', async (importOriginal) => {
   }
 })
 
-vi.mock('@etus/agent-qa-android', () => ({
+vi.mock('@etus/agent-android', () => ({
   AndroidPlatformAdapter: vi.fn(function () { return mockAndroidAdapter }),
 }))
 
-vi.mock('@etus/agent-qa-ios', () => ({
+vi.mock('@etus/agent-ios', () => ({
   IOSPlatformAdapter: vi.fn(function () { return mockIOSAdapter }),
 }))
 
-vi.mock('@etus/agent-qa-web', () => ({
+vi.mock('@etus/agent-web', () => ({
   WebPlatformAdapter: vi.fn(function () { return mockWebAdapter }),
 }))
 
 import { createPlatformAdapter, buildPlatformConfig, resolveDeviceAndFarmSession } from '../commands/run.js'
 import { resolveTarget } from '../targets.js'
-import type { AgentQaConfig } from '@etus/agent-qa-core'
+import type { AgentQaConfig } from '@etus/agent-core'
 
 describe('createPlatformAdapter', () => {
   beforeEach(() => {
@@ -83,25 +83,25 @@ describe('createPlatformAdapter', () => {
     expect(adapter).toBe(mockWebAdapter)
   })
 
-  it('throws helpful error when @etus/agent-qa-android import fails', async () => {
-    const { AndroidPlatformAdapter } = await import('@etus/agent-qa-android')
+  it('throws helpful error when @etus/agent-android import fails', async () => {
+    const { AndroidPlatformAdapter } = await import('@etus/agent-android')
     vi.mocked(AndroidPlatformAdapter).mockImplementationOnce(() => {
       throw new Error('Cannot find module')
     })
 
     await expect(createPlatformAdapter('android')).rejects.toThrow(
-      'Android adapter not available. Install @etus/agent-qa-android: pnpm add @etus/agent-qa-android',
+      'Android adapter not available. Install @etus/agent-android: pnpm add @etus/agent-android',
     )
   })
 
-  it('throws helpful error when @etus/agent-qa-ios import fails', async () => {
-    const { IOSPlatformAdapter } = await import('@etus/agent-qa-ios')
+  it('throws helpful error when @etus/agent-ios import fails', async () => {
+    const { IOSPlatformAdapter } = await import('@etus/agent-ios')
     vi.mocked(IOSPlatformAdapter).mockImplementationOnce(() => {
       throw new Error('Cannot find module')
     })
 
     await expect(createPlatformAdapter('ios')).rejects.toThrow(
-      'iOS adapter not available. Install @etus/agent-qa-ios: pnpm add @etus/agent-qa-ios',
+      'iOS adapter not available. Install @etus/agent-ios: pnpm add @etus/agent-ios',
     )
   })
 })
@@ -194,7 +194,7 @@ describe('buildPlatformConfig', () => {
         deepLinkAppId: 'org.wikipedia.alpha',
         install: {
           path: '/tmp/wikipedia.apk',
-          sourceTrace: { 'app.path': 'agent-qa.local.yaml apps.release-android-wikipedia.path' },
+          sourceTrace: { 'app.path': 'etus-agent.local.yaml apps.release-android-wikipedia.path' },
         },
         sourceTrace: {},
       },
@@ -226,7 +226,7 @@ describe('buildPlatformConfig', () => {
         install: {
           browserstack: 'WikipediaApp',
           browserstackBaseDir: '/tmp',
-          sourceTrace: { 'app.browserstack': 'agent-qa.config.yaml registry.targets.release-android-wikipedia.app.browserstack' },
+          sourceTrace: { 'app.browserstack': 'etus-agent.config.yaml registry.targets.release-android-wikipedia.app.browserstack' },
         },
         sourceTrace: {},
       },
@@ -387,7 +387,7 @@ describe('resolveDeviceAndFarmSession', () => {
           install: {
             browserstack: 'WikipediaApp',
             browserstackBaseDir: '/tmp',
-            sourceTrace: { 'app.browserstack': 'agent-qa.config.yaml registry.targets.release-android-wikipedia.app.browserstack' },
+            sourceTrace: { 'app.browserstack': 'etus-agent.config.yaml registry.targets.release-android-wikipedia.app.browserstack' },
           },
           sourceTrace: {},
         },
@@ -431,7 +431,7 @@ describe('resolveDeviceAndFarmSession', () => {
             deepLinkAppId: 'org.wikipedia.alpha',
             install: {
               path: '/tmp/wikipedia.apk',
-              sourceTrace: { 'app.path': 'agent-qa.local.yaml apps.release-android-wikipedia.path' },
+              sourceTrace: { 'app.path': 'etus-agent.local.yaml apps.release-android-wikipedia.path' },
             },
             sourceTrace: {},
           },

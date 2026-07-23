@@ -1,5 +1,5 @@
 {
-  "name": "@etus/agent-qa-ids",
+  "name": "@etus/agent-ids",
   "version": "0.1.21",
   "private": false,
   "description": "Canonical ID helpers for ETUS tests, suites, hooks, and artifacts.",

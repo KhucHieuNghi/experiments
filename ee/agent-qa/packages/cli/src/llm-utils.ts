@@ -75,11 +75,11 @@ function normalizeLLMConfig(raw: NamedLLMConfigLike & Record<string, unknown>): 
   }
 }
 
-export async function loadAuthPluginsForRawConfig(raw: unknown, configPath = 'agent-qa.config.yaml'): Promise<void> {
+export async function loadAuthPluginsForRawConfig(raw: unknown, configPath = 'etus-agent.config.yaml'): Promise<void> {
   const declarations = (raw as { plugins?: { auth?: unknown } } | null)?.plugins?.auth
   if (!Array.isArray(declarations) || declarations.length === 0) return
 
-  const { loadLLMAuthPlugins } = await import('@etus/agent-qa-core')
+  const { loadLLMAuthPlugins } = await import('@etus/agent-core')
   await loadLLMAuthPlugins(declarations as Parameters<typeof loadLLMAuthPlugins>[0], {
     baseDir: dirname(resolvePath(configPath)),
   })
@@ -87,7 +87,7 @@ export async function loadAuthPluginsForRawConfig(raw: unknown, configPath = 'ag
 
 export async function resolveNamedConfig(
   configName?: string,
-  configPath = 'agent-qa.config.yaml',
+  configPath = 'etus-agent.config.yaml',
 ): Promise<{
   config: NamedLLMConfigLike
   allConfigs: NamedLLMConfigLike[]
@@ -101,7 +101,7 @@ export async function resolveNamedConfig(
   const defaultLLM = (raw as any)?.use?.llm as string | undefined
 
   if (!llms?.length) {
-    throw new Error('No LLM configs found. Run `agent-qa init` to set up your config.')
+    throw new Error('No LLM configs found. Run `etus-agent init` to set up your config.')
   }
 
   const targetName = configName ?? defaultLLM
@@ -141,7 +141,7 @@ export async function resolveModelAuth(
   configName: string,
   llmConfig: LLMConfigLike,
 ): Promise<ResolvedLLMAuth> {
-  const { resolveLLMAuth } = await import('@etus/agent-qa-core') as unknown as {
+  const { resolveLLMAuth } = await import('@etus/agent-core') as unknown as {
     resolveLLMAuth: (configName: string, llmConfig: LLMConfigLike) => Promise<ResolvedLLMAuth>
   }
   return resolveLLMAuth(configName, llmConfig)

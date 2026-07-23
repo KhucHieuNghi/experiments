@@ -1,4 +1,4 @@
-# ETUS package instructions: @etus/agent-qa-mcp
+# ETUS package instructions: @etus/agent-mcp
 
 Inherit the root ETUS branding, security, and release rules.
 
@@ -20,13 +20,13 @@ and run tools.
 
 ## Commands
 
-- Test: `pnpm --filter @etus/agent-qa-mcp test`
-- Typecheck: `pnpm --filter @etus/agent-qa-mcp typecheck`
-- Build: `pnpm --filter @etus/agent-qa-mcp build`
+- Test: `pnpm --filter @etus/agent-mcp test`
+- Typecheck: `pnpm --filter @etus/agent-mcp typecheck`
+- Build: `pnpm --filter @etus/agent-mcp build`
 
 ## Local Rules
 
-- Public MCP tools use `agent_qa_*`.
+- Public MCP tools use `etus_agent_*`.
 - Do not introduce a stale no-separator MCP tool prefix.
 - Keep schema references synchronized with core schemas.
 - Authoring and run tools that need dashboard state must keep explicit dashboard
@@ -40,6 +40,6 @@ and run tools.
 Run focused MCP checks:
 
 ```bash
-pnpm --filter @etus/agent-qa-mcp test
-pnpm --filter @etus/agent-qa-mcp typecheck
+pnpm --filter @etus/agent-mcp test
+pnpm --filter @etus/agent-mcp typecheck
 ```

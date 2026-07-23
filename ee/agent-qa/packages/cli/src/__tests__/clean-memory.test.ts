@@ -13,7 +13,7 @@ async function runCleanMemory(configPath: string): Promise<void> {
   program.exitOverride()
   program.option('--config <path>', 'config file path', configPath)
   program.addCommand(createCleanMemoryCommand())
-  await program.parseAsync(['node', 'agent-qa', '--config', configPath, 'clean-memory', '--yes'])
+  await program.parseAsync(['node', 'etus-agent', '--config', configPath, 'clean-memory', '--yes'])
 }
 
 afterEach(async () => {
@@ -23,9 +23,9 @@ afterEach(async () => {
 
 describe('clean-memory command', () => {
   it('cleans orphaned directories from configured services.memory.dir only', async () => {
-    const root = await mkdtemp(join(tmpdir(), 'agent-qa-clean-memory-'))
+    const root = await mkdtemp(join(tmpdir(), 'etus-agent-clean-memory-'))
     tempDirs.push(root)
-    const configPath = join(root, 'agent-qa.config.yaml')
+    const configPath = join(root, 'etus-agent.config.yaml')
     await writeFile(configPath, [
       'workspace:',
       '  testMatch: ["tests/**/*.yaml"]',
@@ -39,7 +39,7 @@ describe('clean-memory command', () => {
       '    enabled: true',
       '    provider: local',
       '    curatorEnabled: true',
-      '    dir: .agent-qa/custom-memory',
+      '    dir: .etus-agent/custom-memory',
       'use:',
       '  mobile:',
       '    appState: preserve',
@@ -56,14 +56,14 @@ describe('clean-memory command', () => {
       writeFile(join(root, 'agent-rules.md'), '# rules\n'),
       writeFile(join(root, '.env'), ''),
       writeFile(join(root, '.env.secrets.local'), ''),
-      mkdir(join(root, 'agent-qa-memory/products/stale-default'), { recursive: true }),
-      mkdir(join(root, '.agent-qa/custom-memory/products/stale-custom'), { recursive: true }),
+      mkdir(join(root, 'etus-agent-memory/products/stale-default'), { recursive: true }),
+      mkdir(join(root, '.etus-agent/custom-memory/products/stale-custom'), { recursive: true }),
     ])
     vi.spyOn(console, 'log').mockImplementation(() => {})
 
     await runCleanMemory(configPath)
 
-    expect(existsSync(join(root, '.agent-qa/custom-memory/products/stale-custom'))).toBe(false)
-    expect(existsSync(join(root, 'agent-qa-memory/products/stale-default'))).toBe(true)
+    expect(existsSync(join(root, '.etus-agent/custom-memory/products/stale-custom'))).toBe(false)
+    expect(existsSync(join(root, 'etus-agent-memory/products/stale-default'))).toBe(true)
   })
 })

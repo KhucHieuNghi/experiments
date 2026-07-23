@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach, afterEach } from 'vitest'
 import { mkdtemp, writeFile, mkdir, rm, stat } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { basename, join } from 'node:path'
-import { resolveWorkspacePaths, type ResolvedWorkspacePaths } from '@etus/agent-qa-core'
+import { resolveWorkspacePaths, type ResolvedWorkspacePaths } from '@etus/agent-core'
 import { SuiteFileManager } from '../tests/suite-file-manager.js'
 import { TestFileManager } from '../tests/test-file-manager.js'
 
@@ -25,7 +25,7 @@ beforeEach(async () => {
         secretsFile: '.env.secrets.local',
       },
     },
-    configPath: join(workspaceDir, 'agent-qa.config.yaml'),
+    configPath: join(workspaceDir, 'etus-agent.config.yaml'),
   })
   await mkdir(join(workspaceDir, 'specs/web'), { recursive: true })
   // Create one real test file

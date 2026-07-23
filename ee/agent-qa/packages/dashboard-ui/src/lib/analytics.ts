@@ -2,13 +2,13 @@ export type DashboardAnalyticsPlatform = 'web' | 'android' | 'ios' | 'unknown'
 export type DashboardAnalyticsEntityType = 'test' | 'suite' | 'hook' | 'unknown'
 
 type DashboardAnalyticsEvent =
-  | { name: 'agent-qa.dashboard.opened'; properties: Record<string, never> }
+  | { name: 'etus-agent.dashboard.opened'; properties: Record<string, never> }
   | {
-    name: 'agent-qa.dashboard.live_mode.started'
+    name: 'etus-agent.dashboard.live_mode.started'
     properties: { platform: DashboardAnalyticsPlatform; entity_type: Exclude<DashboardAnalyticsEntityType, 'hook'> }
   }
   | {
-    name: 'agent-qa.dashboard.entity.created'
+    name: 'etus-agent.dashboard.entity.created'
     properties: { entity_type: Exclude<DashboardAnalyticsEntityType, 'unknown'>; outcome: 'created' }
   }
 
@@ -58,14 +58,14 @@ export function trackDashboardOpenedOnce(): void {
   if (dashboardOpenedTracked) return
   dashboardOpenedTracked = true
   sendDashboardAnalyticsEvent({
-    name: 'agent-qa.dashboard.opened',
+    name: 'etus-agent.dashboard.opened',
     properties: {},
   })
 }
 
 export function trackDashboardLiveModeStarted(input: { platform?: unknown; entityType?: unknown }): void {
   sendDashboardAnalyticsEvent({
-    name: 'agent-qa.dashboard.live_mode.started',
+    name: 'etus-agent.dashboard.live_mode.started',
     properties: {
       platform: normalizePlatform(input.platform),
       entity_type: normalizeLiveEntityType(input.entityType),
@@ -75,7 +75,7 @@ export function trackDashboardLiveModeStarted(input: { platform?: unknown; entit
 
 export function trackDashboardEntityCreated(entityType: 'test' | 'suite' | 'hook'): void {
   sendDashboardAnalyticsEvent({
-    name: 'agent-qa.dashboard.entity.created',
+    name: 'etus-agent.dashboard.entity.created',
     properties: {
       entity_type: entityType,
       outcome: 'created',

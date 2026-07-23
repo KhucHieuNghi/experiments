@@ -19,14 +19,14 @@ import {
   resolveAnalyticsStandardProperties,
   type ModelConfig,
   type ResolvedWorkspacePaths,
-} from '@etus/agent-qa-core'
+} from '@etus/agent-core'
 import {
   createLocalMcpHttpHandler,
   resolveLocalMcpEndpoint,
   resolveMcpEndpointShape,
   type LocalMcpEndpointConfig,
   type LocalMcpTransport,
-} from '@etus/agent-qa-mcp'
+} from '@etus/agent-mcp'
 
 const MIME_TYPES: Record<string, string> = {
   '.html': 'text/html; charset=utf-8',
@@ -88,7 +88,7 @@ export async function startServer(opts: StartServerOptions): Promise<{
 }> {
   const { db, port = 3470, uiDir, artifactsDir, workspacePaths, configPath, mcp, llmConfig, authFetch } = opts
 
-  const resolvedConfigPath = configPath ?? resolve('agent-qa.config.yaml')
+  const resolvedConfigPath = configPath ?? resolve('etus-agent.config.yaml')
   const configManager = new ConfigManager(resolvedConfigPath)
 
   // Read concurrency from config (defaults to os.cpus().length)
@@ -121,7 +121,7 @@ export async function startServer(opts: StartServerOptions): Promise<{
   try {
     cliBin = TestRunner.resolveCliBin()
   } catch {
-    console.warn('Warning: Could not resolve agent-qa CLI binary. Execution will not work.')
+    console.warn('Warning: Could not resolve etus-agent CLI binary. Execution will not work.')
   }
 
   // TestRunner for live test execution
@@ -435,7 +435,7 @@ export async function startServer(opts: StartServerOptions): Promise<{
       attributes: run.attributes,
       timeout: meta.timeout as number | undefined,
       maxRetries: run.maxRetries,
-      env: isMobile ? { AGENT_QA_APPIUM_URL: appiumManager.getUrl() } : undefined,
+      env: isMobile ? { ETUS_AGENT_APPIUM_URL: appiumManager.getUrl() } : undefined,
     })
   })
 
@@ -593,7 +593,7 @@ export async function startServer(opts: StartServerOptions): Promise<{
     try {
       const standardProperties = await resolveAnalyticsStandardProperties({ surface: 'dashboard-server' })
       await captureAnalytics(buildAnalyticsEvent({
-        name: 'agent-qa.mcp.server.lifecycle',
+        name: 'etus-agent.mcp.server.lifecycle',
         properties: {
           ...standardProperties,
           surface: 'dashboard-server',
@@ -630,7 +630,7 @@ export async function startServer(opts: StartServerOptions): Promise<{
       enabled: false,
       transport: 'stdio',
     }
-    console.log('MCP stdio transport selected; start editor MCP with `agent-qa mcp`')
+    console.log('MCP stdio transport selected; start editor MCP with `etus-agent mcp`')
   } else {
     let mcpHttpHandler = createLocalMcpHttpHandler({
       endpoint: resolvedMcp,

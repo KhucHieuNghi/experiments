@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import { cpus } from 'node:os'
-import { isCanonicalRunId } from '@etus/agent-qa-ids'
+import { isCanonicalRunId } from '@etus/agent-ids'
 import { DashboardDatabase } from '../db/database.js'
 import { JobQueue } from '../queue/job-queue.js'
 
@@ -21,8 +21,8 @@ describe('JobQueue', () => {
   describe('enqueue', () => {
     it('creates a pending run in the database and returns a runId', () => {
       const attributes = {
-        'agent-qa.trigger': 'api',
-        'agent-qa.runner': 'local',
+        'etus-agent.trigger': 'api',
+        'etus-agent.runner': 'local',
         'git.branch': 'phase223-main',
       }
       const runId = queue.enqueue({ name: 'Test Job', attributes })

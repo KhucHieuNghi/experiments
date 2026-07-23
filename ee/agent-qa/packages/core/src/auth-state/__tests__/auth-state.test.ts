@@ -19,7 +19,7 @@ import {
 const tempRoots: string[] = []
 
 async function createTempRoot(): Promise<string> {
-  const root = await mkdtemp(path.join(os.tmpdir(), 'agent-qa-auth-state-'))
+  const root = await mkdtemp(path.join(os.tmpdir(), 'etus-agent-auth-state-'))
   tempRoots.push(root)
   return root
 }
@@ -86,10 +86,10 @@ describe('auth-state resolver', () => {
       target: webTarget,
     })
 
-    expect(paths.rootDir).toBe(path.join(root, '.agent-qa/auth-states'))
-    expect(paths.targetDir).toBe(path.join(root, '.agent-qa/auth-states', 'staging-web'))
-    expect(paths.payloadPath).toBe(path.join(root, '.agent-qa/auth-states', 'staging-web', 'admin.json'))
-    expect(paths.metadataPath).toBe(path.join(root, '.agent-qa/auth-states', 'staging-web', 'admin.meta.json'))
+    expect(paths.rootDir).toBe(path.join(root, '.etus-agent/auth-states'))
+    expect(paths.targetDir).toBe(path.join(root, '.etus-agent/auth-states', 'staging-web'))
+    expect(paths.payloadPath).toBe(path.join(root, '.etus-agent/auth-states', 'staging-web', 'admin.json'))
+    expect(paths.metadataPath).toBe(path.join(root, '.etus-agent/auth-states', 'staging-web', 'admin.meta.json'))
   })
 
   it('resolves a configured auth-state directory relative to the config dir', async () => {
@@ -97,14 +97,14 @@ describe('auth-state resolver', () => {
 
     const paths = resolveAuthStatePaths({
       configDir: root,
-      authStateDir: '.agent-qa/custom-auth-states',
+      authStateDir: '.etus-agent/custom-auth-states',
       targetName: 'staging-web',
       stateName: 'admin',
       platform: 'web',
     })
 
-    expect(paths.payloadPath).toBe(path.join(root, '.agent-qa/custom-auth-states', 'staging-web', 'admin.json'))
-    expect(paths.metadataPath).toBe(path.join(root, '.agent-qa/custom-auth-states', 'staging-web', 'admin.meta.json'))
+    expect(paths.payloadPath).toBe(path.join(root, '.etus-agent/custom-auth-states', 'staging-web', 'admin.json'))
+    expect(paths.metadataPath).toBe(path.join(root, '.etus-agent/custom-auth-states', 'staging-web', 'admin.meta.json'))
   })
 
   it('rejects invalid target and auth-state slugs before path construction', async () => {
@@ -257,19 +257,19 @@ describe('auth-state metadata and store', () => {
       },
     })
 
-    await mkdir(path.join(root, '.agent-qa/auth-states', 'staging-web'), { recursive: true })
+    await mkdir(path.join(root, '.etus-agent/auth-states', 'staging-web'), { recursive: true })
     await writeFile(
-      path.join(root, '.agent-qa/auth-states', 'staging-web', 'broken.meta.json'),
+      path.join(root, '.etus-agent/auth-states', 'staging-web', 'broken.meta.json'),
       '{',
       'utf-8',
     )
     await writeFile(
-      path.join(root, '.agent-qa/auth-states', 'staging-web', 'mismatch.meta.json'),
+      path.join(root, '.etus-agent/auth-states', 'staging-web', 'mismatch.meta.json'),
       `${JSON.stringify({ ...metadata, name: 'other' }, null, 2)}\n`,
       'utf-8',
     )
     await writeFile(
-      path.join(root, '.agent-qa/auth-states', 'staging-web', 'payload-copy.json'),
+      path.join(root, '.etus-agent/auth-states', 'staging-web', 'payload-copy.json'),
       `${JSON.stringify(payload, null, 2)}\n`,
       'utf-8',
     )
@@ -287,7 +287,7 @@ describe('auth-state metadata and store', () => {
     ])
     expect(Object.keys(result[0] ?? {})).toEqual(['version', 'kind', 'target', 'name', 'capturedAt'])
     const serialized = JSON.stringify(result)
-    expect(serialized).not.toContain('.agent-qa/auth-states')
+    expect(serialized).not.toContain('.etus-agent/auth-states')
     expect(serialized).not.toContain('.json')
     expect(serialized).not.toContain('payloadPath')
     expect(serialized).not.toContain('metadataPath')
@@ -478,16 +478,16 @@ describe('auth-state runtime preflight', () => {
       target: webTarget,
     })
 
-    const hookEnv = buildAuthStateHookEnv(resolved, '/workspace/.agent-qa-auth-state/storage-state.json')
+    const hookEnv = buildAuthStateHookEnv(resolved, '/workspace/.etus-agent-auth-state/storage-state.json')
 
-    expect(hookEnv[AUTH_STATE_HOOK_STORAGE_STATE_PATH_ENV]).toBe('/workspace/.agent-qa-auth-state/storage-state.json')
+    expect(hookEnv[AUTH_STATE_HOOK_STORAGE_STATE_PATH_ENV]).toBe('/workspace/.etus-agent-auth-state/storage-state.json')
     expect(JSON.parse(hookEnv[AUTH_STATE_HOOK_JSON_ENV])).toEqual({
       version: 1,
       kind: 'web',
       target: 'staging-web',
       name: 'admin',
       capturedAt: '2026-05-17T00:00:00.000Z',
-      storageStatePath: '/workspace/.agent-qa-auth-state/storage-state.json',
+      storageStatePath: '/workspace/.etus-agent-auth-state/storage-state.json',
     })
     expect(JSON.stringify(hookEnv)).not.toContain(paths.payloadPath)
   })
@@ -517,10 +517,10 @@ describe('auth-state runtime preflight', () => {
       })
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error)
-      expect(message).toContain('agent-qa auth-state capture --target staging-web --name admin')
+      expect(message).toContain('etus-agent auth-state capture --target staging-web --name admin')
       expect(message).not.toContain(paths.payloadPath)
       expect(message).not.toContain(paths.metadataPath)
-      expect(message).not.toContain('.agent-qa/auth-states')
+      expect(message).not.toContain('.etus-agent/auth-states')
     }
   })
 
@@ -546,10 +546,10 @@ describe('auth-state runtime preflight', () => {
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error)
       expect(message).toContain('Auth state "admin" for target "staging-web"')
-      expect(message).toContain('agent-qa auth-state capture --target staging-web --name admin')
+      expect(message).toContain('etus-agent auth-state capture --target staging-web --name admin')
       expect(message).not.toContain(paths.payloadPath)
       expect(message).not.toContain(paths.metadataPath)
-      expect(message).not.toContain('.agent-qa/auth-states')
+      expect(message).not.toContain('.etus-agent/auth-states')
     }
   })
 

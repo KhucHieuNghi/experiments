@@ -13,9 +13,9 @@ import type { SuiteFileManager } from '../tests/suite-file-manager.js'
 import type { ConfigManager } from '../config/index.js'
 import { HookRegistryManager, isHookRegistryMutationError } from '../hooks/hook-registry-manager.js'
 import { readJsonBody } from './body-parser.js'
-import type { AnalyticsServiceConfig, LLMAuthProviderPlugin, ModelConfig, OAuthTokens } from '@etus/agent-qa-core'
-import { AuthStateNameSchema, buildAnalyticsEvent, buildInternalRunAttributes, captureAnalytics, mergeRunAttributes, readAuth, writeAuth, removeAuth, getAgentQaVersion, getAgentQaUpdateStatus, getProviderOptions, getLLMAuthProviderPlugin, listAuthStateMetadata, listLLMAuthProviderPlugins, ModelConfigSchema, NamedLLMConfigSchema, WorkspaceSchema, ServicesSchema, RegistrySchema, UseSchema, MobileAppStateSchema, hashStepInstruction, TimeoutConfigSchema, CacheConfigSchema, HealingConfigSchema, PlannerConfigSchema, LoggingConfigSchema, LogCaptureConfigSchema, AccessibilityConfigSchema, DashboardConfigSchema, McpConfigSchema, RecordingConfigSchema, BrowserConfigSchema, AnalyticsSchema, AgentQaConfigSchema, TestDefinitionSchema, SuiteDefinitionSchema, parseEnvFile, serializeEnvFile, parseHooksFile, runHookInSandbox, RUNTIME_IMAGE_MAP, SecretStore, SecretRedactor, redactAuthStateValue, validateUserRunAttributes, discoverWorkspaceFiles, isWorkspacePathMatch, resolveAnalyticsStandardProperties, resolveMemoryRoot, resolveWorkspaceFileTarget } from '@etus/agent-qa-core'
-import type { ResolvedWorkspacePaths, RunAttributes, WorkspaceFileKind, WorkspaceFileRecord } from '@etus/agent-qa-core'
+import type { AnalyticsServiceConfig, LLMAuthProviderPlugin, ModelConfig, OAuthTokens } from '@etus/agent-core'
+import { AuthStateNameSchema, buildAnalyticsEvent, buildInternalRunAttributes, captureAnalytics, mergeRunAttributes, readAuth, writeAuth, removeAuth, getAgentQaVersion, getAgentQaUpdateStatus, getProviderOptions, getLLMAuthProviderPlugin, listAuthStateMetadata, listLLMAuthProviderPlugins, ModelConfigSchema, NamedLLMConfigSchema, WorkspaceSchema, ServicesSchema, RegistrySchema, UseSchema, MobileAppStateSchema, hashStepInstruction, TimeoutConfigSchema, CacheConfigSchema, HealingConfigSchema, PlannerConfigSchema, LoggingConfigSchema, LogCaptureConfigSchema, AccessibilityConfigSchema, DashboardConfigSchema, McpConfigSchema, RecordingConfigSchema, BrowserConfigSchema, AnalyticsSchema, AgentQaConfigSchema, TestDefinitionSchema, SuiteDefinitionSchema, parseEnvFile, serializeEnvFile, parseHooksFile, runHookInSandbox, RUNTIME_IMAGE_MAP, SecretStore, SecretRedactor, redactAuthStateValue, validateUserRunAttributes, discoverWorkspaceFiles, isWorkspacePathMatch, resolveAnalyticsStandardProperties, resolveMemoryRoot, resolveWorkspaceFileTarget } from '@etus/agent-core'
+import type { ResolvedWorkspacePaths, RunAttributes, WorkspaceFileKind, WorkspaceFileRecord } from '@etus/agent-core'
 import { parse as parseYaml } from 'yaml'
 
 const LLM_PROVIDER_MODES = new Set([
@@ -38,16 +38,16 @@ const LOCAL_COMPATIBLE_LLM_CONNECTION_TEST_TIMEOUT_MS = 120_000
 const LOCAL_COMPATIBLE_LLM_PROVIDERS = new Set(['openai-compatible', 'anthropic-compatible'])
 const PLUGIN_OAUTH_SESSION_TTL_MS = 10 * 60 * 1000
 const DASHBOARD_PRODUCT_EVENT_NAMES = [
-  'agent-qa.dashboard.opened',
-  'agent-qa.dashboard.live_mode.started',
-  'agent-qa.dashboard.entity.created',
+  'etus-agent.dashboard.opened',
+  'etus-agent.dashboard.live_mode.started',
+  'etus-agent.dashboard.entity.created',
 ] as const
 type DashboardProductEventName = typeof DASHBOARD_PRODUCT_EVENT_NAMES[number]
 const DASHBOARD_PRODUCT_EVENT_NAME_SET = new Set<DashboardProductEventName>(DASHBOARD_PRODUCT_EVENT_NAMES)
 const DASHBOARD_PRODUCT_EVENT_PROPERTY_KEYS = {
-  'agent-qa.dashboard.opened': [],
-  'agent-qa.dashboard.live_mode.started': ['platform', 'entity_type'],
-  'agent-qa.dashboard.entity.created': ['entity_type', 'outcome'],
+  'etus-agent.dashboard.opened': [],
+  'etus-agent.dashboard.live_mode.started': ['platform', 'entity_type'],
+  'etus-agent.dashboard.entity.created': ['entity_type', 'outcome'],
 } as const satisfies Record<DashboardProductEventName, readonly string[]>
 
 type DashboardExecutionTimeoutSource =
@@ -275,7 +275,7 @@ async function resolveDashboardRuntimeLLM(
     return { ok: true, llmConfig: fallbackLLMConfig, authFetch: fallbackAuthFetch }
   }
 
-  const coreAuth = await import('@etus/agent-qa-core') as typeof import('@etus/agent-qa-core') & {
+  const coreAuth = await import('@etus/agent-core') as typeof import('@etus/agent-core') & {
     resolveLLMAuth: (
       configName: string,
       config: DashboardRuntimeLLMConfig,
@@ -1162,7 +1162,7 @@ async function readWorkspaceHooks(
 ): Promise<{
   hooks: Array<{ name: string }>
   filePath: string
-  resolvedHooks: Map<string, import('@etus/agent-qa-core').HookDefinition>
+  resolvedHooks: Map<string, import('@etus/agent-core').HookDefinition>
   errors: string[]
   missing: boolean
   hookRegistryError?: string
@@ -3361,7 +3361,7 @@ export function createRouter(dbOrDeps: DashboardDatabase | RouterDeps, artifacts
 
           const start = Date.now()
           const llmConfig = parsedConfig.data
-          const coreAuth = await import('@etus/agent-qa-core') as typeof import('@etus/agent-qa-core') & {
+          const coreAuth = await import('@etus/agent-core') as typeof import('@etus/agent-core') & {
             resolveLLMAuth: (name: string, config: typeof llmConfig) => Promise<
               | { kind: 'api-key'; apiKey: string }
               | { kind: 'bearer-token'; token: string }
@@ -3397,7 +3397,7 @@ export function createRouter(dbOrDeps: DashboardDatabase | RouterDeps, artifacts
           }
 
           try {
-            const { createModel } = await import('@etus/agent-qa-core')
+            const { createModel } = await import('@etus/agent-core')
             const model = await createModel(modelConfig as unknown as Parameters<typeof createModel>[0])
 
             const testProviderOpts = getProviderOptions(modelConfig as unknown as Parameters<typeof getProviderOptions>[0])
@@ -4034,7 +4034,7 @@ export function createRouter(dbOrDeps: DashboardDatabase | RouterDeps, artifacts
           let envVars: Record<string, string> | undefined
           let secretStore: SecretStore | undefined
           let secretRedactor: SecretRedactor | undefined
-          let resolvedHooks = new Map<string, import('@etus/agent-qa-core').HookDefinition>()
+          let resolvedHooks = new Map<string, import('@etus/agent-core').HookDefinition>()
           let hookRegistryError: string | undefined
           if (!workspacePaths) {
             json(res, { error: 'Workspace path resolution not available' }, 500)

@@ -261,8 +261,8 @@ function makeRun(id: string) {
     status: "passed",
     duration: 1000,
     attributes: {
-      "agent-qa.trigger": "cli",
-      "agent-qa.runner": "local",
+      "etus-agent.trigger": "cli",
+      "etus-agent.runner": "local",
       "git.branch": "phase223-main",
     },
     environment: null,
@@ -424,8 +424,8 @@ describe("RunDetailPage artifact drawer", () => {
     expect(drawer.textContent).toContain("Attributes")
     expect(drawer.textContent).toContain("Config")
     expect(drawer.textContent).toContain("Memory")
-    expect(drawer.textContent).toContain("agent-qa.trigger")
-    expect(drawer.textContent).toContain("agent-qa.runner")
+    expect(drawer.textContent).toContain("etus-agent.trigger")
+    expect(drawer.textContent).toContain("etus-agent.runner")
     expect(drawer.textContent).toContain("git.branch")
     expect(drawer.textContent).toContain("Copy JSON")
     expect(drawer.querySelector('[aria-label="Copy git.branch value"]')).not.toBeNull()

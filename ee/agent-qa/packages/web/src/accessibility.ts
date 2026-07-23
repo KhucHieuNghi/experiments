@@ -1,6 +1,6 @@
 import { AxeBuilder } from '@axe-core/playwright'
 import type { Page } from 'playwright-core'
-import type { AccessibilityViolation } from '@etus/agent-qa-core'
+import type { AccessibilityViolation } from '@etus/agent-core'
 
 export interface AccessibilityOptions {
   standard?: 'wcag2a' | 'wcag2aa' | 'wcag2aaa'

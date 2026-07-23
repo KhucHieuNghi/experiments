@@ -54,17 +54,17 @@ export class TestRunner extends EventEmitter implements ExecutionBackend {
   }
 
   static resolveCliBin(): string {
-    const envBin = process.env.AGENT_QA_CLI_BIN
+    const envBin = process.env.ETUS_AGENT_CLI_BIN
     if (envBin) return envBin
 
     try {
-      const which = execSync('which agent-qa', { encoding: 'utf-8' }).trim()
+      const which = execSync('which etus-agent', { encoding: 'utf-8' }).trim()
       if (which) return which
     } catch {
       // not found in PATH
     }
 
-    return './node_modules/.bin/agent-qa'
+    return './node_modules/.bin/etus-agent'
   }
 
   execute(opts: ExecuteOptions): void {
@@ -74,23 +74,23 @@ export class TestRunner extends EventEmitter implements ExecutionBackend {
     const env: Record<string, string | undefined> = {
       ...process.env,
       ...opts.env,
-      AGENT_QA_LIVE_EVENTS: 'true',
+      ETUS_AGENT_LIVE_EVENTS: 'true',
     }
     if (opts.attributes) {
-      env.AGENT_QA_RUN_ATTRIBUTES_JSON = JSON.stringify(opts.attributes)
+      env.ETUS_AGENT_RUN_ATTRIBUTES_JSON = JSON.stringify(opts.attributes)
     }
 
     if (opts.source === 'suite') {
       // Suites create their own parent row via DashboardReporter.onSuiteStart
       // Pass the enqueued run ID so the suite can update it instead of creating a duplicate
-      env.AGENT_QA_SUITE_QUEUE_ID = opts.runId
+      env.ETUS_AGENT_SUITE_QUEUE_ID = opts.runId
     } else if (maxRetries > 0) {
       // Retry-enabled: parent run stays in 'running', reporter creates child runs
-      env.AGENT_QA_PARENT_RUN_ID = opts.runId
-      env.AGENT_QA_MAX_RETRIES = String(maxRetries)
+      env.ETUS_AGENT_PARENT_RUN_ID = opts.runId
+      env.ETUS_AGENT_MAX_RETRIES = String(maxRetries)
     } else {
       // No retries: reporter updates the existing run row directly
-      env.AGENT_QA_RUN_ID = opts.runId
+      env.ETUS_AGENT_RUN_ID = opts.runId
     }
 
     const child = spawn(this.cliBin, spawnArgs, {
@@ -144,9 +144,9 @@ export class TestRunner extends EventEmitter implements ExecutionBackend {
 
       for (const line of lines) {
         if (!line) continue
-        if (line.startsWith('AGENT_QA_EVENT:')) {
+        if (line.startsWith('ETUS_AGENT_EVENT:')) {
           try {
-            const payload = JSON.parse(line.slice('AGENT_QA_EVENT:'.length))
+            const payload = JSON.parse(line.slice('ETUS_AGENT_EVENT:'.length))
             handle.lastEventAt = Date.now()
             if (payload.type === 'test-complete' && payload.status) {
               testResultStatus = payload.status
@@ -174,9 +174,9 @@ export class TestRunner extends EventEmitter implements ExecutionBackend {
       if (timer) clearTimeout(timer)
       if (forceKillTimer) clearTimeout(forceKillTimer)
       if (stdoutBuffer) {
-        if (stdoutBuffer.startsWith('AGENT_QA_EVENT:')) {
+        if (stdoutBuffer.startsWith('ETUS_AGENT_EVENT:')) {
           try {
-            const payload = JSON.parse(stdoutBuffer.slice('AGENT_QA_EVENT:'.length))
+            const payload = JSON.parse(stdoutBuffer.slice('ETUS_AGENT_EVENT:'.length))
             if (payload.type === 'test-complete' && payload.status) {
               testResultStatus = payload.status
             }

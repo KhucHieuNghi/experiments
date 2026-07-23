@@ -7,7 +7,7 @@ import { assertSharedPublicVersion } from './version.mjs'
 export const dockerImages = [
   {
     id: 'web',
-    repo: 'agent-qa-web',
+    repo: 'etus-agent-web',
     dockerfile: 'docker/Dockerfile.web',
     platforms: 'linux/amd64',
     title: 'ETUS Web',
@@ -15,7 +15,7 @@ export const dockerImages = [
   },
   {
     id: 'android',
-    repo: 'agent-qa-android',
+    repo: 'etus-agent-android',
     dockerfile: 'docker/Dockerfile.android',
     platforms: 'linux/amd64',
     title: 'ETUS Android',
@@ -23,7 +23,7 @@ export const dockerImages = [
   },
   {
     id: 'hooks-node',
-    repo: 'agent-qa-hook-runner-node',
+    repo: 'etus-agent-hook-runner-node',
     dockerfile: 'docker/Dockerfile.hooks-node',
     platforms: 'linux/amd64,linux/arm64',
     title: 'ETUS Hook Runner Node',
@@ -31,7 +31,7 @@ export const dockerImages = [
   },
   {
     id: 'hooks-bun',
-    repo: 'agent-qa-hook-runner-bun',
+    repo: 'etus-agent-hook-runner-bun',
     dockerfile: 'docker/Dockerfile.hooks-bun',
     platforms: 'linux/amd64,linux/arm64',
     title: 'ETUS Hook Runner Bun',
@@ -39,7 +39,7 @@ export const dockerImages = [
   },
   {
     id: 'hooks-python',
-    repo: 'agent-qa-hook-runner-python',
+    repo: 'etus-agent-hook-runner-python',
     dockerfile: 'docker/Dockerfile.hooks-python',
     platforms: 'linux/amd64,linux/arm64',
     title: 'ETUS Hook Runner Python',
@@ -47,7 +47,7 @@ export const dockerImages = [
   },
   {
     id: 'hooks-bash',
-    repo: 'agent-qa-hook-runner-bash',
+    repo: 'etus-agent-hook-runner-bash',
     dockerfile: 'docker/Dockerfile.hooks-bash',
     platforms: 'linux/amd64,linux/arm64',
     title: 'ETUS Hook Runner Bash',

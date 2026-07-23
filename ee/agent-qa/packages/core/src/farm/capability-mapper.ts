@@ -38,8 +38,8 @@ export function mapWebCapabilities(
     'browserstack.username': credentials.username,
     'browserstack.accessKey': credentials.accessKey,
     'client.playwrightVersion': opts?.playwrightVersion ?? detectPlaywrightVersion(),
-    project: 'agent-qa',
-    build: 'agent-qa-' + Date.now(),
+    project: 'etus-agent',
+    build: 'etus-agent-' + Date.now(),
     name: opts?.testName,
   }
 }
@@ -60,8 +60,8 @@ export function mapMobileCapabilities(
       accessKey: credentials.accessKey,
       deviceName: match.deviceName as string | undefined,
       osVersion: match.platformVersion as string | undefined,
-      projectName: 'agent-qa',
-      buildName: 'agent-qa-' + Date.now(),
+      projectName: 'etus-agent',
+      buildName: 'etus-agent-' + Date.now(),
       sessionName: opts.testName,
       idleTimeout: Math.ceil(opts.testTimeout / 1000),
     },

@@ -5,8 +5,8 @@ import type { AuthCredential, AuthStore } from './types.js'
 
 export function getAuthPath(): string {
   const xdg = process.env.XDG_DATA_HOME
-  if (xdg) return join(xdg, 'agent-qa', 'auth.json')
-  return join(homedir(), '.agent-qa', 'auth.json')
+  if (xdg) return join(xdg, 'etus-agent', 'auth.json')
+  return join(homedir(), '.etus-agent', 'auth.json')
 }
 
 export async function readAuth(path?: string): Promise<AuthStore> {

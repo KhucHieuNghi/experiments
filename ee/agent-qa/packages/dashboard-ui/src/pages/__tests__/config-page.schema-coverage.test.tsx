@@ -54,10 +54,10 @@ const { sampleConfig } = vi.hoisted(() => ({
   services: {
     dashboard: {
       port: 4173,
-      dbPath: '.agent-qa/runs.db',
-      artifactsDir: '.agent-qa/artifacts',
+      dbPath: '.etus-agent/runs.db',
+      artifactsDir: '.etus-agent/artifacts',
     },
-    cache: { dir: '.agent-qa/cache', ttl: '7d' },
+    cache: { dir: '.etus-agent/cache', ttl: '7d' },
     logging: { level: 'info' },
     recording: { enabled: true },
     accessibility: {
@@ -69,7 +69,7 @@ const { sampleConfig } = vi.hoisted(() => ({
     memory: {
       enabled: true,
       provider: 'local',
-      dir: 'agent-qa-memory',
+      dir: 'etus-agent-memory',
       minTrust: 0.3,
       maxInjections: 3,
       curatorEnabled: true,

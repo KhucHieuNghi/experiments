@@ -1,0 +1,15 @@
+interface:
+  display_name: "ETUS Result Triage"
+  short_description: "Classify failures from run artifacts"
+  default_prompt: "Use $etus-agent-result-triage to classify this failed ETUS run with evidence."
+
+dependencies:
+  tools:
+    - type: "mcp"
+      value: "etus-agent"
+      description: "ETUS local MCP server for run, artifact, log, and triage tools."
+      transport: "streamable_http"
+      url: "http://127.0.0.1:3471/mcp"
+
+policy:
+  allow_implicit_invocation: true

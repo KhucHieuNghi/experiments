@@ -184,7 +184,7 @@ describe('HookViewerPage URL state contract', () => {
       variables: {},
       sandbox: {
         runtime: 'node',
-        image: 'etus/agent-qa-hook-runner-node',
+        image: 'etus/etus-agent-hook-node',
         networkMode: 'enabled',
       },
     })

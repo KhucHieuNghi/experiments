@@ -13,9 +13,9 @@ import { fileURLToPath } from 'node:url'
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..')
 const packagesRoot = join(root, 'packages')
-const entryPackageName = 'agent-qa'
-const scopedPrefix = '@etus/agent-qa'
-const repositoryHostPath = 'github.com/etus/agent-qa'
+const entryPackageName = 'etus-agent'
+const scopedPrefix = '@etus/etus-agent'
+const repositoryHostPath = 'github.com/etus/etus-agent'
 const requiredLicense = 'SEE LICENSE IN LICENSE.md'
 const requiredCopyright = 'Copyright 2026 Pranshu Chittora'
 const requiredNoticeSnippets = [
@@ -25,11 +25,11 @@ const requiredNoticeSnippets = [
   'Apache License, Version 2.0',
   'Third-party dependencies are distributed under their own license terms',
 ]
-const requiredSkills = ['agent-qa-authoring', 'agent-qa-result-triage', 'agent-qa-debug-fix']
+const requiredSkills = ['etus-agent-authoring', 'etus-agent-result-triage', 'etus-agent-debug-fix']
 const requiredSkillReferences = {
-  'agent-qa-authoring': ['references/agent-qa-contracts.json'],
-  'agent-qa-result-triage': ['references/triage-categories.md'],
-  'agent-qa-debug-fix': [],
+  'etus-agent-authoring': ['references/etus-agent-contracts.json'],
+  'etus-agent-result-triage': ['references/triage-categories.md'],
+  'etus-agent-debug-fix': [],
 }
 const forbiddenPackPatterns = [
   /^\.env($|\.)/,
@@ -38,7 +38,7 @@ const forbiddenPackPatterns = [
   /^\.turbo($|\/)/,
   /^\.planning($|\/)/,
   /^node_modules($|\/)/,
-  /(^|\/)agent-qa\.local\.yaml$/,
+  /(^|\/)etus-agent\.local\.yaml$/,
   /(^|\/)\.env($|\.|\/)/,
   /(^|\/)\.env\.secrets\.local$/,
 ]
@@ -69,9 +69,9 @@ function assert(condition, message, errors) {
 
 function validateRootPackage(errors, options = { checkFiles: true }) {
   const pkg = readJson(join(root, 'package.json'))
-  assert(pkg.name === 'agent-qa-monorepo', 'root package must remain named agent-qa-monorepo', errors)
+  assert(pkg.name === 'etus-agent-monorepo', 'root package must remain named etus-agent-monorepo', errors)
   assert(pkg.private === true, 'root package must remain private', errors)
-  assert(pkg.name !== entryPackageName, 'root package must not claim the public agent-qa package name', errors)
+  assert(pkg.name !== entryPackageName, 'root package must not claim the public etus-agent package name', errors)
   assert(!Object.hasOwn(pkg, 'author'), 'root package must not declare author metadata', errors)
   assert(pkg.license === requiredLicense, `root package license must be ${requiredLicense}`, errors)
   if (options.checkFiles) {
@@ -145,8 +145,8 @@ function validatePublicPackage(record, allVersions, errors, options = { checkFil
   allVersions.add(record.pkg.version)
 
   if (record.pkg.name === entryPackageName) {
-    assert(record.pkg.bin?.['agent-qa'] === './dist/cli.js', 'agent-qa must keep bin.agent-qa pointing at ./dist/cli.js', errors)
-    assert(record.pkg.files?.includes('skills'), 'agent-qa files must include skills', errors)
+    assert(record.pkg.bin?.['etus-agent'] === './dist/cli.js', 'etus-agent must keep bin.etus-agent pointing at ./dist/cli.js', errors)
+    assert(record.pkg.files?.includes('skills'), 'etus-agent files must include skills', errors)
   } else {
     assert(typeof record.pkg.name === 'string' && record.pkg.name.startsWith(`${scopedPrefix}-`), `${name} must be scoped under @etus/*`, errors)
   }
@@ -162,14 +162,14 @@ function validatePublicPackage(record, allVersions, errors, options = { checkFil
   validateFilesAllowlist(record, errors)
   validateWorkspaceRanges(record, errors)
 
-  if (record.pkg.name !== entryPackageName && record.pkg.name !== '@etus/agent-qa-dashboard-ui') {
+  if (record.pkg.name !== entryPackageName && record.pkg.name !== '@etus/agent-dashboard-ui') {
     assert(record.pkg.exports?.['.']?.types === './dist/index.d.ts', `${name} must export dist types`, errors)
     assert(record.pkg.exports?.['.']?.import === './dist/index.js', `${name} must export dist ESM`, errors)
     assert(record.pkg.exports?.['.']?.require === './dist/index.cjs', `${name} must export dist CJS`, errors)
   }
 
-  if (record.pkg.name === '@etus/agent-qa-dashboard-ui') {
-    assert(!record.pkg.exports, '@etus/agent-qa-dashboard-ui must not add exports unless package.json is exported for dashboard resolution', errors)
+  if (record.pkg.name === '@etus/agent-dashboard-ui') {
+    assert(!record.pkg.exports, '@etus/agent-dashboard-ui must not add exports unless package.json is exported for dashboard resolution', errors)
   }
 
   if (options.checkFiles) {
@@ -183,7 +183,7 @@ function validateManifestSurface(errors, options = { checkFiles: true }) {
 
   const records = packageRecords()
   const entryPackages = records.filter(record => record.pkg.name === entryPackageName)
-  assert(entryPackages.length === 1, 'exactly one public entry package named agent-qa is required', errors)
+  assert(entryPackages.length === 1, 'exactly one public entry package named etus-agent is required', errors)
 
   const allVersions = new Set()
   for (const record of records) {
@@ -196,13 +196,13 @@ function validateCopiedSkills(errors) {
   const skillsRoot = join(root, 'packages/cli/skills')
   for (const skillName of requiredSkills) {
     const skillDir = join(skillsRoot, skillName)
-    assert(existsSync(join(skillDir, 'SKILL.md')), `agent-qa packaged skill missing ${skillName}/SKILL.md`, errors)
-    assert(existsSync(join(skillDir, 'agents/openai.yaml')), `agent-qa packaged skill missing ${skillName}/agents/openai.yaml`, errors)
+    assert(existsSync(join(skillDir, 'SKILL.md')), `etus-agent packaged skill missing ${skillName}/SKILL.md`, errors)
+    assert(existsSync(join(skillDir, 'agents/openai.yaml')), `etus-agent packaged skill missing ${skillName}/agents/openai.yaml`, errors)
     for (const ref of requiredSkillReferences[skillName]) {
-      assert(existsSync(join(skillDir, ref)), `agent-qa packaged skill missing ${skillName}/${ref}`, errors)
+      assert(existsSync(join(skillDir, ref)), `etus-agent packaged skill missing ${skillName}/${ref}`, errors)
     }
   }
-  assert(!existsSync(join(skillsRoot, 'scripts')), 'agent-qa packaged skills must not include skills/scripts', errors)
+  assert(!existsSync(join(skillsRoot, 'scripts')), 'etus-agent packaged skills must not include skills/scripts', errors)
 }
 
 function collectTextFiles(dir) {
@@ -294,12 +294,12 @@ function validatePackFiles(record, files, errors) {
 
   if (record.pkg.name === entryPackageName) {
     for (const skillName of requiredSkills) {
-      assert(files.some(file => file.startsWith(`skills/${skillName}/`)), `agent-qa tarball must include skills/${skillName}`, errors)
+      assert(files.some(file => file.startsWith(`skills/${skillName}/`)), `etus-agent tarball must include skills/${skillName}`, errors)
     }
   }
 
-  if (record.pkg.name === '@etus/agent-qa-dashboard-ui') {
-    assert(files.some(file => file === 'dist/index.html' || file.startsWith('dist/assets/')), '@etus/agent-qa-dashboard-ui tarball must include built dashboard assets', errors)
+  if (record.pkg.name === '@etus/agent-dashboard-ui') {
+    assert(files.some(file => file === 'dist/index.html' || file.startsWith('dist/assets/')), '@etus/agent-dashboard-ui tarball must include built dashboard assets', errors)
   }
 
   for (const file of files) {
@@ -311,7 +311,7 @@ function validatePackFiles(record, files, errors) {
 
 function validatePackDryRuns(errors) {
   runCopySkills(errors)
-  const npmCache = mkdtempSync(join(tmpdir(), 'agent-qa-npm-pack-cache-'))
+  const npmCache = mkdtempSync(join(tmpdir(), 'etus-agent-npm-pack-cache-'))
   const npmEnv = {
     ...process.env,
     npm_config_audit: 'false',
@@ -368,7 +368,7 @@ function runFixtures() {
   }, 'private: false')
 
   expectFixtureFailure('package name drift', (errors) => {
-    const record = { ...scoped, pkg: { ...scoped.pkg, name: 'agent-qa-core' } }
+    const record = { ...scoped, pkg: { ...scoped.pkg, name: 'etus-agent-core' } }
     validatePublicPackage(record, new Set(), errors, { checkFiles: false })
   }, '@etus')
 
@@ -384,12 +384,12 @@ function runFixtures() {
   }, 'v0 semver')
 
   expectFixtureFailure('missing copied skills', (errors) => {
-    const temp = mkdtempSync(join(tmpdir(), 'agent-qa-publish-fixture-'))
+    const temp = mkdtempSync(join(tmpdir(), 'etus-agent-publish-fixture-'))
     try {
       const originalRoot = join(root, 'packages/cli/skills')
       const missingRoot = join(temp, 'skills')
       for (const skillName of requiredSkills) {
-        assert(existsSync(join(missingRoot, skillName, 'SKILL.md')), `agent-qa packaged skill missing ${skillName}/SKILL.md`, errors)
+        assert(existsSync(join(missingRoot, skillName, 'SKILL.md')), `etus-agent packaged skill missing ${skillName}/SKILL.md`, errors)
       }
       assert(existsSync(originalRoot), 'fixture sanity check failed: real skills root missing', errors)
     } finally {

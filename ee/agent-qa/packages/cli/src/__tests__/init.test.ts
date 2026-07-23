@@ -18,7 +18,7 @@ vi.mock('node:child_process', () => ({
 }))
 
 vi.mock('../commands/install-browsers.js', () => ({
-  formatInstallBrowsersRetryCommand: vi.fn(() => 'agent-qa install-browsers --chromium'),
+  formatInstallBrowsersRetryCommand: vi.fn(() => 'etus-agent install-browsers --chromium'),
   runBrowserInstall: vi.fn(() => ({ ok: true, status: 0, stage: 'installer' })),
 }))
 
@@ -42,14 +42,14 @@ vi.mock('@inquirer/password', () => ({
   default: vi.fn(),
 }))
 
-vi.mock('@etus/agent-qa-core', () => ({
+vi.mock('@etus/agent-core', () => ({
   writeAuth: vi.fn(() => Promise.resolve()),
   createModel: vi.fn(),
   resolveAppiumExecutable: vi.fn(() => ({ command: 'appium', source: 'path' })),
   formatAppiumInstallGuidance: vi.fn(() => 'Install Appium locally with `npm install -D appium` or globally with `npm install -g appium`.'),
-  DEFAULT_AGENT_QA_AUTH_STATES_DIR: '.agent-qa/auth-states',
-  DEFAULT_AGENT_QA_CACHE_DIR: '.agent-qa/cache',
-  DEFAULT_AGENT_QA_RUNTIME_DIR: '.agent-qa',
+  DEFAULT_ETUS_AGENT_AUTH_STATES_DIR: '.etus-agent/auth-states',
+  DEFAULT_ETUS_AGENT_CACHE_DIR: '.etus-agent/cache',
+  DEFAULT_ETUS_AGENT_RUNTIME_DIR: '.etus-agent',
 }))
 
 // Suppress console output in tests
@@ -64,7 +64,7 @@ import input from '@inquirer/input'
 import checkbox from '@inquirer/checkbox'
 import confirm from '@inquirer/confirm'
 import password from '@inquirer/password'
-import { resolveAppiumExecutable, writeAuth } from '@etus/agent-qa-core'
+import { resolveAppiumExecutable, writeAuth } from '@etus/agent-core'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 
 const mockWriteFileSync = vi.mocked(writeFileSync)
@@ -121,7 +121,7 @@ describe('init command', () => {
     mockExistsSync.mockReturnValue(false)
     mockReadFileSync.mockImplementation((path) => String(path).endsWith('package.json') ? '{"version":"0.1.1"}' : '')
     mockRunBrowserInstall.mockReturnValue({ ok: true, status: 0, stage: 'installer' })
-    mockFormatInstallBrowsersRetryCommand.mockReturnValue('agent-qa install-browsers --chromium')
+    mockFormatInstallBrowsersRetryCommand.mockReturnValue('etus-agent install-browsers --chromium')
     mockResolveAppiumExecutable.mockReturnValue({ command: 'appium', source: 'path' })
   })
 
@@ -133,7 +133,7 @@ describe('init command', () => {
     await runInit(['--dir', '/tmp/test-project', '--platform', 'web', '--skip-install'])
 
     const configCall = mockWriteFileSync.mock.calls.find(
-      (call) => (call[0] as string).endsWith('agent-qa.config.yaml'),
+      (call) => (call[0] as string).endsWith('etus-agent.config.yaml'),
     )
     expect(configCall).toBeDefined()
 
@@ -153,9 +153,9 @@ describe('init command', () => {
     expect(content).toContain('recording:')
     expect(content).toContain('memory:')
     expect(content).toContain('provider: local')
-    expect(content).toContain('dir: agent-qa-memory')
+    expect(content).toContain('dir: etus-agent-memory')
     expect(content).toContain('authState:')
-    expect(content).toContain('dir: .agent-qa/auth-states')
+    expect(content).toContain('dir: .etus-agent/auth-states')
     expect(content).toContain('registry:')
     expect(content).toContain('targets:')
     expect(content).toContain('example-web:')
@@ -167,9 +167,9 @@ describe('init command', () => {
     expect(content).toContain('use:')
     expect(content).toContain('mobile:')
     expect(content).toContain('appState: preserve')
-    expect(content).toContain('dir: .agent-qa/cache')
+    expect(content).toContain('dir: .etus-agent/cache')
     expect(content).toContain('plugins:')
-    expect(content).toContain('package: "@etus/agent-qa-subscription-auth"')
+    expect(content).toContain('package: "@etus/agent-subscription-auth"')
     expect(content).toContain('provider: anthropic-subscription')
     expect(content).toContain('model: claude-sonnet-4-6')
     expect(content).toContain('screenshotSize: 50kb')
@@ -226,14 +226,14 @@ describe('init command', () => {
     expect(content).not.toContain('apiKey')
 
     const parsed = parseYaml(content) as any
-    expect(parsed.services.authState).toEqual({ dir: '.agent-qa/auth-states' })
+    expect(parsed.services.authState).toEqual({ dir: '.etus-agent/auth-states' })
 
     const packageJsonCall = findWriteCallEndingWith('package.json')
     expect(packageJsonCall).toBeDefined()
     expect(JSON.parse(packageJsonCall![1] as string)).toEqual({
       private: true,
       devDependencies: {
-        '@etus/agent-qa-subscription-auth': '0.1.1',
+        '@etus/agent-subscription-auth': '0.1.1',
       },
     })
   })
@@ -297,9 +297,9 @@ describe('init command', () => {
     expect(config.use.browser.viewport).toEqual({ width: 1280, height: 720 })
     expect(config.use.logCapture).toEqual({ console: true, network: true })
     expect(config.use.parallel).toBe(false)
-    expect(config.services.authState).toEqual({ dir: '.agent-qa/auth-states' })
+    expect(config.services.authState).toEqual({ dir: '.etus-agent/auth-states' })
     expect(config.services.recording).toEqual({ enabled: true })
-    expect(config.services.memory).toEqual({ enabled: true, provider: 'local', dir: 'agent-qa-memory' })
+    expect(config.services.memory).toEqual({ enabled: true, provider: 'local', dir: 'etus-agent-memory' })
   })
 
   it('builds anthropic-compatible config with exact baseURL and no authMethod or inline apiKey', () => {
@@ -326,9 +326,9 @@ describe('init command', () => {
     expect(config.use.browser.viewport).toEqual({ width: 1280, height: 720 })
     expect(config.use.logCapture).toEqual({ console: true, network: true })
     expect(config.use.parallel).toBe(false)
-    expect(config.services.authState).toEqual({ dir: '.agent-qa/auth-states' })
+    expect(config.services.authState).toEqual({ dir: '.etus-agent/auth-states' })
     expect(config.services.recording).toEqual({ enabled: true })
-    expect(config.services.memory).toEqual({ enabled: true, provider: 'local', dir: 'agent-qa-memory' })
+    expect(config.services.memory).toEqual({ enabled: true, provider: 'local', dir: 'etus-agent-memory' })
   })
 
   it('builds Gemini config without subscription auth plugin or base URL', () => {
@@ -345,7 +345,7 @@ describe('init command', () => {
     ])
     expect(config.registry.llms[0]).not.toHaveProperty('baseURL')
     expect(config.registry.llms[0]).not.toHaveProperty('apiKey')
-    expect(config.services.authState).toEqual({ dir: '.agent-qa/auth-states' })
+    expect(config.services.authState).toEqual({ dir: '.etus-agent/auth-states' })
     expect(config).not.toHaveProperty('plugins')
   })
 
@@ -372,12 +372,12 @@ describe('init command', () => {
       }),
     ])
     expect(config.plugins).toEqual({
-      auth: [{ package: '@etus/agent-qa-subscription-auth' }],
+      auth: [{ package: '@etus/agent-subscription-auth' }],
     })
     expect(config.use.llm).toBe('codex')
     expect(config.registry.llms[0]).not.toHaveProperty('apiKey')
     expect(config.registry.llms[1]).not.toHaveProperty('authMethod')
-    expect(config.services.authState).toEqual({ dir: '.agent-qa/auth-states' })
+    expect(config.services.authState).toEqual({ dir: '.etus-agent/auth-states' })
   })
 
   it.each(['web', 'android', 'ios', 'web+android', 'web+ios'] as const)(
@@ -392,9 +392,9 @@ describe('init command', () => {
       expect(config.use.mobile.appState).toBe('preserve')
       expect(config.use.logCapture).toEqual({ console: true, network: true })
       expect(config.use.parallel).toBe(false)
-      expect(config.services.authState).toEqual({ dir: '.agent-qa/auth-states' })
+      expect(config.services.authState).toEqual({ dir: '.etus-agent/auth-states' })
       expect(config.services.recording).toEqual({ enabled: true })
-      expect(config.services.memory).toEqual({ enabled: true, provider: 'local', dir: 'agent-qa-memory' })
+      expect(config.services.memory).toEqual({ enabled: true, provider: 'local', dir: 'etus-agent-memory' })
       expect(config.services.mcp).toEqual({
         enabled: true,
         transport: 'http',
@@ -403,7 +403,7 @@ describe('init command', () => {
         path: '/mcp',
       })
       expect(config.plugins).toEqual({
-        auth: [{ package: '@etus/agent-qa-subscription-auth' }],
+        auth: [{ package: '@etus/agent-subscription-auth' }],
       })
       if (platform === 'web' || platform === 'web+android' || platform === 'web+ios') {
         expect(config.services.accessibility).toEqual({
@@ -472,7 +472,7 @@ describe('init command', () => {
     expect(mockWriteAuth).not.toHaveBeenCalled()
 
     const configCall = mockWriteFileSync.mock.calls.find(
-      (call) => (call[0] as string).endsWith('agent-qa.config.yaml'),
+      (call) => (call[0] as string).endsWith('etus-agent.config.yaml'),
     )
     expect(configCall?.[1]).toContain('provider: anthropic-compatible')
     expect(configCall?.[1]).toContain('baseURL: https://anthropic-proxy.example/messages')
@@ -496,7 +496,7 @@ describe('init command', () => {
     }))
 
     const configCall = mockWriteFileSync.mock.calls.find(
-      (call) => (call[0] as string).endsWith('agent-qa.config.yaml'),
+      (call) => (call[0] as string).endsWith('etus-agent.config.yaml'),
     )
     expect(configCall?.[1]).toContain('example-web:')
     expect(configCall?.[1]).toContain('example-android:')
@@ -537,25 +537,25 @@ describe('init command', () => {
     expect(mockWriteAuth).not.toHaveBeenCalled()
 
     const configCall = mockWriteFileSync.mock.calls.find(
-      (call) => (call[0] as string).endsWith('agent-qa.config.yaml'),
+      (call) => (call[0] as string).endsWith('etus-agent.config.yaml'),
     )
     expect(configCall?.[1]).toContain('name: codex')
     expect(configCall?.[1]).toContain('provider: openai-subscription')
     expect(configCall?.[1]).toContain('name: claude-subscription')
     expect(configCall?.[1]).toContain('provider: anthropic-subscription')
-    expect(configCall?.[1]).toContain('package: "@etus/agent-qa-subscription-auth"')
+    expect(configCall?.[1]).toContain('package: "@etus/agent-subscription-auth"')
     expect(configCall?.[1]).toContain('llm: codex')
     expect(configCall?.[1]).not.toContain('apiKey')
     expect(configCall?.[1]).not.toContain('authMethod')
 
     const output = consoleOutput()
-    expect(output).toContain('Fetch @etus/agent-qa-subscription-auth with your package manager install command')
-    expect(output).toContain('Authenticate codex from agent-qa dashboard')
-    expect(output).toContain('Authenticate claude-subscription from agent-qa dashboard')
+    expect(output).toContain('Fetch @etus/agent-subscription-auth with your package manager install command')
+    expect(output).toContain('Authenticate codex from etus-agent dashboard')
+    expect(output).toContain('Authenticate claude-subscription from etus-agent dashboard')
 
     const packageJsonCall = findWriteCallEndingWith('package.json')
     expect(packageJsonCall).toBeDefined()
-    expect(JSON.parse(packageJsonCall![1] as string).devDependencies['@etus/agent-qa-subscription-auth']).toBe('0.1.1')
+    expect(JSON.parse(packageJsonCall![1] as string).devDependencies['@etus/agent-subscription-auth']).toBe('0.1.1')
   })
 
   it('writes OpenAI subscription config during interactive init', async () => {
@@ -566,13 +566,13 @@ describe('init command', () => {
     await runInit(['--dir', '/tmp/test-project', '--skip-install'])
 
     const configCall = mockWriteFileSync.mock.calls.find(
-      (call) => (call[0] as string).endsWith('agent-qa.config.yaml'),
+      (call) => (call[0] as string).endsWith('etus-agent.config.yaml'),
     )
     expect(configCall?.[1]).toContain('name: codex')
     expect(configCall?.[1]).toContain('provider: openai-subscription')
     expect(configCall?.[1]).toContain('model: gpt-5.5')
     expect(configCall?.[1]).toContain('llm: codex')
-    expect(configCall?.[1]).toContain('package: "@etus/agent-qa-subscription-auth"')
+    expect(configCall?.[1]).toContain('package: "@etus/agent-subscription-auth"')
     expect(configCall?.[1]).not.toContain('provider: anthropic-subscription')
     expect(mockInput).not.toHaveBeenCalled()
     expect(mockWriteAuth).not.toHaveBeenCalled()
@@ -594,7 +594,7 @@ describe('init command', () => {
     }))
 
     const configCall = mockWriteFileSync.mock.calls.find(
-      (call) => (call[0] as string).endsWith('agent-qa.config.yaml'),
+      (call) => (call[0] as string).endsWith('etus-agent.config.yaml'),
     )
     expect(configCall?.[1]).toContain('provider: gemini')
     expect(configCall?.[1]).toContain('model: gemini-3-flash-preview')
@@ -688,7 +688,7 @@ describe('init command', () => {
     const scriptContent = scriptCall?.[1] as string
     expect(scriptContent).toContain('https://hacker-news.firebaseio.com/v0/topstories.json')
     expect(scriptContent).toContain('https://hacker-news.firebaseio.com/v0/item/${firstStoryId}.json')
-    expect(scriptContent).toContain("writeFile('/tmp/agent-qa.env'")
+    expect(scriptContent).toContain("writeFile('/tmp/etus-agent.env'")
     expect(scriptContent).toContain('HN_FIRST_STORY_TITLE')
     expect(scriptContent).toContain('HN_FIRST_STORY_ID')
 
@@ -797,7 +797,7 @@ describe('init command', () => {
     expect(findWriteCallEndingWith('tests/hacker-news-top-story.yaml')).toBeUndefined()
     expect(findWriteCallEndingWith('tests/bad-a11y.yaml')).toBeUndefined()
 
-    const configCall = findWriteCallEndingWith('agent-qa.config.yaml')
+    const configCall = findWriteCallEndingWith('etus-agent.config.yaml')
     expect(configCall?.[1]).not.toContain('automation-exercise:')
     expect(configCall?.[1]).not.toContain('automationexercise.com')
     expect(configCall?.[1]).not.toContain('wai-bad:')
@@ -830,14 +830,14 @@ describe('init command', () => {
     await runInit(['--dir', '/tmp/test-project', '--platform', 'web', '--skip-install'])
 
     const localCall = mockWriteFileSync.mock.calls.find(
-      (call) => (call[0] as string).endsWith('agent-qa.local.yaml'),
+      (call) => (call[0] as string).endsWith('etus-agent.local.yaml'),
     )
     expect(localCall).toBeDefined()
 
     const content = localCall![1] as string
     expect(content.startsWith('# This file is for machine-specific device, app, and provider bindings.')).toBe(true)
     expect(content).toContain('# Keep it out of git.')
-    expect(content).toContain('# Add agent-qa.local.yaml to .gitignore.')
+    expect(content).toContain('# Add etus-agent.local.yaml to .gitignore.')
     expect(content).toContain('devices:\n')
     expect(content).toContain('apps:\n')
     expect(content).toContain('providers:\n')
@@ -854,7 +854,7 @@ describe('init command', () => {
     expect(content).not.toContain('# providers:')
 
     const output = consoleOutput()
-    expect(output).toContain('agent-qa.local.yaml')
+    expect(output).toContain('etus-agent.local.yaml')
   })
 
   it('appends to .gitignore without duplicating entries', async () => {
@@ -873,26 +873,26 @@ describe('init command', () => {
 
     const content = gitignoreCall![1] as string
     // Should contain auth-state credential material entries but not duplicate node_modules/
-    expect(content).toContain('.agent-qa/')
-    expect(content).toContain('.agent-qa/auth-states/')
-    expect(content).toContain('agent-qa.local.yaml')
+    expect(content).toContain('.etus-agent/')
+    expect(content).toContain('.etus-agent/auth-states/')
+    expect(content).toContain('etus-agent.local.yaml')
     expect(content).toContain('.env')
     expect(content).toContain('.env.secrets.local')
     // Original content + only the missing entry
     const nodeModulesCount = (content.match(/node_modules\//g) || []).length
-    const runtimeCount = (content.match(/^\.agent-qa\/$/gm) || []).length
-    const authStatesCount = (content.match(/^\.agent-qa\/auth-states\/$/gm) || []).length
+    const runtimeCount = (content.match(/^\.etus-agent\/$/gm) || []).length
+    const authStatesCount = (content.match(/^\.etus-agent\/auth-states\/$/gm) || []).length
     expect(nodeModulesCount).toBe(1)
     expect(runtimeCount).toBe(1)
     expect(authStatesCount).toBe(1)
   })
 
-  it('does not skip .agent-qa/ when only the auth-state directory is already ignored', async () => {
+  it('does not skip .etus-agent/ when only the auth-state directory is already ignored', async () => {
     mockExistsSync.mockImplementation((p) => {
       if ((p as string).endsWith('.gitignore')) return true
       return false
     })
-    mockReadFileSync.mockReturnValue('node_modules/\n.agent-qa/auth-states/\n')
+    mockReadFileSync.mockReturnValue('node_modules/\n.etus-agent/auth-states/\n')
 
     await runInit(['--dir', '/tmp/test-project', '--platform', 'web', '--skip-install'])
 
@@ -902,15 +902,15 @@ describe('init command', () => {
     expect(gitignoreCall).toBeDefined()
 
     const content = gitignoreCall![1] as string
-    expect(content).toContain('.agent-qa/')
-    expect(content).toContain('.agent-qa/auth-states/')
-    expect((content.match(/^\.agent-qa\/$/gm) || []).length).toBe(1)
-    expect((content.match(/^\.agent-qa\/auth-states\/$/gm) || []).length).toBe(1)
+    expect(content).toContain('.etus-agent/')
+    expect(content).toContain('.etus-agent/auth-states/')
+    expect((content.match(/^\.etus-agent\/$/gm) || []).length).toBe(1)
+    expect((content.match(/^\.etus-agent\/auth-states\/$/gm) || []).length).toBe(1)
   })
 
   it('skips if config exists and no --force', async () => {
     mockExistsSync.mockImplementation((p) => {
-      if ((p as string).endsWith('agent-qa.config.yaml')) return true
+      if ((p as string).endsWith('etus-agent.config.yaml')) return true
       return false
     })
 
@@ -918,14 +918,14 @@ describe('init command', () => {
 
     // Should not write config file
     const configCall = mockWriteFileSync.mock.calls.find(
-      (call) => (call[0] as string).endsWith('agent-qa.config.yaml'),
+      (call) => (call[0] as string).endsWith('etus-agent.config.yaml'),
     )
     expect(configCall).toBeUndefined()
   })
 
   it('overwrites with --force', async () => {
     mockExistsSync.mockImplementation((p) => {
-      if ((p as string).endsWith('agent-qa.config.yaml')) return true
+      if ((p as string).endsWith('etus-agent.config.yaml')) return true
       if ((p as string).endsWith('tests')) return true
       return false
     })
@@ -933,36 +933,36 @@ describe('init command', () => {
     await runInit(['--dir', '/tmp/test-project', '--platform', 'web', '--force', '--skip-install'])
 
     const configCall = mockWriteFileSync.mock.calls.find(
-      (call) => (call[0] as string).endsWith('agent-qa.config.yaml'),
+      (call) => (call[0] as string).endsWith('etus-agent.config.yaml'),
     )
     expect(configCall).toBeDefined()
   })
 
   it('preserves existing local override file without --force', async () => {
     mockExistsSync.mockImplementation((p) => {
-      if ((p as string).endsWith('agent-qa.local.yaml')) return true
+      if ((p as string).endsWith('etus-agent.local.yaml')) return true
       return false
     })
 
     await runInit(['--dir', '/tmp/test-project', '--platform', 'web', '--skip-install'])
 
     const localCall = mockWriteFileSync.mock.calls.find(
-      (call) => (call[0] as string).endsWith('agent-qa.local.yaml'),
+      (call) => (call[0] as string).endsWith('etus-agent.local.yaml'),
     )
     expect(localCall).toBeUndefined()
   })
 
   it('overwrites existing local override file with --force', async () => {
     mockExistsSync.mockImplementation((p) => {
-      if ((p as string).endsWith('agent-qa.config.yaml')) return true
-      if ((p as string).endsWith('agent-qa.local.yaml')) return true
+      if ((p as string).endsWith('etus-agent.config.yaml')) return true
+      if ((p as string).endsWith('etus-agent.local.yaml')) return true
       return false
     })
 
     await runInit(['--dir', '/tmp/test-project', '--platform', 'web', '--force', '--skip-install'])
 
     const localCall = mockWriteFileSync.mock.calls.find(
-      (call) => (call[0] as string).endsWith('agent-qa.local.yaml'),
+      (call) => (call[0] as string).endsWith('etus-agent.local.yaml'),
     )
     expect(localCall).toBeDefined()
   })
@@ -973,7 +973,7 @@ describe('init command', () => {
     expect(mockRunBrowserInstall).not.toHaveBeenCalled()
     expect(mockExecSync).not.toHaveBeenCalledWith('npx playwright install chromium', { stdio: 'inherit' })
     const output = consoleOutput()
-    expect(output).toContain('agent-qa install-browsers --chromium')
+    expect(output).toContain('etus-agent install-browsers --chromium')
     expect(output).not.toContain('Installing ETUS browser support')
   })
 
@@ -984,7 +984,7 @@ describe('init command', () => {
     expect(mockExecFileSync).not.toHaveBeenCalled()
     expect(mockResolveAppiumExecutable).not.toHaveBeenCalled()
     const output = consoleOutput()
-    expect(output).toContain('agent-qa install-mobile-drivers --all')
+    expect(output).toContain('etus-agent install-mobile-drivers --all')
     expect(output).not.toContain('Installing Appium')
   })
 
@@ -992,18 +992,18 @@ describe('init command', () => {
     await runInit(['--dir', '/tmp/test-project', '--platform', 'ios'])
 
     const output = consoleOutput()
-    expect(output).toContain('agent-qa install-mobile-drivers --all')
-    expect(output).not.toContain('agent-qa install-mobile-drivers --ios')
-    expect(output).not.toContain('agent-qa install-mobile-drivers --android')
+    expect(output).toContain('etus-agent install-mobile-drivers --all')
+    expect(output).not.toContain('etus-agent install-mobile-drivers --ios')
+    expect(output).not.toContain('etus-agent install-mobile-drivers --android')
   })
 
   it('prints both web and mobile setup guidance for mixed projects', async () => {
     await runInit(['--dir', '/tmp/test-project', '--platform', 'web+android'])
 
     const output = consoleOutput()
-    expect(output).toContain('agent-qa install-browsers --chromium')
-    expect(output).toContain('agent-qa install-mobile-drivers --all')
-    expect(output).toContain('agent-qa doctor')
+    expect(output).toContain('etus-agent install-browsers --chromium')
+    expect(output).toContain('etus-agent install-mobile-drivers --all')
+    expect(output).toContain('etus-agent doctor')
   })
 
   it('prints all-drivers setup guidance when both mobile platforms are selected interactively', async () => {
@@ -1016,7 +1016,7 @@ describe('init command', () => {
     await runInit(['--dir', '/tmp/test-project'])
 
     const output = consoleOutput()
-    expect(output).toContain('agent-qa install-mobile-drivers --all')
+    expect(output).toContain('etus-agent install-mobile-drivers --all')
     expect(mockCheckbox).not.toHaveBeenCalledWith(expect.objectContaining({
       message: 'Which mobile platforms will you test?',
     }))
@@ -1030,7 +1030,7 @@ describe('init command', () => {
     expect(mockRunBrowserInstall).not.toHaveBeenCalled()
 
     const output = consoleOutput()
-    expect(output).toContain('agent-qa install-browsers --chromium')
+    expect(output).toContain('etus-agent install-browsers --chromium')
   })
 
   it('creates tests directory when it does not exist', async () => {
@@ -1046,7 +1046,7 @@ describe('init command', () => {
     await runInit(['--dir', '/tmp/test-project', '--platform', 'android', '--skip-install'])
 
     const configCall = mockWriteFileSync.mock.calls.find(
-      (call) => (call[0] as string).endsWith('agent-qa.config.yaml'),
+      (call) => (call[0] as string).endsWith('etus-agent.config.yaml'),
     )
     expect(configCall).toBeDefined()
 

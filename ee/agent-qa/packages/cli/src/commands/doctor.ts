@@ -13,7 +13,7 @@ import {
   resolveWorkspacePaths,
   type AgentQaConfig,
   type ResolvedWorkspacePaths,
-} from '@etus/agent-qa-core'
+} from '@etus/agent-core'
 
 type CheckStatus = 'pass' | 'warn' | 'fail' | 'skip'
 
@@ -88,7 +88,7 @@ function getActiveLLMConfig(config: Record<string, unknown> | null): ActiveLLMCo
 }
 
 async function resolveActiveLLMAuth(llm: ActiveLLMConfig): Promise<ResolvedDoctorAuth> {
-  const { resolveLLMAuth } = await import('@etus/agent-qa-core') as unknown as {
+  const { resolveLLMAuth } = await import('@etus/agent-core') as unknown as {
     resolveLLMAuth: (
       configName: string,
       llmConfig: {
@@ -156,12 +156,12 @@ function checkNodeVersion(): DoctorCheck {
 function checkConfigFile(configPath: string): DoctorCheck {
   return {
     name: 'Config file',
-    fixInstructions: 'Run `agent-qa init` to create a config file',
+    fixInstructions: 'Run `etus-agent init` to create a config file',
     check: async () => {
       if (existsSync(configPath)) {
-        return { status: 'pass', message: 'agent-qa.config.yaml found' }
+        return { status: 'pass', message: 'etus-agent.config.yaml found' }
       }
-      return { status: 'warn', message: 'agent-qa.config.yaml not found' }
+      return { status: 'warn', message: 'etus-agent.config.yaml not found' }
     },
   }
 }
@@ -169,14 +169,14 @@ function checkConfigFile(configPath: string): DoctorCheck {
 function checkConfigValidation(config: Record<string, unknown> | null): DoctorCheck {
   return {
     name: 'Config validation',
-    fixInstructions: 'Fix the config errors above, or delete agent-qa.config.yaml and re-run `agent-qa init`',
+    fixInstructions: 'Fix the config errors above, or delete etus-agent.config.yaml and re-run `etus-agent init`',
     check: async () => {
       if (!config) {
         return { status: 'skip', message: 'no config to validate' }
       }
 
       try {
-        const { AgentQaConfigSchema } = await import('@etus/agent-qa-core')
+        const { AgentQaConfigSchema } = await import('@etus/agent-core')
         const result = AgentQaConfigSchema.safeParse(config)
         if (result.success) {
           return { status: 'pass', message: 'config schema valid' }
@@ -197,7 +197,7 @@ function checkConfigValidation(config: Record<string, unknown> | null): DoctorCh
 function checkSecretsFile(config: Record<string, unknown> | null, configPath: string): DoctorCheck {
   return {
     name: 'Secrets file',
-    fixInstructions: 'Set workspace.secretsFile in agent-qa.config.yaml and create the file. It may be empty, but it must exist.',
+    fixInstructions: 'Set workspace.secretsFile in etus-agent.config.yaml and create the file. It may be empty, but it must exist.',
     check: async () => {
       if (!config) {
         return { status: 'skip', message: 'no config' }
@@ -256,7 +256,7 @@ function checkDocker(): DoctorCheck {
     fixInstructions: 'Install Docker Desktop from https://docker.com/ and ensure the daemon is running',
     check: async () => {
       try {
-        const { checkDockerAvailable } = await import('@etus/agent-qa-core')
+        const { checkDockerAvailable } = await import('@etus/agent-core')
         const available = await checkDockerAvailable()
         if (available) {
           return { status: 'pass', message: 'Docker daemon running' }
@@ -272,7 +272,7 @@ function checkDocker(): DoctorCheck {
 function checkLLMApiKey(config: Record<string, unknown> | null): DoctorCheck {
   return {
     name: 'LLM credential',
-    fixInstructions: 'Run `agent-qa auth set --config <name> --type api-key` for API modes, or declare a subscription auth plugin and authenticate from `agent-qa dashboard`.',
+    fixInstructions: 'Run `etus-agent auth set --config <name> --type api-key` for API modes, or declare a subscription auth plugin and authenticate from `etus-agent dashboard`.',
     check: async () => {
       const llm = getActiveLLMConfig(config)
       try {
@@ -299,7 +299,7 @@ function checkLLMApiKey(config: Record<string, unknown> | null): DoctorCheck {
 function checkSubscriptionAuth(config: Record<string, unknown> | null): DoctorCheck {
   return {
     name: 'Subscription Auth',
-    fixInstructions: 'Install `@etus/agent-qa-subscription-auth`, declare it in plugins.auth, and authenticate from `agent-qa dashboard`.',
+    fixInstructions: 'Install `@etus/agent-subscription-auth`, declare it in plugins.auth, and authenticate from `etus-agent dashboard`.',
     check: async () => {
       const llm = getActiveLLMConfig(config)
       if (!SUBSCRIPTION_PROVIDERS.has(llm.provider)) {
@@ -325,7 +325,7 @@ function checkSubscriptionAuth(config: Record<string, unknown> | null): DoctorCh
 function checkLLMConnection(config: Record<string, unknown> | null): DoctorCheck {
   return {
     name: 'LLM connection',
-    fixInstructions: 'Check the saved credential, model name, and exact base URL. Run `agent-qa auth test --config <name>` for details.',
+    fixInstructions: 'Check the saved credential, model name, and exact base URL. Run `etus-agent auth test --config <name>` for details.',
     check: async () => {
       if (!config) {
         return { status: 'skip', message: 'no config' }
@@ -344,7 +344,7 @@ function checkLLMConnection(config: Record<string, unknown> | null): DoctorCheck
         if (auth.kind === 'missing') {
           return { status: 'fail', message: auth.message }
         }
-        const { createModel, getProviderOptions } = await import('@etus/agent-qa-core')
+        const { createModel, getProviderOptions } = await import('@etus/agent-core')
         const { generateText } = await import('ai')
         const modelConfig = applyResolvedAuth(llm, auth)
         const testModel = await createModel(modelConfig as any)
@@ -388,7 +388,7 @@ function checkLLMConnection(config: Record<string, unknown> | null): DoctorCheck
 function checkPlaywright(config: Record<string, unknown> | null): DoctorCheck {
   return {
     name: 'Playwright',
-    fixInstructions: 'Run `agent-qa install-browsers --chromium`',
+    fixInstructions: 'Run `etus-agent install-browsers --chromium`',
     check: async () => {
       // Skip if no browser config (mobile-only)
       const browsers = config?.browsers as unknown[] | undefined
@@ -412,7 +412,7 @@ function appiumResolverCwd(configPath: string): string {
 }
 
 function mobileDriverInstallCommand(): string {
-  return 'agent-qa install-mobile-drivers --all'
+  return 'etus-agent install-mobile-drivers --all'
 }
 
 function checkAppium(config: Record<string, unknown> | null, configPath: string): DoctorCheck {
@@ -508,7 +508,7 @@ function checkXcode(config: Record<string, unknown> | null): DoctorCheck {
 function checkValidation(config: Record<string, unknown> | null, configPath: string): DoctorCheck {
   return {
     name: 'Validate',
-    fixInstructions: 'Run `agent-qa validate` for full details, then fix reported errors',
+    fixInstructions: 'Run `etus-agent validate` for full details, then fix reported errors',
     check: async () => {
       if (!config) {
         return { status: 'skip', message: 'no config' }
@@ -520,7 +520,7 @@ function checkValidation(config: Record<string, unknown> | null, configPath: str
       }
 
       try {
-        const { validateProject } = await import('@etus/agent-qa-core')
+        const { validateProject } = await import('@etus/agent-core')
         const result = await validateProject({ configPath, workspace: resolved.workspace })
 
         if (result.errorCount === 0 && result.warningCount === 0) {
@@ -540,7 +540,7 @@ function checkValidation(config: Record<string, unknown> | null, configPath: str
 function checkTestDiscovery(config: Record<string, unknown> | null, configPath: string): DoctorCheck {
   return {
     name: 'Test discovery',
-    fixInstructions: 'Add testMatch patterns to agent-qa.config.yaml, or create test files matching your configured patterns',
+    fixInstructions: 'Add testMatch patterns to etus-agent.config.yaml, or create test files matching your configured patterns',
     check: async () => {
       if (!config) {
         return { status: 'skip', message: 'no config' }
@@ -601,7 +601,7 @@ function hasIOSPlatform(config: Record<string, unknown> | null): boolean {
 }
 
 function getGlobalConfigPath(command: Command): string {
-  return command.parent?.opts<{ config?: string }>().config ?? 'agent-qa.config.yaml'
+  return command.parent?.opts<{ config?: string }>().config ?? 'etus-agent.config.yaml'
 }
 
 export function createDoctorCommand(): Command {
@@ -642,7 +642,7 @@ export function createDoctorCommand(): Command {
       ]
 
       console.log('')
-      console.log(pc.bold('  agent-qa doctor'))
+      console.log(pc.bold('  etus-agent doctor'))
       console.log('')
 
       let hasFailure = false

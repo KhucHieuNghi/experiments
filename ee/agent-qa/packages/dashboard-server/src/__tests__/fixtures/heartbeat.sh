@@ -1,6 +1,6 @@
 #!/bin/sh
-echo 'AGENT_QA_EVENT:{"type":"test-start","testName":"test"}'
+echo 'ETUS_AGENT_EVENT:{"type":"test-start","testName":"test"}'
 while true; do
-  echo 'AGENT_QA_EVENT:{"type":"heartbeat"}'
+  echo 'ETUS_AGENT_EVENT:{"type":"heartbeat"}'
   sleep 2
 done

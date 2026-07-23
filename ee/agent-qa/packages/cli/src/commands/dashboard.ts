@@ -2,7 +2,7 @@ import { Command } from 'commander'
 import { resolve, dirname } from 'node:path'
 import { createRequire } from 'node:module'
 import pc from 'picocolors'
-import { flushAnalytics, resolveWorkspacePaths } from '@etus/agent-qa-core'
+import { flushAnalytics, resolveWorkspacePaths } from '@etus/agent-core'
 import { resolveConfig } from '../config.js'
 import { applyResolvedAuthToModelConfig, resolveModelAuth, type LLMConfigLike } from '../llm-utils.js'
 import { DEFAULT_ANTHROPIC_MODEL } from '../model-defaults.js'
@@ -31,7 +31,7 @@ async function startDashboardBackedServices(
       configPath: globalOpts.config,
     })
 
-    const configFilePath = resolve(globalOpts.config ?? 'agent-qa.config.yaml')
+    const configFilePath = resolve(globalOpts.config ?? 'etus-agent.config.yaml')
     const configDir = dirname(configFilePath)
     const workspacePaths = resolveWorkspacePaths({
       config,
@@ -43,7 +43,7 @@ async function startDashboardBackedServices(
     const mcpConfig = (config as any).services?.mcp ?? {}
     const port = opts.port ? parseInt(opts.port, 10) : (servicesConfig.port || 3470)
     const configuredDbPath = opts.db ?? servicesConfig.dbPath
-    const artifactsDir = servicesConfig.artifactsDir ?? '.agent-qa/artifacts'
+    const artifactsDir = servicesConfig.artifactsDir ?? '.etus-agent/artifacts'
 
     const registryLlms = (config as any).registry?.llms ?? []
     const useLlm = (config as any).use?.llm
@@ -67,7 +67,7 @@ async function startDashboardBackedServices(
       resolvedLLMConfig = modelConfig
     }
 
-    const { DashboardDatabase, resolveDashboardDbPath, startServer } = await import('@etus/agent-qa-dashboard')
+    const { DashboardDatabase, resolveDashboardDbPath, startServer } = await import('@etus/agent-dashboard')
 
     const db = new DashboardDatabase({
       dbPath: resolveDashboardDbPath({ configDir, configuredDbPath }),
@@ -76,11 +76,11 @@ async function startDashboardBackedServices(
     let uiDir: string | undefined
     try {
       const require = createRequire(import.meta.url)
-      const pkgPath = require.resolve('@etus/agent-qa-dashboard-ui/package.json')
+      const pkgPath = require.resolve('@etus/agent-dashboard-ui/package.json')
       uiDir = resolve(dirname(pkgPath), 'dist')
     } catch {
       if (globalOpts.verbose) {
-        console.log(pc.yellow('Warning: @etus/agent-qa-dashboard-ui not found — API-only mode'))
+        console.log(pc.yellow('Warning: @etus/agent-dashboard-ui not found — API-only mode'))
       }
     }
 

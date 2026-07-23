@@ -460,7 +460,7 @@ describe('SuiteEditorPage live mode orchestration', () => {
       path: 'suites/live.suite.yaml',
       content: `name: Live Suite\nsuite-id: s_live\ntarget: demo-target\nuse:\n  authState: ../suite-admin.json\ntests:\n  - test: tests/web/login.yaml\n    id: t_login\n`,
     })
-    saveLiveAuthStateMock.mockRejectedValue(new Error('EACCES .agent-qa/auth-states/demo-target/suite-admin.json secret-cookie'))
+    saveLiveAuthStateMock.mockRejectedValue(new Error('EACCES .etus-agent/auth-states/demo-target/suite-admin.json secret-cookie'))
     const rootElement = await render(<SuiteEditorPage />)
 
     await click(getButtonByText(rootElement, 'Connect Live Session'))

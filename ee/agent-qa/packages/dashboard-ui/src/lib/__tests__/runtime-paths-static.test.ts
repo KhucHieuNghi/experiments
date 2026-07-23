@@ -3,8 +3,8 @@ import { readdirSync, readFileSync, statSync } from 'node:fs'
 import { describe, expect, it } from 'vitest'
 
 const repoRoot = new URL('../../../../../', import.meta.url)
-const demoConfig = readFileSync(new URL('../../../../../demo-project/agent-qa.config.yaml', import.meta.url), 'utf-8')
-const releaseConfig = readFileSync(new URL('../../../../../demo-project/agent-qa.release.config.yaml', import.meta.url), 'utf-8')
+const demoConfig = readFileSync(new URL('../../../../../demo-project/etus-agent.config.yaml', import.meta.url), 'utf-8')
+const releaseConfig = readFileSync(new URL('../../../../../demo-project/etus-agent.release.config.yaml', import.meta.url), 'utf-8')
 const yamlCompletions = readFileSync(new URL('../yaml-completions.ts', import.meta.url), 'utf-8')
 const workspaceResolverTest = readFileSync(new URL('../../../../../packages/core/src/workspace/__tests__/workspace-paths.test.ts', import.meta.url), 'utf-8')
 
@@ -45,12 +45,12 @@ function readFiles(relativeRoot: string, include: RegExp): string {
 
 describe('runtime path static contract', () => {
   it('keeps the demo config cache under the runtime root', () => {
-    expect(demoConfig).toContain('dir: .agent-qa/cache')
+    expect(demoConfig).toContain('dir: .etus-agent/cache')
   })
 
   it('keeps the demo config memory root explicit and separate from runtime artifacts', () => {
     expect(demoConfig).toContain('memory:')
-    expect(demoConfig).toContain('dir: agent-qa-memory')
+    expect(demoConfig).toContain('dir: etus-agent-memory')
   })
 
   it('keeps the demo config on the canonical workspace sample', () => {
@@ -94,12 +94,12 @@ describe('runtime path static contract', () => {
 
     expect(cliSource).toContain('resolveMemoryRoot')
     expect(dashboardSource).toContain('resolveMemoryRoot')
-    expect(dashboardSource).not.toContain("join(workspaceDir, 'agent-qa-memory')")
-    expect(dashboardSource).not.toContain("join(configDir, 'agent-qa-memory')")
+    expect(dashboardSource).not.toContain("join(workspaceDir, 'etus-agent-memory')")
+    expect(dashboardSource).not.toContain("join(configDir, 'etus-agent-memory')")
     expect(memoryFactorySource).toContain('DEFAULT_MEMORY_DIR')
     expect(localProviderSource).toContain('DEFAULT_MEMORY_DIR')
-    expect(memoryFactorySource).not.toContain("?? 'agent-qa-memory'")
-    expect(localProviderSource).not.toContain("?? 'agent-qa-memory'")
+    expect(memoryFactorySource).not.toContain("?? 'etus-agent-memory'")
+    expect(localProviderSource).not.toContain("?? 'etus-agent-memory'")
   })
 
   it('keeps dashboard UI source exposing audited config paths and create actions', () => {

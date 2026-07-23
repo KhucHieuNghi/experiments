@@ -1,6 +1,6 @@
 import { z } from 'zod'
 import ms from 'ms'
-import { isCanonicalHookId, isCanonicalTestId } from '@etus/agent-qa-ids'
+import { isCanonicalHookId, isCanonicalTestId } from '@etus/agent-ids'
 import { UseOverrideSchema } from './use-schema.js'
 
 const OptionalDuration = z.string()

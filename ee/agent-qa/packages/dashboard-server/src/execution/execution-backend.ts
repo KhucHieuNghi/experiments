@@ -1,4 +1,4 @@
-import type { RunAttributes } from '@etus/agent-qa-core'
+import type { RunAttributes } from '@etus/agent-core'
 import type { EventEmitter } from 'node:events'
 
 export interface ExecuteOptions {

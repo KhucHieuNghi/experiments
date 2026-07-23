@@ -1,7 +1,7 @@
 import { copyFile, mkdir, rename, stat, unlink } from 'node:fs/promises'
 import { basename, dirname, isAbsolute, relative, resolve } from 'node:path'
-import { isCanonicalRunId } from '@etus/agent-qa-ids'
-import { createBetterSqlite3Database, generateRunId, type BetterSqlite3Database } from '@etus/agent-qa-core'
+import { isCanonicalRunId } from '@etus/agent-ids'
+import { createBetterSqlite3Database, generateRunId, type BetterSqlite3Database } from '@etus/agent-core'
 
 interface RunIdMigrationRunRow {
   id: string

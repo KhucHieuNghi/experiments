@@ -7,14 +7,14 @@ dist/
 
 # Local config and credentials
 .env*
-agent-qa.local.yaml
+etus-agent.local.yaml
 packages/core/src/analytics/posthog-project.ts
 
-# agent-qa runtime output
-.agent-qa/
-.agent-qa-cache/
-.agent-qa-screenshots/
-agent-qa-memory/
+# etus-agent runtime output
+.etus-agent/
+.etus-agent-cache/
+.etus-agent-screenshots/
+etus-agent-memory/
 
 # Test and report output
 coverage/

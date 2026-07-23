@@ -6,7 +6,7 @@ import {
   formatAppiumInstallGuidance,
   resolveAppiumExecutable,
   type ResolvedAppiumExecutable,
-} from '@etus/agent-qa-core'
+} from '@etus/agent-core'
 
 export type MobileDriverName = 'uiautomator2' | 'xcuitest'
 export type MobileDriverTarget = 'android' | 'ios'
@@ -85,7 +85,7 @@ export function validateMobileDriverInstallSelection(selection: MobileDriverInst
 }
 
 export function formatInstallMobileDriversRetryCommand(selection: MobileDriverInstallSelection): string {
-  const args = ['agent-qa', 'install-mobile-drivers']
+  const args = ['etus-agent', 'install-mobile-drivers']
 
   if (selection.all) {
     args.push('--all')
@@ -252,7 +252,7 @@ export function runMobileDriverInstall(
 }
 
 function resolveCommandCwd(command: Command): string {
-  const configPath = command.parent?.opts<{ config?: string }>().config ?? 'agent-qa.config.yaml'
+  const configPath = command.parent?.opts<{ config?: string }>().config ?? 'etus-agent.config.yaml'
   return dirname(resolve(configPath))
 }
 

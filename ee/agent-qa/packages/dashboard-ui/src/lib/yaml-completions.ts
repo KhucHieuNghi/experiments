@@ -18,7 +18,7 @@ interface SchemaField {
 }
 
 // Static schema field map derived from TestDefinitionSchema.
-// Built manually to avoid importing @etus/agent-qa-core (Node.js-only code) in the browser.
+// Built manually to avoid importing @etus/agent-core (Node.js-only code) in the browser.
 const SCHEMA_MAP: SchemaField = {
   label: 'root',
   kind: 'object',

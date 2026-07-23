@@ -150,7 +150,7 @@ const CONFIG_ITEMS = [
     item: 'targets',
     itemLabel: 'Targets',
     title: 'Targets',
-    description: 'Manage named browser or mobile targets referenced elsewhere in the product.',
+    description: 'Manage named browser targets referenced elsewhere in the product.',
     fieldPaths: ['registry.targets'],
     aliases: ['targets', 'target', 'urls', 'bundle id', 'app package'],
   },

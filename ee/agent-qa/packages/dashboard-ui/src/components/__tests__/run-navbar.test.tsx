@@ -91,8 +91,8 @@ const baseRun = {
   status: "passed",
   duration: 1200,
   attributes: {
-    "agent-qa.trigger": "cli",
-    "agent-qa.runner": "local",
+    "etus-agent.trigger": "cli",
+    "etus-agent.runner": "local",
   },
   environment: null,
   metadata: null,

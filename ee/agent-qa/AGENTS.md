@@ -16,14 +16,14 @@ Allowed forms:
 Compatibility-only technical identifiers that must not be renamed without a
 dedicated migration:
 
-- Public CLI command: `agent-qa`
-- Config file: `agent-qa.config.yaml`
-- Local-only override file: `agent-qa.local.yaml`
-- Runtime artifact directory: `.agent-qa/`
-- Scoped npm packages: `@etus/agent-qa-*`
-- Docker images: `etus/agent-qa-*`
-- MCP tools and snake_case public names: `agent_qa_*`
-- Environment variables and stdout sentinels: `AGENT_QA_*`
+- Public CLI command: `etus-agent`
+- Config file: `etus-agent.config.yaml`
+- Local-only override file: `etus-agent.local.yaml`
+- Runtime artifact directory: `.etus-agent/`
+- Scoped npm packages: `@etus/agent-*`
+- Docker images: `etus/etus-agent-*`
+- MCP tools and snake_case public names: `etus_agent_*`
+- Environment variables and stdout sentinels: `ETUS_AGENT_*`
 
 Future changes must not introduce compatibility CLI/package names, legacy brand names,
 or no-separator variants as brand prose. Keep legacy technical identifiers only
@@ -47,17 +47,17 @@ Use preferred TypeScript API names such as `AgentQaConfig` and
 
 Package map:
 
-- `@etus/agent-qa-ids` - canonical persistent ID helpers.
-- `@etus/agent-qa-core` - runtime schemas, parser, runner, reporters,
+- `@etus/agent-ids` - canonical persistent ID helpers.
+- `@etus/agent-core` - runtime schemas, parser, runner, reporters,
   auth, cache, memory, analytics, hooks, and shared platform contracts.
-- `@etus/agent-qa-web` - Playwright browser adapter, DOM extraction,
+- `@etus/agent-web` - Playwright browser adapter, DOM extraction,
   action validation, smart waits, and accessibility checks.
-- `@etus/agent-qa-android` - WebdriverIO/Appium Android adapter.
-- `@etus/agent-qa-ios` - WebdriverIO/Appium iOS adapter.
-- `@etus/agent-qa-mcp` - Model Context Protocol server, tools, schema
+- `@etus/agent-android` - WebdriverIO/Appium Android adapter.
+- `@etus/agent-ios` - WebdriverIO/Appium iOS adapter.
+- `@etus/agent-mcp` - Model Context Protocol server, tools, schema
   references, and local HTTP/stdio transports.
-- `@etus/agent-qa-dashboard-ui` - React/Vite dashboard UI assets.
-- `@etus/agent-qa-dashboard` - local dashboard server, SQLite database,
+- `@etus/agent-dashboard-ui` - React/Vite dashboard UI assets.
+- `@etus/agent-dashboard` - local dashboard server, SQLite database,
   run queue, routes, reporter, live editor, and service ownership.
 - The compatibility CLI package owns the public entrypoint and packaged skills.
 
@@ -96,19 +96,19 @@ automation.
 ## Testing
 
 - Add or update focused tests for the package you change.
-- For CLI changes, run `pnpm --filter agent-qa test`.
-- For core runtime/schema changes, run `pnpm --filter @etus/agent-qa-core test`.
-- For dashboard server changes, run `pnpm --filter @etus/agent-qa-dashboard test`.
-- For dashboard UI changes, run `pnpm --filter @etus/agent-qa-dashboard-ui test`.
-- For MCP changes, run `pnpm --filter @etus/agent-qa-mcp test`.
+- For CLI changes, run `pnpm --filter etus-agent test`.
+- For core runtime/schema changes, run `pnpm --filter @etus/agent-core test`.
+- For dashboard server changes, run `pnpm --filter @etus/agent-dashboard test`.
+- For dashboard UI changes, run `pnpm --filter @etus/agent-dashboard-ui test`.
+- For MCP changes, run `pnpm --filter @etus/agent-mcp test`.
 - Before release-facing changes are complete, run `pnpm typecheck`,
   `pnpm run validate:skills`, and `pnpm run validate:publish`.
 
 ## Security
 
-- Never commit `.env*`, `agent-qa.local.yaml`, auth stores, real PostHog keys,
+- Never commit `.env*`, `etus-agent.local.yaml`, auth stores, real PostHog keys,
   subscription tokens, or local credential material.
-- Do not commit `.agent-qa/`, `dist/`, `.turbo/`, `.pnpm-store/`, or
+- Do not commit `.etus-agent/`, `dist/`, `.turbo/`, `.pnpm-store/`, or
   `node_modules/`.
 - Do not log LLM API keys, bearer tokens, subscription-auth tokens, or
   redacted secret material in plain text.
@@ -124,10 +124,10 @@ automation.
 
 - Public packages keep `private: false`, Node `>=24`, FSL license metadata,
   npm publish config, and explicit `files` allowlists.
-- Workspace dependencies between `@etus/agent-qa-*` packages should remain
+- Workspace dependencies between `@etus/agent-*` packages should remain
   `workspace:*` in source manifests.
-- The public CLI package is the only package named `agent-qa` and owns the
-  `bin.agent-qa` entry.
+- The public CLI package is the only package named `etus-agent` and owns the
+  `bin.etus-agent` entry.
 - The dashboard UI package intentionally publishes built assets and does not
   expose a library entry unless a dedicated plan changes that.
 - Do not modify `LICENSE.md` or `NOTICE.md` wording unless the task is
@@ -135,7 +135,7 @@ automation.
 
 ## Skills And MCP
 
-- Public MCP tools use the `agent_qa_*` prefix.
+- Public MCP tools use the `etus_agent_*` prefix.
 - Never hand-write canonical test, suite, hook, run, or observation IDs. Use
   the existing ID generation helpers or MCP tools.
 - When editing `skills/` or packaged CLI skills, run `pnpm run validate:skills`.

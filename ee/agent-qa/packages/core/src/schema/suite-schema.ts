@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { isCanonicalHookId, isCanonicalSuiteId, isCanonicalTestId } from '@etus/agent-qa-ids'
+import { isCanonicalHookId, isCanonicalSuiteId, isCanonicalTestId } from '@etus/agent-ids'
 import { UseOverrideSchema } from './use-schema.js'
 
 export const SuiteTestEntrySchema = z.object({

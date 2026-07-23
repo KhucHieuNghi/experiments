@@ -164,7 +164,7 @@ export async function runSuite(
   const startTime = performance.now()
   const results: TestResult[] = []
   const reporter = config.reporters?.length ? new MultiReporter(config.reporters) : undefined
-  const suiteRunId = config.runId ?? process.env.AGENT_QA_SUITE_QUEUE_ID ?? generateRunId()
+  const suiteRunId = config.runId ?? process.env.ETUS_AGENT_SUITE_QUEUE_ID ?? generateRunId()
   let suiteSandboxOptions = config.sandboxOptions && config.platformConfig.authState
     ? { ...config.sandboxOptions, authState: config.platformConfig.authState }
     : config.sandboxOptions

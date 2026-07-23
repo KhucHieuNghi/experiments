@@ -2,8 +2,8 @@ import { access, mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { describe, it, expect, afterEach } from 'vitest'
-import { isCanonicalRunId } from '@etus/agent-qa-ids'
-import { createBetterSqlite3Database } from '@etus/agent-qa-core'
+import { isCanonicalRunId } from '@etus/agent-ids'
+import { createBetterSqlite3Database } from '@etus/agent-core'
 import { DashboardDatabase } from '../db/database.js'
 import { migrateWorkspaceRunIds } from '../db/run-id-migration.js'
 
@@ -19,10 +19,10 @@ function expectCanonicalRunId(id: string): void {
 }
 
 async function createMigrationFixture() {
-  const rootDir = await mkdtemp(join(tmpdir(), 'agent-qa-run-id-migration-'))
+  const rootDir = await mkdtemp(join(tmpdir(), 'etus-agent-run-id-migration-'))
   tempDirs.push(rootDir)
 
-  const workspaceDir = join(rootDir, '.agent-qa')
+  const workspaceDir = join(rootDir, '.etus-agent')
   const artifactsDir = join(workspaceDir, 'artifacts')
   const screenshotsDir = join(artifactsDir, 'screenshots')
   const videosDir = join(artifactsDir, 'videos')
@@ -267,9 +267,9 @@ describe('migrateWorkspaceRunIds', () => {
   })
 
   it('keeps external absolute video paths unchanged', { timeout: 30_000 }, async () => {
-    const rootDir = await mkdtemp(join(tmpdir(), 'agent-qa-run-id-migration-external-'))
+    const rootDir = await mkdtemp(join(tmpdir(), 'etus-agent-run-id-migration-external-'))
     tempDirs.push(rootDir)
-    const workspaceDir = join(rootDir, '.agent-qa')
+    const workspaceDir = join(rootDir, '.etus-agent')
     const artifactsDir = join(workspaceDir, 'artifacts')
     const videosDir = join(artifactsDir, 'videos')
     const externalDir = join(rootDir, 'external-videos')

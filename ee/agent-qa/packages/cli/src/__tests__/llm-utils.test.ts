@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 
-vi.mock('@etus/agent-qa-core', () => ({
+vi.mock('@etus/agent-core', () => ({
   getCredential: vi.fn(),
   resolveLLMAuth: vi.fn(),
   writeAuth: vi.fn(() => Promise.resolve()),
@@ -10,7 +10,7 @@ vi.mock('../config.js', () => ({
   loadConfigFile: vi.fn(),
 }))
 
-import { getCredential, resolveLLMAuth } from '@etus/agent-qa-core'
+import { getCredential, resolveLLMAuth } from '@etus/agent-core'
 import { loadConfigFile } from '../config.js'
 import {
   applyResolvedAuthToModelConfig,
@@ -58,9 +58,9 @@ describe('resolveCredentials', () => {
       use: { llm: 'planner' },
     })
 
-    const resolved = await resolveNamedConfig(undefined, 'custom-agent-qa.yaml')
+    const resolved = await resolveNamedConfig(undefined, 'custom-etus-agent.yaml')
 
-    expect(mockLoadConfigFile).toHaveBeenCalledWith('custom-agent-qa.yaml')
+    expect(mockLoadConfigFile).toHaveBeenCalledWith('custom-etus-agent.yaml')
     expect(resolved.config).toMatchObject({
       name: 'planner',
       provider: 'openai-compatible',
@@ -101,7 +101,7 @@ describe('resolveCredentials', () => {
         provider: 'anthropic-compatible',
         model: 'claude-remote',
         baseURL: 'https://anthropic.example/messages',
-        providerHeaders: { 'x-workspace': 'agent-qa' },
+        providerHeaders: { 'x-workspace': 'etus-agent' },
       },
       {
         kind: 'bearer-token',
@@ -115,7 +115,7 @@ describe('resolveCredentials', () => {
       provider: 'anthropic-compatible',
       model: 'claude-remote',
       baseURL: 'https://anthropic.example/messages',
-      providerHeaders: { 'x-workspace': 'agent-qa' },
+      providerHeaders: { 'x-workspace': 'etus-agent' },
       authToken: 'bearer-planner',
     })
     expect(runtimeConfig).not.toHaveProperty('apiKey')

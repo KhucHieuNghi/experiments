@@ -23,7 +23,7 @@ vi.mock('../targets.js', () => ({
   resolveTarget: mocks.resolveTarget,
 }))
 
-vi.mock('@etus/agent-qa-core', () => ({
+vi.mock('@etus/agent-core', () => ({
   AUTH_STATE_SCHEMA_VERSION: 1,
   resolveAuthStatePaths: mocks.resolveAuthStatePaths,
   listAuthStateMetadata: mocks.listAuthStateMetadata,
@@ -62,7 +62,7 @@ const metadata = {
 
 const secretCookie = ['secret', 'cookie'].join('-')
 const secretLocalStorage = ['secret', 'local', 'storage'].join('-')
-const authStateDir = ['.agent-qa', 'auth-states'].join('/')
+const authStateDir = ['.etus-agent', 'auth-states'].join('/')
 const storageStatePayload = {
   cookies: [{
     name: 'session',
@@ -108,7 +108,7 @@ async function runAuthStateCommand(
   const parent = new Command()
   parent.exitOverride()
   parent.enablePositionalOptions()
-  parent.option('--config <path>', 'config file path', 'agent-qa.config.yaml')
+  parent.option('--config <path>', 'config file path', 'etus-agent.config.yaml')
   parent.addCommand(createAuthStateCommand({
     waitForConfirmation: waitForConfirmation as any,
     now: () => new Date('2026-05-17T00:00:00.000Z'),
@@ -174,7 +174,7 @@ describe('auth-state capture command', () => {
     await runCapture(waitForConfirmation)
 
     expect(mocks.resolveConfig).toHaveBeenCalledWith({
-      configPath: 'agent-qa.config.yaml',
+      configPath: 'etus-agent.config.yaml',
       loadAuthPlugins: false,
     })
     expect(mocks.resolveAuthStatePaths).toHaveBeenCalledWith({
@@ -199,7 +199,7 @@ describe('auth-state capture command', () => {
     expect(getOutput()).toContain('Saved auth state "admin" for target "test-app".')
     expect(getOutput()).not.toContain(paths.payloadPath)
     expect(getOutput()).not.toContain(paths.metadataPath)
-    expect(getOutput()).not.toContain('.agent-qa/auth-states')
+    expect(getOutput()).not.toContain('.etus-agent/auth-states')
     expect(getOutput()).not.toContain('secret-cookie')
     expect(getOutput()).not.toContain('secret-local-storage')
   })

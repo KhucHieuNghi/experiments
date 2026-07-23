@@ -64,7 +64,7 @@ vi.mock('webdriverio', () => ({
 }))
 
 import { AndroidPlatformAdapter } from '../adapter.js'
-import type { PlatformConfig } from '@etus/agent-qa-core'
+import type { PlatformConfig } from '@etus/agent-core'
 
 describe('AndroidPlatformAdapter', () => {
   let adapter: AndroidPlatformAdapter
@@ -244,8 +244,8 @@ describe('AndroidPlatformAdapter', () => {
     })
 
     it('uses mobile shell pid lookup only when explicitly enabled', async () => {
-      const previous = process.env.AGENT_QA_ANDROID_USE_MOBILE_SHELL
-      process.env.AGENT_QA_ANDROID_USE_MOBILE_SHELL = '1'
+      const previous = process.env.ETUS_AGENT_ANDROID_USE_MOBILE_SHELL
+      process.env.ETUS_AGENT_ANDROID_USE_MOBILE_SHELL = '1'
       mockDriver.execute.mockResolvedValueOnce('12345')
 
       try {
@@ -260,8 +260,8 @@ describe('AndroidPlatformAdapter', () => {
           appPackage: 'app.linear',
         })
       } finally {
-        if (previous === undefined) delete process.env.AGENT_QA_ANDROID_USE_MOBILE_SHELL
-        else process.env.AGENT_QA_ANDROID_USE_MOBILE_SHELL = previous
+        if (previous === undefined) delete process.env.ETUS_AGENT_ANDROID_USE_MOBILE_SHELL
+        else process.env.ETUS_AGENT_ANDROID_USE_MOBILE_SHELL = previous
       }
 
       expect(mockDriver.execute).toHaveBeenCalledWith('mobile: shell', { command: 'pidof', args: ['app.linear'] })

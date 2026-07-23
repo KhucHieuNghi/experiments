@@ -53,7 +53,7 @@ async function getValue(key: string, providedValue: string | undefined): Promise
 async function setAction(key: string, value: string | undefined): Promise<void> {
   if (isSensitiveKey(key)) {
     console.error(pc.red('Credential values are not written by config set.'))
-    console.error('Use agent-qa auth set --config <name> --type api-key|bearer-token for compatible or Gemini configs.')
+    console.error('Use etus-agent auth set --config <name> --type api-key|bearer-token for compatible or Gemini configs.')
     console.error('Use plugins.auth plus the dashboard auth flow for subscription configs.')
     return
   }
@@ -64,7 +64,7 @@ async function setAction(key: string, value: string | undefined): Promise<void> 
     return
   }
 
-  const configPath = 'agent-qa.config.yaml'
+  const configPath = 'etus-agent.config.yaml'
   let doc: Document
   try {
     const content = await readFile(configPath, 'utf-8')
@@ -79,11 +79,11 @@ async function setAction(key: string, value: string | undefined): Promise<void> 
 
   doc.setIn(key.split('.'), resolved)
   await writeFile(configPath, doc.toString())
-  console.log(pc.green(`\u2713 ${key} = ${resolved} saved to agent-qa.config.yaml`))
+  console.log(pc.green(`\u2713 ${key} = ${resolved} saved to etus-agent.config.yaml`))
 }
 
 async function showAction(): Promise<void> {
-  const fileConfig = await loadConfigFile('agent-qa.config.yaml')
+  const fileConfig = await loadConfigFile('etus-agent.config.yaml')
   const envOverrides = loadEnvOverrides()
   // Merge env into file config (3-layer: file+env is the global config)
   const { mergeConfigs } = await import('../config.js')

@@ -147,7 +147,7 @@ describe('LiveSessionPane auth-state capture control', () => {
 
     expect(buttonByLabel('Save auth state')).not.toBeNull()
     expect(buttonByLabel('Open auth state save form')).not.toBeNull()
-    expect(document.body.textContent).not.toContain('.agent-qa/auth-states')
+    expect(document.body.textContent).not.toContain('.etus-agent/auth-states')
     expect(document.body.textContent).not.toContain('cookies')
     expect(document.body.textContent).not.toContain('localStorage')
     expect(document.body.textContent).not.toContain('IndexedDB')

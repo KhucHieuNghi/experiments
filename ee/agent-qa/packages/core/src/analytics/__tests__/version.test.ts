@@ -6,13 +6,13 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { getAgentQaVersion } from '../../version.js'
 import { resolveAnalyticsStandardProperties } from '../service.js'
 
-describe('agent-qa analytics version context', () => {
+describe('etus-agent analytics version context', () => {
   let tempDir: string
   let identityPath: string
   const packageVersion = (JSON.parse(readFileSync(new URL('../../../package.json', import.meta.url), 'utf-8')) as { version: string }).version
 
   beforeEach(async () => {
-    tempDir = await mkdtemp(join(tmpdir(), 'agent-qa-version-'))
+    tempDir = await mkdtemp(join(tmpdir(), 'etus-agent-version-'))
     identityPath = join(tempDir, 'analytics.json')
   })
 
@@ -20,7 +20,7 @@ describe('agent-qa analytics version context', () => {
     await rm(tempDir, { recursive: true, force: true })
   })
 
-  it('returns a reusable agent-qa package version', () => {
+  it('returns a reusable etus-agent package version', () => {
     expect(getAgentQaVersion()).toMatch(/^\d+\.\d+\.\d+$/)
     expect(getAgentQaVersion()).toBe(packageVersion)
   })
@@ -31,7 +31,7 @@ describe('agent-qa analytics version context', () => {
       env: {},
       identityPath,
     })).resolves.toMatchObject({
-      agent_qa_version: getAgentQaVersion(),
+      etus_agent_version: getAgentQaVersion(),
       surface: 'cli',
       runtime_context: 'user',
     })
@@ -43,7 +43,7 @@ describe('agent-qa analytics version context', () => {
       env: { CI: 'true' },
       identityPath,
     })).resolves.toEqual({
-      agent_qa_version: getAgentQaVersion(),
+      etus_agent_version: getAgentQaVersion(),
       surface: 'core',
       runtime_context: 'ci',
     })
@@ -57,7 +57,7 @@ describe('agent-qa analytics version context', () => {
     })
 
     expect(properties).toEqual({
-      agent_qa_version: getAgentQaVersion(),
+      etus_agent_version: getAgentQaVersion(),
       surface: 'mcp',
       runtime_context: 'agent',
       agent_product: 'goose',

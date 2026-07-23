@@ -13,7 +13,7 @@ function renderStringLiteral(value) {
 
 export function renderPosthogProjectFile(projectKey) {
   if (!projectKey?.trim()) throw new Error('POSTHOG_PROJECT_KEY is required')
-  return `export const AGENT_QA_POSTHOG_KEY = ${renderStringLiteral(projectKey)}\nexport const AGENT_QA_POSTHOG_HOST = ${renderStringLiteral(host)}\n`
+  return `export const ETUS_AGENT_POSTHOG_KEY = ${renderStringLiteral(projectKey)}\nexport const ETUS_AGENT_POSTHOG_HOST = ${renderStringLiteral(host)}\n`
 }
 
 export function redactSecret(value) {
@@ -34,8 +34,8 @@ export async function writePosthogProjectFile(options = {}) {
 function validateRuntimeArtifact(path, projectKey) {
   if (!existsSync(path)) throw new Error(`PostHog dist key artifact is missing: ${path}`)
   const distText = readFileSync(path, 'utf8')
-  if (!distText.includes('AGENT_QA_POSTHOG_KEY')) throw new Error(`PostHog dist key export is missing: ${path}`)
-  if (/AGENT_QA_POSTHOG_KEY\s*=\s*["']{2}/.test(distText)) throw new Error(`PostHog dist key is empty: ${path}`)
+  if (!distText.includes('ETUS_AGENT_POSTHOG_KEY')) throw new Error(`PostHog dist key export is missing: ${path}`)
+  if (/ETUS_AGENT_POSTHOG_KEY\s*=\s*["']{2}/.test(distText)) throw new Error(`PostHog dist key is empty: ${path}`)
   if (!distText.includes(projectKey)) throw new Error(`PostHog dist key does not match POSTHOG_PROJECT_KEY: ${path}`)
 }
 
@@ -61,8 +61,8 @@ export function validatePosthogReleaseArtifacts(options = {}) {
   if (!existsSync(servicePath)) throw new Error('analytics service source is missing')
   const serviceText = readFileSync(servicePath, 'utf8')
   if (!serviceText.includes('NoopAnalyticsTransport')) throw new Error('analytics service must preserve NoopAnalyticsTransport')
-  if (serviceText.includes('process.env.AGENT_QA_POSTHOG_KEY')) {
-    throw new Error('analytics runtime must not read process.env.AGENT_QA_POSTHOG_KEY')
+  if (serviceText.includes('process.env.ETUS_AGENT_POSTHOG_KEY')) {
+    throw new Error('analytics runtime must not read process.env.ETUS_AGENT_POSTHOG_KEY')
   }
 }
 

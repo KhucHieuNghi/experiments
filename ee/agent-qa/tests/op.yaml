@@ -1,0 +1,9 @@
+name: OP
+test-id: "t_phon-span-bull-agger-els-listen-liable-gil-ense-left"
+target: "op"
+context: "this is a landing page, please add plan senarios to testing "
+steps:
+  - Navigate to the homepage
+  - Verify the page loads
+  - On navigate click to "Clients & Partners"
+  - "Verify load new page with content on Hero \"Clients & Partners\""

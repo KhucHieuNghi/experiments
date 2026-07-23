@@ -2,16 +2,16 @@ import { readFile } from 'node:fs/promises'
 import { dirname, resolve as resolvePath } from 'node:path'
 import { parse as parseYaml } from 'yaml'
 import pc from 'picocolors'
-import { AgentQaConfigSchema, loadLLMAuthPlugins } from '@etus/agent-qa-core'
-import type { AgentQaConfig } from '@etus/agent-qa-core'
+import { AgentQaConfigSchema, loadLLMAuthPlugins } from '@etus/agent-core'
+import type { AgentQaConfig } from '@etus/agent-core'
 
 const ENV_MAPPING: Record<string, string> = {
-  AGENT_QA_DASHBOARD_PORT: 'services.dashboard.port',
-  AGENT_QA_MCP_PORT: 'services.mcp.port',
-  AGENT_QA_CACHE_DIR: 'services.cache.dir',
-  AGENT_QA_CACHE_TTL: 'services.cache.ttl',
-  AGENT_QA_LOG_LEVEL: 'services.logging.level',
-  AGENT_QA_HEADLESS: 'use.browser.headless',
+  ETUS_AGENT_DASHBOARD_PORT: 'services.dashboard.port',
+  ETUS_AGENT_MCP_PORT: 'services.mcp.port',
+  ETUS_AGENT_CACHE_DIR: 'services.cache.dir',
+  ETUS_AGENT_CACHE_TTL: 'services.cache.ttl',
+  ETUS_AGENT_LOG_LEVEL: 'services.logging.level',
+  ETUS_AGENT_HEADLESS: 'use.browser.headless',
 }
 
 function setNestedValue(obj: Record<string, unknown>, path: string, value: unknown): void {
@@ -28,11 +28,11 @@ function setNestedValue(obj: Record<string, unknown>, path: string, value: unkno
 }
 
 function parseEnvValue(key: string, value: string): unknown {
-  if (key === 'AGENT_QA_DASHBOARD_PORT' || key === 'AGENT_QA_MCP_PORT') {
+  if (key === 'ETUS_AGENT_DASHBOARD_PORT' || key === 'ETUS_AGENT_MCP_PORT') {
     const parsed = Number.parseInt(value, 10)
     if (Number.isInteger(parsed)) return parsed
   }
-  if (key === 'AGENT_QA_HEADLESS') {
+  if (key === 'ETUS_AGENT_HEADLESS') {
     const normalized = value.trim().toLowerCase()
     if (normalized === 'true') return true
     if (normalized === 'false') return false
@@ -203,7 +203,7 @@ export async function resolveConfig(options: {
   flags?: Record<string, unknown>
   loadAuthPlugins?: boolean
 }): Promise<AgentQaConfig> {
-  const configPath = options.configPath ?? 'agent-qa.config.yaml'
+  const configPath = options.configPath ?? 'etus-agent.config.yaml'
   const fileConfig = await loadRequiredConfigFile(configPath)
   const envOverrides = loadEnvOverrides()
   const merged = mergeConfigs(fileConfig, envOverrides, options.flags ?? {})
@@ -232,7 +232,7 @@ export async function resolveConfig(options: {
       : ''
     throw new Error(
       `Config validation failed:\n${messages.join('\n')}\n\n` +
-      `Run 'agent-qa init' to generate a complete config file.` +
+      `Run 'etus-agent init' to generate a complete config file.` +
       dashboardHint
     )
   }

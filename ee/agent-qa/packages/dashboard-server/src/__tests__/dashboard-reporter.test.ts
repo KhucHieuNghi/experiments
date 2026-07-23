@@ -1,10 +1,10 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
-import { isCanonicalRunId } from '@etus/agent-qa-ids'
+import { isCanonicalRunId } from '@etus/agent-ids'
 import { join } from 'node:path'
 import { DashboardReporter } from '../reporter/dashboard-reporter.js'
 import { DashboardDatabase } from '../db/database.js'
-import { generateFailureSummary, SecretRedactor, SecretStore } from '@etus/agent-qa-core'
-import type { SuiteDefinition, TestDefinition, StepResult, TestResult, RunSummary } from '@etus/agent-qa-core'
+import { generateFailureSummary, SecretRedactor, SecretStore } from '@etus/agent-core'
+import type { SuiteDefinition, TestDefinition, StepResult, TestResult, RunSummary } from '@etus/agent-core'
 
 vi.mock('node:fs/promises', () => ({
   copyFile: vi.fn().mockResolvedValue(undefined),
@@ -17,14 +17,14 @@ vi.mock('node:fs/promises', () => ({
 let db: DashboardDatabase
 let reporter: DashboardReporter
 const reporterEnvKeys = [
-  'AGENT_QA_SUITE_QUEUE_ID',
-  'AGENT_QA_PARENT_RUN_ID',
-  'AGENT_QA_ATTEMPT_NUMBER',
-  'AGENT_QA_MAX_RETRIES',
-  'AGENT_QA_RUN_ATTRIBUTES_JSON',
-  'AGENT_QA_RUN_ID',
-  'AGENT_QA_LLM_MODEL',
-  'AGENT_QA_LLM_PROVIDER',
+  'ETUS_AGENT_SUITE_QUEUE_ID',
+  'ETUS_AGENT_PARENT_RUN_ID',
+  'ETUS_AGENT_ATTEMPT_NUMBER',
+  'ETUS_AGENT_MAX_RETRIES',
+  'ETUS_AGENT_RUN_ATTRIBUTES_JSON',
+  'ETUS_AGENT_RUN_ID',
+  'ETUS_AGENT_LLM_MODEL',
+  'ETUS_AGENT_LLM_PROVIDER',
 ] as const
 const reporterEnvDefaults = Object.fromEntries(reporterEnvKeys.map((key) => [key, process.env[key]])) as Record<(typeof reporterEnvKeys)[number], string | undefined>
 const HOOK_ID = 'h_amber-birch-coral-delta-ember-falcon-garden-harbor-island-jungle'
@@ -139,8 +139,8 @@ describe('DashboardReporter', () => {
 
   it('uses result metadata attributes for onTestEnd-only fallback rows and artifacts', async () => {
     const attributes = {
-      'agent-qa.trigger': 'api',
-      'agent-qa.runner': 'browserstack',
+      'etus-agent.trigger': 'api',
+      'etus-agent.runner': 'browserstack',
       'git.branch': 'phase247-review',
     }
 
@@ -154,13 +154,13 @@ describe('DashboardReporter', () => {
   })
 
   it('stores canonical-root video paths relative to artifactsDir/videos', async () => {
-    reporter = new DashboardReporter({ db, artifactsDir: '/workspace/.agent-qa/artifacts' })
+    reporter = new DashboardReporter({ db, artifactsDir: '/workspace/.etus-agent/artifacts' })
     reporter.onRunStart([makeTest()])
     await reporter.onTestStart!(makeTest(), 'tests/login.yaml')
 
     const runId = db.getRuns()[0].id
     await reporter.onTestEnd!(makeTestResult({
-      videoPath: join('/workspace/.agent-qa/artifacts', 'videos', runId, 'recording.webm'),
+      videoPath: join('/workspace/.etus-agent/artifacts', 'videos', runId, 'recording.webm'),
     }))
 
     const storedRun = db.getRuns()[0]
@@ -169,12 +169,12 @@ describe('DashboardReporter', () => {
 
   it('materializes flat canonical-root videos into the run-id directory', async () => {
     const { mkdir: mkdirMock, rename: renameMock } = await import('node:fs/promises')
-    reporter = new DashboardReporter({ db, artifactsDir: '/workspace/.agent-qa/artifacts' })
+    reporter = new DashboardReporter({ db, artifactsDir: '/workspace/.etus-agent/artifacts' })
     reporter.onRunStart([makeTest()])
     await reporter.onTestStart!(makeTest(), 'tests/login.yaml')
 
     const runId = db.getRuns()[0].id
-    const sourcePath = join('/workspace/.agent-qa/artifacts', 'videos', 'recording.webm')
+    const sourcePath = join('/workspace/.etus-agent/artifacts', 'videos', 'recording.webm')
     await reporter.onTestEnd!(makeTestResult({
       videoPath: sourcePath,
     }))
@@ -182,22 +182,22 @@ describe('DashboardReporter', () => {
     const storedRun = db.getRuns()[0]
     expect(storedRun.videoPath).toBe(`${runId}/recording.webm`)
     expect(mkdirMock).toHaveBeenCalledWith(
-      join('/workspace/.agent-qa/artifacts', 'videos', runId),
+      join('/workspace/.etus-agent/artifacts', 'videos', runId),
       { recursive: true },
     )
     expect(renameMock).toHaveBeenCalledWith(
       sourcePath,
-      join('/workspace/.agent-qa/artifacts', 'videos', runId, 'recording.webm'),
+      join('/workspace/.etus-agent/artifacts', 'videos', runId, 'recording.webm'),
     )
   })
 
   it('preserves absolute video paths outside artifactsDir/videos', async () => {
     const { rename: renameMock } = await import('node:fs/promises')
-    reporter = new DashboardReporter({ db, artifactsDir: '/workspace/.agent-qa/artifacts' })
+    reporter = new DashboardReporter({ db, artifactsDir: '/workspace/.etus-agent/artifacts' })
     reporter.onRunStart([makeTest()])
     await reporter.onTestStart!(makeTest(), 'tests/login.yaml')
 
-    const externalPath = '/tmp/agent-qa-external-video/recording.webm'
+    const externalPath = '/tmp/etus-agent-external-video/recording.webm'
     await reporter.onTestEnd!(makeTestResult({
       videoPath: externalPath,
     }))
@@ -474,16 +474,16 @@ describe('DashboardReporter', () => {
     expect(runs[0].id).toBe(runId)
     expect(runs[0].suiteId).toBe('suite-context')
     expect(runs[0].attributes).toMatchObject({
-      'agent-qa.trigger': 'cli',
-      'agent-qa.runner': 'local',
+      'etus-agent.trigger': 'cli',
+      'etus-agent.runner': 'local',
     })
   })
 
   it('preserves queued run attributes when updating an existing row', async () => {
     const runId = 'r_queue-attrs-alpha-bravo-charlie-delta-echo-foxtrot-golf-hotel-india'
     const attributes = {
-      'agent-qa.trigger': 'api',
-      'agent-qa.runner': 'local',
+      'etus-agent.trigger': 'api',
+      'etus-agent.runner': 'local',
       'git.branch': 'phase223-main',
     }
     db.insertPendingRun({ id: runId, name: 'Queued attrs', attributes })
@@ -515,8 +515,8 @@ describe('DashboardReporter', () => {
     const parentRunId = 'r_suite-attrs-alpha-bravo-charlie-delta-echo-foxtrot-golf-hotel-india'
     const childRunId = 'r_suite-child-alpha-bravo-charlie-delta-echo-foxtrot-golf-hotel-india'
     const attributes = {
-      'agent-qa.trigger': 'cli',
-      'agent-qa.runner': 'local',
+      'etus-agent.trigger': 'cli',
+      'etus-agent.runner': 'local',
       'git.branch': 'phase223-main',
     }
 
@@ -628,8 +628,8 @@ describe('DashboardReporter', () => {
 
   it('creates r_ ids for retry-created child runs', async () => {
     const attributes = {
-      'agent-qa.trigger': 'dashboard',
-      'agent-qa.runner': 'local',
+      'etus-agent.trigger': 'dashboard',
+      'etus-agent.runner': 'local',
       'git.branch': 'phase247-review',
     }
     const parentRunId = db.insertRun({
@@ -640,9 +640,9 @@ describe('DashboardReporter', () => {
       endedAt: '2026-03-01T10:00:01Z',
       attributes,
     })
-    process.env.AGENT_QA_PARENT_RUN_ID = parentRunId
-    process.env.AGENT_QA_ATTEMPT_NUMBER = '2'
-    process.env.AGENT_QA_MAX_RETRIES = '3'
+    process.env.ETUS_AGENT_PARENT_RUN_ID = parentRunId
+    process.env.ETUS_AGENT_ATTEMPT_NUMBER = '2'
+    process.env.ETUS_AGENT_MAX_RETRIES = '3'
 
     await reporter.onTestStart!(makeTest('Retry Test'), 'tests/retry.yaml')
 
@@ -1045,7 +1045,7 @@ describe('DashboardReporter', () => {
           config: {
             rawConfigContent: 'use:\n  authState: demo-acc\n',
             effectiveConfig: { use: { authState: 'demo-acc' } },
-            services: { authState: { dir: '.agent-qa/auth-states' } },
+            services: { authState: { dir: '.etus-agent/auth-states' } },
           },
           source: {
             kind: 'test',
@@ -1075,7 +1075,7 @@ describe('DashboardReporter', () => {
         runId,
         status: 'passed',
         duration: 10,
-        stdout: '/workspace/.agent-qa-auth-state/storage-state.json',
+        stdout: '/workspace/.etus-agent-auth-state/storage-state.json',
         stderr: JSON.stringify(authStatePayload),
         variables: { ACCESS_TOKEN: 'hook-token-secret', SAFE_VALUE: 'visible' },
       })
@@ -1089,7 +1089,7 @@ describe('DashboardReporter', () => {
       expect(serialized).toContain('[auth state redacted]')
       expect(serialized).not.toContain('demo-acc')
       expect(serialized).not.toContain('/internal/auth/staging-web/demo-acc/storage-state.json')
-      expect(serialized).not.toContain('/workspace/.agent-qa-auth-state/storage-state.json')
+      expect(serialized).not.toContain('/workspace/.etus-agent-auth-state/storage-state.json')
       expect(serialized).not.toContain(AUTH_STATE_COOKIE_SECRET)
       expect(serialized).not.toContain(AUTH_STATE_LOCAL_STORAGE_SECRET)
       expect(serialized).not.toContain('hook-token-secret')

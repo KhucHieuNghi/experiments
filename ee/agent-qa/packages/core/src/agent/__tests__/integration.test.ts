@@ -76,7 +76,7 @@ describe('integration: agent loop with FileActionCache', () => {
   let cache: FileActionCache
 
   beforeEach(async () => {
-    cacheDir = await mkdtemp(join(tmpdir(), 'agent-qa-integ-'))
+    cacheDir = await mkdtemp(join(tmpdir(), 'etus-agent-integ-'))
     cache = new FileActionCache({ dir: cacheDir, ttl: '7d' })
   })
 

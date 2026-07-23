@@ -323,8 +323,8 @@ describe('POST run enqueue trigger attributes', () => {
 
     expect(res.status).toBe(202)
     expect(enqueued[0].attributes).toMatchObject({
-      'agent-qa.trigger': 'dashboard',
-      'agent-qa.runner': 'local',
+      'etus-agent.trigger': 'dashboard',
+      'etus-agent.runner': 'local',
     })
   })
 
@@ -335,8 +335,8 @@ describe('POST run enqueue trigger attributes', () => {
 
     expect(res.status).toBe(202)
     expect(enqueued[0].attributes).toMatchObject({
-      'agent-qa.trigger': 'api',
-      'agent-qa.runner': 'local',
+      'etus-agent.trigger': 'api',
+      'etus-agent.runner': 'local',
     })
   })
 
@@ -347,13 +347,13 @@ describe('POST run enqueue trigger attributes', () => {
       triggerSource: 'mcp',
       file: undefined,
       prompt: 'do not copy me',
-      attributes: { 'agent-qa.trigger': 'evil', email: 'user@example.com' },
+      attributes: { 'etus-agent.trigger': 'evil', email: 'user@example.com' },
     })
 
     expect(res.status).toBe(202)
     expect(enqueued[0].attributes).toEqual({
-      'agent-qa.trigger': 'mcp',
-      'agent-qa.runner': 'local',
+      'etus-agent.trigger': 'mcp',
+      'etus-agent.runner': 'local',
     })
   })
 

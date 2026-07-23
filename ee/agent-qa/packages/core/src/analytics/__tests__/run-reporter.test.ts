@@ -154,7 +154,7 @@ describe('AnalyticsRunReporter', () => {
   let identityPath: string
 
   beforeEach(async () => {
-    tempDir = await mkdtemp(join(tmpdir(), 'agent-qa-run-reporter-'))
+    tempDir = await mkdtemp(join(tmpdir(), 'etus-agent-run-reporter-'))
     identityPath = join(tempDir, 'analytics.json')
   })
 
@@ -195,7 +195,7 @@ describe('AnalyticsRunReporter', () => {
 
     expect(transport.events).toHaveLength(1)
     const event = transport.events[0].event
-    expect(event.name).toBe('agent-qa.test_run.completed')
+    expect(event.name).toBe('etus-agent.test_run.completed')
     expect(event.properties).toMatchObject({
       surface: 'cli',
       runtime_context: 'user',
@@ -355,7 +355,7 @@ describe('AnalyticsRunReporter', () => {
         kind: 'suite-parent',
         source: { kind: 'suite', suiteId, name: 'Sensitive Suite Name', filePath: '/private/suite.yaml' },
         runtime: { executionMode: 'parallel' },
-        metadata: { attributes: { 'agent-qa.trigger': 'mcp', 'agent-qa.runner': 'browserstack' } },
+        metadata: { attributes: { 'etus-agent.trigger': 'mcp', 'etus-agent.runner': 'browserstack' } },
       },
     })
     await reporter.onTestStart?.(makeTest(), '/private/tests/sensitive.yaml', {
@@ -379,8 +379,8 @@ describe('AnalyticsRunReporter', () => {
     })
 
     expect(transport.events.map(payload => payload.event.name)).toEqual([
-      'agent-qa.test_run.completed',
-      'agent-qa.suite_run.completed',
+      'etus-agent.test_run.completed',
+      'etus-agent.suite_run.completed',
     ])
     expect(transport.events[0].event.properties.parent_run_id).toBe(parentRunId)
     expect(transport.events[1].event.properties).toMatchObject({

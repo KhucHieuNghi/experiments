@@ -10,7 +10,7 @@ describe('auth store', () => {
   let authPath: string
 
   beforeEach(async () => {
-    tempDir = await mkdtemp(join(tmpdir(), 'agent-qa-test-'))
+    tempDir = await mkdtemp(join(tmpdir(), 'etus-agent-test-'))
     authPath = join(tempDir, 'auth.json')
   })
 

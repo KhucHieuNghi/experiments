@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { resolveTarget, listTargets } from '../targets.js'
-import type { AgentQaConfig } from '@etus/agent-qa-core'
+import type { AgentQaConfig } from '@etus/agent-core'
 
 function makeConfig(targets?: Record<string, unknown>): AgentQaConfig {
   return {

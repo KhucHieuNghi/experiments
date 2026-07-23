@@ -9,7 +9,7 @@ vi.mock('node:child_process', () => ({
 
 vi.mock('node:fs/promises', () => ({
   readFile: vi.fn(),
-  mkdtemp: vi.fn().mockResolvedValue('/tmp/agent-qa-hook-abc123'),
+  mkdtemp: vi.fn().mockResolvedValue('/tmp/etus-agent-hook-abc123'),
   mkdir: vi.fn().mockResolvedValue(undefined),
   rm: vi.fn().mockResolvedValue(undefined),
   writeFile: vi.fn().mockResolvedValue(undefined),
@@ -103,7 +103,7 @@ describe('runHookInSandbox', () => {
       return {} as any
     })
     mockReadFile.mockImplementation((path: any) => {
-      if (String(path).includes('agent-qa.env')) {
+      if (String(path).includes('etus-agent.env')) {
         return Promise.resolve('TOKEN=abc123\nUSER_ID=42\n') as any
       }
       return Promise.reject(Object.assign(new Error('ENOENT'), { code: 'ENOENT' }))
@@ -180,7 +180,7 @@ describe('runHookInSandbox', () => {
     const bindMounts = dockerArgs.filter((a, i) => dockerArgs[i - 1] === '-v')
     const tmpMount = bindMounts.find((m) => m.includes('/tmp:/tmp'))
     expect(tmpMount).toBeDefined()
-    expect(tmpMount).toMatch(/\/tmp\/agent-qa-hook-abc123\/tmp:\/tmp$/)
+    expect(tmpMount).toMatch(/\/tmp\/etus-agent-hook-abc123\/tmp:\/tmp$/)
     expect(dockerArgs).not.toContain('--tmpfs')
   })
 
@@ -193,7 +193,7 @@ describe('runHookInSandbox', () => {
     mockReadFile.mockRejectedValue(Object.assign(new Error('ENOENT'), { code: 'ENOENT' }))
 
     await runHookInSandbox(makeHook())
-    expect(mockMkdir).toHaveBeenCalledWith('/tmp/agent-qa-hook-abc123/tmp', expect.anything())
+    expect(mockMkdir).toHaveBeenCalledWith('/tmp/etus-agent-hook-abc123/tmp', expect.anything())
   })
 
   it('returns failure when container exits non-zero', async () => {
@@ -269,10 +269,10 @@ describe('runHookInSandbox', () => {
 
   it('uses correct runtime command for each runtime', async () => {
     const runtimes: Array<{ runtime: HookDefinition['runtime']; expectedImage: string; expectedCommand: string }> = [
-      { runtime: 'node', expectedImage: 'etus/agent-qa-hook-runner-node', expectedCommand: 'node' },
-      { runtime: 'bun', expectedImage: 'etus/agent-qa-hook-runner-bun', expectedCommand: 'bun' },
-      { runtime: 'python', expectedImage: 'etus/agent-qa-hook-runner-python', expectedCommand: 'python3' },
-      { runtime: 'bash', expectedImage: 'etus/agent-qa-hook-runner-bash', expectedCommand: 'bash' },
+      { runtime: 'node', expectedImage: 'etus/etus-agent-hook-node', expectedCommand: 'node' },
+      { runtime: 'bun', expectedImage: 'etus/etus-agent-hook-bun', expectedCommand: 'bun' },
+      { runtime: 'python', expectedImage: 'etus/etus-agent-hook-python', expectedCommand: 'python3' },
+      { runtime: 'bash', expectedImage: 'etus/etus-agent-hook-bash', expectedCommand: 'bash' },
     ]
 
     for (const { runtime, expectedImage, expectedCommand } of runtimes) {
@@ -329,7 +329,7 @@ describe('runHookInSandbox', () => {
 
     await runHookInSandbox(makeHook(), {
       envVars: {
-        AGENT_QA_AUTH_STATE_STORAGE_STATE_PATH: '/tmp/overridden.json',
+        ETUS_AGENT_AUTH_STATE_STORAGE_STATE_PATH: '/tmp/overridden.json',
       },
       authState: {
         version: 1,
@@ -342,30 +342,30 @@ describe('runHookInSandbox', () => {
     })
 
     expect(mockMkdir).toHaveBeenCalledWith(
-      '/tmp/agent-qa-hook-abc123/.agent-qa-auth-state',
+      '/tmp/etus-agent-hook-abc123/.etus-agent-auth-state',
       expect.anything(),
     )
     expect(mockCp).toHaveBeenCalledWith(
       '/internal/auth/staging-web/admin.json',
-      '/tmp/agent-qa-hook-abc123/.agent-qa-auth-state/storage-state.json',
+      '/tmp/etus-agent-hook-abc123/.etus-agent-auth-state/storage-state.json',
     )
 
     const eFlags = dockerArgs.reduce<string[]>((acc, val, i) => {
       if (val === '-e') acc.push(dockerArgs[i + 1])
       return acc
     }, [])
-    const pathEnv = eFlags.find((item) => item.startsWith('AGENT_QA_AUTH_STATE_STORAGE_STATE_PATH='))
-    const jsonEnv = eFlags.find((item) => item.startsWith('AGENT_QA_AUTH_STATE_JSON='))
-    expect(pathEnv).toBe('AGENT_QA_AUTH_STATE_STORAGE_STATE_PATH=/workspace/.agent-qa-auth-state/storage-state.json')
+    const pathEnv = eFlags.find((item) => item.startsWith('ETUS_AGENT_AUTH_STATE_STORAGE_STATE_PATH='))
+    const jsonEnv = eFlags.find((item) => item.startsWith('ETUS_AGENT_AUTH_STATE_JSON='))
+    expect(pathEnv).toBe('ETUS_AGENT_AUTH_STATE_STORAGE_STATE_PATH=/workspace/.etus-agent-auth-state/storage-state.json')
     expect(jsonEnv).toBeDefined()
     expect(JSON.stringify(eFlags)).not.toContain('/internal/auth/staging-web/admin.json')
-    expect(JSON.parse(jsonEnv!.slice('AGENT_QA_AUTH_STATE_JSON='.length))).toEqual({
+    expect(JSON.parse(jsonEnv!.slice('ETUS_AGENT_AUTH_STATE_JSON='.length))).toEqual({
       version: 1,
       kind: 'web',
       target: 'staging-web',
       name: 'admin',
       capturedAt: '2026-05-17T00:00:00.000Z',
-      storageStatePath: '/workspace/.agent-qa-auth-state/storage-state.json',
+      storageStatePath: '/workspace/.etus-agent-auth-state/storage-state.json',
     })
   })
 
@@ -387,8 +387,8 @@ describe('runHookInSandbox', () => {
       if (val === '-e') acc.push(dockerArgs[i + 1])
       return acc
     }, [])
-    expect(eFlags.join('\n')).not.toContain('AGENT_QA_AUTH_STATE_JSON')
-    expect(eFlags.join('\n')).not.toContain('AGENT_QA_AUTH_STATE_STORAGE_STATE_PATH')
+    expect(eFlags.join('\n')).not.toContain('ETUS_AGENT_AUTH_STATE_JSON')
+    expect(eFlags.join('\n')).not.toContain('ETUS_AGENT_AUTH_STATE_STORAGE_STATE_PATH')
   })
 
   it('filters reserved auth-state variables emitted by hooks', async () => {
@@ -402,11 +402,11 @@ describe('runHookInSandbox', () => {
       return {} as any
     })
     mockReadFile.mockImplementation((path: any) => {
-      if (String(path).includes('agent-qa.env')) {
+      if (String(path).includes('etus-agent.env')) {
         return Promise.resolve([
           'SAFE=value',
-          'AGENT_QA_AUTH_STATE_JSON={"name":"bad"}',
-          'AGENT_QA_AUTH_STATE_STORAGE_STATE_PATH=/tmp/bad.json',
+          'ETUS_AGENT_AUTH_STATE_JSON={"name":"bad"}',
+          'ETUS_AGENT_AUTH_STATE_STORAGE_STATE_PATH=/tmp/bad.json',
           '',
         ].join('\n')) as any
       }
@@ -429,10 +429,10 @@ describe('runHookInSandbox', () => {
         cb(
           Object.assign(new Error('exit'), { code: 1 }),
           [
-            '/workspace/.agent-qa-auth-state/storage-state.json',
+            '/workspace/.etus-agent-auth-state/storage-state.json',
             storageStateJson,
           ].join('\n'),
-          'AGENT_QA_AUTH_STATE_JSON={"name":"admin","storageStatePath":"/workspace/.agent-qa-auth-state/storage-state.json"}',
+          'ETUS_AGENT_AUTH_STATE_JSON={"name":"admin","storageStatePath":"/workspace/.etus-agent-auth-state/storage-state.json"}',
         )
       } else {
         cb(null, '', '')
@@ -455,11 +455,11 @@ describe('runHookInSandbox', () => {
     const serialized = JSON.stringify(result)
     expect(result.success).toBe(false)
     expect(serialized).toContain('[auth state redacted]')
-    expect(serialized).not.toContain('/workspace/.agent-qa-auth-state/storage-state.json')
+    expect(serialized).not.toContain('/workspace/.etus-agent-auth-state/storage-state.json')
     expect(serialized).not.toContain('/internal/auth/staging-web/admin.json')
     expect(serialized).not.toContain('hook-cookie-secret')
     expect(serialized).not.toContain('hook-local-secret')
-    expect(serialized).not.toContain('AGENT_QA_AUTH_STATE_JSON')
+    expect(serialized).not.toContain('ETUS_AGENT_AUTH_STATE_JSON')
   })
 
   it('overlays secret values over normal env vars in the docker container', async () => {
@@ -501,7 +501,7 @@ describe('runHookInSandbox', () => {
       return {} as any
     })
     mockReadFile.mockImplementation((path: any) => {
-      if (String(path).includes('agent-qa.env')) {
+      if (String(path).includes('etus-agent.env')) {
         return Promise.resolve('LEAKED=runtime-secret\nSAFE=value\n') as any
       }
       return Promise.reject(Object.assign(new Error('ENOENT'), { code: 'ENOENT' }))

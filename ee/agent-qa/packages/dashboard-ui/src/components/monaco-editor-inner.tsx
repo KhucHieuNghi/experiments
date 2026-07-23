@@ -22,13 +22,13 @@ interface MonacoEditorProps {
 let themesRegistered = false
 let yamlCompletionsRegistered = false
 
-function getResolvedTheme(theme: string): 'agent-qa-dark' | 'agent-qa-light' {
+function getResolvedTheme(theme: string): 'etus-agent-dark' | 'etus-agent-light' {
   if (theme === 'system') {
     return window.matchMedia('(prefers-color-scheme: dark)').matches
-      ? 'agent-qa-dark'
-      : 'agent-qa-light'
+      ? 'etus-agent-dark'
+      : 'etus-agent-light'
   }
-  return theme === 'dark' ? 'agent-qa-dark' : 'agent-qa-light'
+  return theme === 'dark' ? 'etus-agent-dark' : 'etus-agent-light'
 }
 
 function MonacoEditorInner({

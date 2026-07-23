@@ -21,12 +21,12 @@ import {
 
 const rootDir = join(dirname(fileURLToPath(import.meta.url)), '..', '..')
 const imageNames = [
-  'etus/agent-qa-web',
-  'etus/agent-qa-android',
-  'etus/agent-qa-hook-runner-node',
-  'etus/agent-qa-hook-runner-bun',
-  'etus/agent-qa-hook-runner-python',
-  'etus/agent-qa-hook-runner-bash',
+  'etus/etus-agent-web',
+  'etus/etus-agent-android',
+  'etus/etus-agent-hook-node',
+  'etus/etus-agent-hook-bun',
+  'etus/etus-agent-hook-python',
+  'etus/etus-agent-hook-bash',
 ]
 const dockerfiles = [
   'docker/Dockerfile.web',
@@ -54,7 +54,7 @@ test('defines the six Docker release images under the etus namespace', () => {
 
 test('normalizes namespace and version inputs for Docker releases', () => {
   assert.equal(normalizeDockerNamespace('etus'), 'etus')
-  assert.throws(() => normalizeDockerNamespace('agent-qa'), /Docker namespace must be etus/)
+  assert.throws(() => normalizeDockerNamespace('etus-agent'), /Docker namespace must be etus/)
   assert.equal(normalizeDockerVersion('0.1.1'), '0.1.1')
   assert.equal(normalizeDockerVersion('v0.1.1'), '0.1.1')
   assert.throws(() => normalizeDockerVersion('1.0.0'), /0\.x\.x/)
@@ -62,14 +62,14 @@ test('normalizes namespace and version inputs for Docker releases', () => {
 })
 
 test('creates immutable version tags and optional latest tag', () => {
-  assert.deepEqual(createDockerTags('etus/agent-qa-web', '0.1.1'), [
-    'etus/agent-qa-web:0.1.1',
-    'etus/agent-qa-web:v0.1.1',
+  assert.deepEqual(createDockerTags('etus/etus-agent-web', '0.1.1'), [
+    'etus/etus-agent-web:0.1.1',
+    'etus/etus-agent-web:v0.1.1',
   ])
-  assert.deepEqual(createDockerTags('etus/agent-qa-web', '0.1.1', { latest: true }), [
-    'etus/agent-qa-web:0.1.1',
-    'etus/agent-qa-web:v0.1.1',
-    'etus/agent-qa-web:latest',
+  assert.deepEqual(createDockerTags('etus/etus-agent-web', '0.1.1', { latest: true }), [
+    'etus/etus-agent-web:0.1.1',
+    'etus/etus-agent-web:v0.1.1',
+    'etus/etus-agent-web:latest',
   ])
 })
 
@@ -77,20 +77,20 @@ test('creates OCI labels for Docker metadata action', () => {
   assert.deepEqual(createDockerLabels({
     title: 'ETUS Web',
     description: 'The self-improving Agentic QA harness with Memory',
-    image: 'etus/agent-qa-web',
+    image: 'etus/etus-agent-web',
     version: '0.1.1',
     revision: 'abc123',
     created: '2026-05-07T00:00:00Z',
-    source: 'https://github.com/etus/agent-qa',
+    source: 'https://github.com/etus/etus-agent',
   }), [
     'org.opencontainers.image.title=ETUS Web',
     'org.opencontainers.image.description=The self-improving Agentic QA harness with Memory',
     'org.opencontainers.image.version=0.1.1',
     'org.opencontainers.image.licenses=SEE LICENSE IN LICENSE.md',
-    'org.opencontainers.image.ref.name=etus/agent-qa-web',
+    'org.opencontainers.image.ref.name=etus/etus-agent-web',
     'org.opencontainers.image.revision=abc123',
     'org.opencontainers.image.created=2026-05-07T00:00:00Z',
-    'org.opencontainers.image.source=https://github.com/etus/agent-qa',
+    'org.opencontainers.image.source=https://github.com/etus/etus-agent',
   ])
 })
 
@@ -104,7 +104,7 @@ test('validates real Docker release files in the repository', () => {
 })
 
 test('fails local validation when release files are missing', async () => {
-  const tempDir = await mkdtemp(join(tmpdir(), 'agent-qa-docker-missing-'))
+  const tempDir = await mkdtemp(join(tmpdir(), 'etus-agent-docker-missing-'))
   try {
     assert.throws(() => validateDockerReleasePlan({ rootDir: tempDir, version: '0.1.1' }), /Docker release files missing/)
     mkdirSync(join(tempDir, 'docker'), { recursive: true })
@@ -127,7 +127,7 @@ test('requires Docker Hub environment for publishing', () => {
     username: 'etus-bot',
   })
   assert.throws(() => assertDockerReleaseEnvironment({ env: { ...goodEnv, DOCKERHUB_TOKEN: '' } }), /DOCKERHUB_TOKEN/)
-  assert.throws(() => assertDockerReleaseEnvironment({ env: { ...goodEnv, DOCKERHUB_NAMESPACE: 'agent-qa' } }), /etus/)
+  assert.throws(() => assertDockerReleaseEnvironment({ env: { ...goodEnv, DOCKERHUB_NAMESPACE: 'etus-agent' } }), /etus/)
 })
 
 test('checks immutable Docker Hub tags and fails closed on collisions or ambiguity', async () => {
@@ -140,7 +140,7 @@ test('checks immutable Docker Hub tags and fails closed on collisions or ambigui
     },
   })
   assert.equal(urls.length, 2)
-  assert.ok(urls.every(url => url.includes('hub.docker.com/v2/repositories/etus/agent-qa-web/tags/')))
+  assert.ok(urls.every(url => url.includes('hub.docker.com/v2/repositories/etus/etus-agent-web/tags/')))
   await assert.rejects(
     checkDockerTagsAbsent([image], '0.1.1', { fetchImpl: async () => ({ status: 200 }) }),
     /docker tag already exists/,
@@ -174,7 +174,7 @@ test('parses Docker release CLI args', () => {
 })
 
 test('writes GitHub Actions outputs for matrix handoff', async () => {
-  const tempDir = await mkdtemp(join(tmpdir(), 'agent-qa-docker-output-'))
+  const tempDir = await mkdtemp(join(tmpdir(), 'etus-agent-docker-output-'))
   try {
     const outputPath = join(tempDir, 'github-output')
     const matrix = getDockerImageMatrix()
@@ -183,7 +183,7 @@ test('writes GitHub Actions outputs for matrix handoff', async () => {
     assert.match(text, /^version=0\.1\.1/m)
     assert.match(text, /^namespace=etus/m)
     assert.match(text, /images<<EOF/)
-    assert.match(text, /"image":"etus\/agent-qa-web"/)
+    assert.match(text, /"image":"etus\/etus-agent-web"/)
   } finally {
     await rm(tempDir, { recursive: true, force: true })
   }
@@ -196,13 +196,13 @@ test('CLI prints a local Docker release plan', async () => {
     output: { write: chunk => { output += chunk } },
   })
   assert.match(output, /"version": "0\.1\.1"/)
-  assert.match(output, /"image": "etus\/agent-qa-web"/)
+  assert.match(output, /"image": "etus\/etus-agent-web"/)
 })
 
 test('Dockerfiles include license metadata and avoid secret build args', () => {
   for (const dockerfile of dockerfiles) {
     const text = readFileSync(join(rootDir, dockerfile), 'utf8')
-    assert.match(text, /COPY LICENSE\.md \/licenses\/agent-qa\/LICENSE\.md/)
+    assert.match(text, /COPY LICENSE\.md \/licenses\/etus-agent\/LICENSE\.md/)
     assert.match(text, /org\.opencontainers\.image\.licenses/)
     assert.match(text, /org\.opencontainers\.image\.vendor="ETUS"/)
     assert.doesNotMatch(text, /ARG .*TOKEN|ARG .*SECRET|build-arg|DOCKERHUB_TOKEN/)

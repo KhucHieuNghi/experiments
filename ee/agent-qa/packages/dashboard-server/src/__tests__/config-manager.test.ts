@@ -22,8 +22,8 @@ const {
   mockGenerateText: vi.fn(),
 }))
 
-vi.mock('@etus/agent-qa-core', async () => {
-  const actual = await vi.importActual<typeof import('@etus/agent-qa-core')>('@etus/agent-qa-core')
+vi.mock('@etus/agent-core', async () => {
+  const actual = await vi.importActual<typeof import('@etus/agent-core')>('@etus/agent-core')
   const { z } = await import('zod')
   const modelConfigBaseSchema = z.object({
     provider: z.enum([
@@ -116,7 +116,7 @@ use:
 beforeEach(async () => {
   dir = join(tmpdir(), `config-manager-test-${Date.now()}`)
   await mkdir(dir, { recursive: true })
-  configPath = join(dir, 'agent-qa.config.yaml')
+  configPath = join(dir, 'etus-agent.config.yaml')
   await writeFile(configPath, SAMPLE_CONFIG)
   manager = new ConfigManager(configPath)
   router = createRouter({
@@ -262,7 +262,7 @@ describe('ConfigManager', () => {
         enabled: true,
         provider: 'local',
         curatorEnabled: true,
-        dir: '.agent-qa/custom-memory',
+        dir: '.etus-agent/custom-memory',
       })
 
       const config = await manager.read()
@@ -270,7 +270,7 @@ describe('ConfigManager', () => {
         enabled: true,
         provider: 'local',
         curatorEnabled: true,
-        dir: '.agent-qa/custom-memory',
+        dir: '.etus-agent/custom-memory',
       })
     })
 

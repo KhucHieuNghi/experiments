@@ -95,14 +95,14 @@ export function buildReleaseDryRunPlan(options = {}) {
       })),
     },
     subscriptionAuth: {
-      package: '@etus/agent-qa-subscription-auth',
+      package: '@etus/agent-subscription-auth',
       status: 'dispatched_from_main_release_workflow',
-      note: `agent-qa/.github/workflows/release.yml dispatches the subscription-auth release workflow at ${targetVersion} after npm packages and before Docker.`,
+      note: `etus-agent/.github/workflows/release.yml dispatches the subscription-auth release workflow at ${targetVersion} after npm packages and before Docker.`,
     },
     githubRelease: {
-      repository: 'etus/agent-qa',
+      repository: 'etus/etus-agent',
       tag: `v${targetVersion}`,
-      title: `agent-qa v${targetVersion}`,
+      title: `etus-agent v${targetVersion}`,
       status: 'created_or_updated_after_package_release',
       notes: 'GitHub-generated release notes plus stable public footer',
       note: `Created or updated after npm and subscription auth publish complete for ${targetVersion}; Docker publish continues separately.`,
@@ -143,7 +143,7 @@ export function parseDryRunArgs(argv = []) {
 
 function renderText(plan) {
   const lines = [
-    'agent-qa release dry-run',
+    'etus-agent release dry-run',
     '',
     `Bump: ${plan.bump}`,
     `Version: ${plan.currentVersion} -> ${plan.targetVersion}`,

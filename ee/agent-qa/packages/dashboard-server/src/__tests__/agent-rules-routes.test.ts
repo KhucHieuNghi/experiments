@@ -7,7 +7,7 @@ import { tmpdir } from 'node:os'
 import { DashboardDatabase } from '../db/database.js'
 import { ConfigManager } from '../config/config-manager.js'
 import { createRouter } from '../server/routes.js'
-import { resolveWorkspacePaths, type ResolvedWorkspacePaths } from '@etus/agent-qa-core'
+import { resolveWorkspacePaths, type ResolvedWorkspacePaths } from '@etus/agent-core'
 
 let db: DashboardDatabase
 let router: ReturnType<typeof createRouter>
@@ -101,7 +101,7 @@ async function invokeRoute(
 async function startRouter(configContent: string) {
   tmpDir = await mkdtemp(join(tmpdir(), 'agent-rules-test-'))
   const normalizedConfigContent = withRequiredWorkspaceConfig(configContent)
-  const configPath = join(tmpDir, 'agent-qa.config.yaml')
+  const configPath = join(tmpDir, 'etus-agent.config.yaml')
   await writeFile(configPath, normalizedConfigContent, 'utf-8')
 
   db = new DashboardDatabase({ dbPath: ':memory:' })
@@ -244,7 +244,7 @@ describe('Agent Rules API', () => {
     '../outside.md',
     'nested/rules.md',
     'nested\\rules.md',
-    '/tmp/agent-qa-rules-outside.md',
+    '/tmp/etus-agent-rules-outside.md',
   ])('POST /create rejects unsafe fileName %s', async (fileName) => {
     await startRouter(TEST_LLM_CONFIG)
     const res = await invokeRoute('/api/agent-rules/create', {

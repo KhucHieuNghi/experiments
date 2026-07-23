@@ -11,7 +11,7 @@ import {
   scanContent,
   type BaseObservation,
   type SuiteObservation,
-} from '@etus/agent-qa-core'
+} from '@etus/agent-core'
 import { parse as parseYaml } from 'yaml'
 
 import type { ConfigManager } from '../config/index.js'
@@ -326,7 +326,7 @@ export class MemoryCatalogManager {
     const workspacePaths = configResult.success
       ? resolveWorkspacePaths({
           config: configResult.data,
-          configPath: this.configPath ? resolve(this.configPath) : resolve(workspaceDir, 'agent-qa.config.yaml'),
+          configPath: this.configPath ? resolve(this.configPath) : resolve(workspaceDir, 'etus-agent.config.yaml'),
         })
       : null
     const [testFiles, suiteFiles] = workspacePaths

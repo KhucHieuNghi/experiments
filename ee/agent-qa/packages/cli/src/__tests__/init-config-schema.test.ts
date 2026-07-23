@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { AgentQaConfigSchema } from '@etus/agent-qa-core'
+import { AgentQaConfigSchema } from '@etus/agent-core'
 import { buildDefaultConfig } from '../commands/init.js'
 
 const SCREENSHOT_SIZE_BYTES = 50 * 1024
@@ -34,10 +34,10 @@ describe('init generated config schema compatibility', () => {
       const parsed = parseGeneratedConfig(config)
       expectCompressionDefaults(config)
       expect(parsed.services?.recording?.enabled).toBe(true)
-      expect(parsed.services?.authState?.dir).toBe('.agent-qa/auth-states')
+      expect(parsed.services?.authState?.dir).toBe('.etus-agent/auth-states')
       expect(parsed.services?.memory?.enabled).toBe(true)
       expect(parsed.services?.memory?.provider).toBe('local')
-      expect(parsed.services?.memory?.dir).toBe('agent-qa-memory')
+      expect(parsed.services?.memory?.dir).toBe('etus-agent-memory')
       expect(parsed.use?.timeout?.step).toBe(300000)
       expect(parsed.use?.timeout?.test).toBe(1800000)
       expect(parsed.use?.timeout?.navigation).toBe(60000)
@@ -63,10 +63,10 @@ describe('init generated config schema compatibility', () => {
     const parsed = parseGeneratedConfig(config)
     expect(parsed.use?.llm).toBe('codex')
     expect(parsed.services?.recording?.enabled).toBe(true)
-    expect(parsed.services?.authState?.dir).toBe('.agent-qa/auth-states')
+    expect(parsed.services?.authState?.dir).toBe('.etus-agent/auth-states')
     expect(parsed.services?.memory?.enabled).toBe(true)
     expect(parsed.services?.memory?.provider).toBe('local')
-    expect(parsed.services?.memory?.dir).toBe('agent-qa-memory')
+    expect(parsed.services?.memory?.dir).toBe('etus-agent-memory')
     expect(parsed.use?.timeout?.step).toBe(300000)
     expect(parsed.use?.timeout?.test).toBe(1800000)
     expect(parsed.use?.timeout?.navigation).toBe(60000)
@@ -75,7 +75,7 @@ describe('init generated config schema compatibility', () => {
     expect(parsed.use?.logCapture?.network).toBe(true)
     expect(parsed.use?.parallel).toBe(false)
     expect(parsed.plugins?.auth).toEqual([
-      { package: '@etus/agent-qa-subscription-auth' },
+      { package: '@etus/agent-subscription-auth' },
     ])
     for (const llm of parsed.registry?.llms ?? []) {
       expect(llm.screenshotSize).toBe(SCREENSHOT_SIZE_BYTES)

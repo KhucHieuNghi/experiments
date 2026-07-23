@@ -188,7 +188,7 @@ describe('HookViewerPage Run tab', () => {
       variables: { TOKEN: 'abc' },
       sandbox: {
         runtime: 'bun',
-        image: 'etus/agent-qa-hook-runner-bun',
+        image: 'etus/etus-agent-hook-bun',
         networkMode: 'enabled',
         dockerVersion: null,
         networkLogsAvailable: false,
@@ -341,7 +341,7 @@ describe('HookViewerPage Run tab', () => {
       await Promise.resolve()
     })
     expect(container.textContent).toContain('Bun')
-    expect(container.textContent).toContain('etus/agent-qa-hook-runner-bun')
+    expect(container.textContent).toContain('etus/etus-agent-hook-bun')
     expect(container.textContent).toContain('enabled')
     expect(container.textContent).toContain("Network logs aren't available for this runtime yet.")
     expect(buttonsByText('Network')).toHaveLength(0)
@@ -362,7 +362,7 @@ describe('HookViewerPage Run tab', () => {
       variables: { TOKEN: 'abc' },
       sandbox: {
         runtime: 'bun',
-        image: 'etus/agent-qa-hook-runner-bun',
+        image: 'etus/etus-agent-hook-bun',
         networkMode: 'enabled',
         dockerVersion: '28.0.4',
         networkLogsAvailable: true,
@@ -449,7 +449,7 @@ describe('HookViewerPage Run tab', () => {
       variables: {},
       sandbox: {
         runtime: 'bun',
-        image: 'etus/agent-qa-hook-runner-bun',
+        image: 'etus/etus-agent-hook-bun',
         networkMode: 'enabled',
         dockerVersion: '28.0.4',
         networkLogsAvailable: false,

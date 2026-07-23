@@ -52,11 +52,11 @@ const {
 
 vi.mock('glob', () => ({ glob: mockGlob }))
 
-vi.mock('@etus/agent-qa-core', () => ({
-  DEFAULT_AGENT_QA_ARTIFACTS_DIR: '.agent-qa/artifacts',
-  DEFAULT_AGENT_QA_CACHE_DIR: '.agent-qa/cache',
-  DEFAULT_AGENT_QA_SCREENSHOTS_DIR: '.agent-qa/artifacts/screenshots',
-  DEFAULT_AGENT_QA_VIDEOS_DIR: '.agent-qa/artifacts/videos',
+vi.mock('@etus/agent-core', () => ({
+  DEFAULT_ETUS_AGENT_ARTIFACTS_DIR: '.etus-agent/artifacts',
+  DEFAULT_ETUS_AGENT_CACHE_DIR: '.etus-agent/cache',
+  DEFAULT_ETUS_AGENT_SCREENSHOTS_DIR: '.etus-agent/artifacts/screenshots',
+  DEFAULT_ETUS_AGENT_VIDEOS_DIR: '.etus-agent/artifacts/videos',
   AUTH_STATE_SCHEMA_VERSION: 1,
   parseAllTests: mockParseAllTests,
   formatParseError: vi.fn((err: any) => `${err.file}:${err.line}:${err.column}: ${err.message}`),
@@ -163,7 +163,7 @@ vi.mock('@etus/agent-qa-core', () => ({
   shouldAblate: vi.fn(() => false),
   collectAllInjectedIds: vi.fn(() => new Map()),
   createMemoryProvider: vi.fn(),
-  resolveMemoryRoot: vi.fn((_config: unknown, configDir: string) => `${configDir}/agent-qa-memory`),
+  resolveMemoryRoot: vi.fn((_config: unknown, configDir: string) => `${configDir}/etus-agent-memory`),
   generateRunId: vi.fn(() => 'r_able-baker-charlie-delta-echo-foxtrot-golf-hotel-india-juliet'),
   resolveWorkspacePaths: vi.fn(({ config, configPath }: any) => {
     const configDir = String(configPath).includes('/')
@@ -245,8 +245,8 @@ vi.mock('@etus/agent-qa-core', () => ({
   }),
   parseRunAttrFlags: vi.fn(() => ({ attributes: {}, duplicateKeys: [] })),
   buildInternalRunAttributes: vi.fn(({ trigger, runner }: { trigger: string; runner: string }) => ({
-    'agent-qa.trigger': trigger,
-    'agent-qa.runner': runner,
+    'etus-agent.trigger': trigger,
+    'etus-agent.runner': runner,
   })),
   mergeRunAttributes: vi.fn((internal: Record<string, string>, user: Record<string, string>) => ({
     ...internal,
@@ -261,7 +261,7 @@ vi.mock('@etus/agent-qa-core', () => ({
   isPathInsideDir: vi.fn((candidatePath: string) => !candidatePath.includes('..')),
 }))
 
-vi.mock('@etus/agent-qa-web', () => ({
+vi.mock('@etus/agent-web', () => ({
   WebPlatformAdapter: vi.fn(function () {
     return {
       setup: vi.fn(),
@@ -301,7 +301,7 @@ function defaultConfig() {
       secretsFile: '.secrets.local',
     },
     services: {
-      cache: { dir: '.agent-qa/cache', ttl: '7d' },
+      cache: { dir: '.etus-agent/cache', ttl: '7d' },
       logging: { level: 'warn' },
     },
     registry: {
@@ -381,7 +381,7 @@ beforeEach(async () => {
   errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
 
   originalCwd = process.cwd()
-  tempDir = await mkdtemp(path.join(tmpdir(), 'agent-qa-run-hook-ids-'))
+  tempDir = await mkdtemp(path.join(tmpdir(), 'etus-agent-run-hook-ids-'))
   await writeFile(path.join(tempDir, 'hooks.yaml'), 'hooks: []\n', 'utf-8')
   await writeFile(path.join(tempDir, 'agent-rules.md'), '', 'utf-8')
   await writeFile(path.join(tempDir, '.env'), '', 'utf-8')
@@ -399,14 +399,14 @@ afterEach(async () => {
 
 async function runCommand(...args: string[]) {
   const program = new Command()
-  program.option('--config <path>', 'config file path', 'agent-qa.config.yaml')
+  program.option('--config <path>', 'config file path', 'etus-agent.config.yaml')
   program.option('--log-level <level>', 'log verbosity: silent|error|warn|info|debug')
   program.option('--verbose', 'shorthand for --log-level debug')
   program.option('--quiet', 'shorthand for --log-level silent')
   program.addCommand(createRunCommand())
 
   try {
-    await program.parseAsync(['node', 'agent-qa', 'run', ...args])
+    await program.parseAsync(['node', 'etus-agent', 'run', ...args])
   } catch (err) {
     if ((err as Error).message !== 'process.exit') throw err
   }

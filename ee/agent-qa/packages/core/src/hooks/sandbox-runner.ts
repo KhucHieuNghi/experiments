@@ -63,7 +63,7 @@ export async function runHookInSandbox(
 
   let workDir: string | undefined
   try {
-    workDir = await mkdtemp(join(tmpdir(), 'agent-qa-hook-'))
+    workDir = await mkdtemp(join(tmpdir(), 'etus-agent-hook-'))
     await mkdir(join(workDir, 'tmp'), { recursive: true })
 
     await cp(hook.file, join(workDir, basename(hook.file)))
@@ -98,7 +98,7 @@ export async function runHookInSandbox(
 
     let variables: Record<string, string> = {}
     try {
-      const envContent = await readFile(join(workDir, 'tmp', 'agent-qa.env'), 'utf-8')
+      const envContent = await readFile(join(workDir, 'tmp', 'etus-agent.env'), 'utf-8')
       variables = parseEnvFile(envContent)
     } catch {
       // Hook did not write .env file -- no variables to extract

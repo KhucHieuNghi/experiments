@@ -12,7 +12,7 @@ import { ConfigManager } from '../config/config-manager.js'
 import { createRouter } from '../server/routes.js'
 import { SuiteFileManager } from '../tests/suite-file-manager.js'
 import { TestFileManager } from '../tests/test-file-manager.js'
-import { resolveWorkspacePaths, type ResolvedWorkspacePaths } from '@etus/agent-qa-core'
+import { resolveWorkspacePaths, type ResolvedWorkspacePaths } from '@etus/agent-core'
 
 interface MockResponse {
   status: number
@@ -182,7 +182,7 @@ async function createSuiteWorkspace(): Promise<{
   suiteFileManager: SuiteFileManager
   testFileManager: TestFileManager
 }> {
-  const dir = await mkdtemp(join(tmpdir(), `agent-qa-suite-analytics-${randomUUID()}-`))
+  const dir = await mkdtemp(join(tmpdir(), `etus-agent-suite-analytics-${randomUUID()}-`))
   tempDirs.push(dir)
   await mkdir(join(dir, 'tests'), { recursive: true })
   await mkdir(join(dir, 'suites'), { recursive: true })
@@ -230,7 +230,7 @@ async function createSuiteWorkspace(): Promise<{
         secretsFile: '.env.secrets.local',
       },
     },
-    configPath: join(dir, 'agent-qa.config.yaml'),
+    configPath: join(dir, 'etus-agent.config.yaml'),
   })
   const testFileManager = new TestFileManager(workspacePaths)
   const suiteFileManager = new SuiteFileManager(workspacePaths, testFileManager)
@@ -239,9 +239,9 @@ async function createSuiteWorkspace(): Promise<{
 }
 
 async function applyAnalyticsScopeConfig(content: string): Promise<void> {
-  const configDir = await mkdtemp(join(tmpdir(), `agent-qa-suite-scope-${randomUUID()}-`))
+  const configDir = await mkdtemp(join(tmpdir(), `etus-agent-suite-scope-${randomUUID()}-`))
   tempDirs.push(configDir)
-  const configPath = join(configDir, 'agent-qa.config.yaml')
+  const configPath = join(configDir, 'etus-agent.config.yaml')
   await writeFile(configPath, [
     'workspace:',
     '  testMatch:',

@@ -5,7 +5,7 @@ import { createRoot, type Root } from 'react-dom/client'
 import { MemoryRouter, Route, Routes, useLocation } from 'react-router'
 import { toast } from 'sonner'
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { APPROVED_SAAS_PLACEHOLDER_SLUGS } from '@etus/agent-qa-ids'
+import { APPROVED_SAAS_PLACEHOLDER_SLUGS } from '@etus/agent-ids'
 
 import {
   exchangePluginAuthCode,
@@ -39,10 +39,10 @@ const { sampleConfig } = vi.hoisted(() => ({
   services: {
     dashboard: {
       port: 4173,
-      dbPath: '.agent-qa/runs.db',
-      artifactsDir: '.agent-qa/artifacts',
+      dbPath: '.etus-agent/runs.db',
+      artifactsDir: '.etus-agent/artifacts',
     },
-    cache: { dir: '.agent-qa/cache', ttl: '7d' },
+    cache: { dir: '.etus-agent/cache', ttl: '7d' },
     logging: { level: 'info' },
     recording: { enabled: true },
     accessibility: {
@@ -54,7 +54,7 @@ const { sampleConfig } = vi.hoisted(() => ({
     memory: {
       enabled: true,
       provider: 'local',
-      dir: 'agent-qa-memory',
+      dir: 'etus-agent-memory',
       minTrust: 0.3,
       maxInjections: 3,
       curatorEnabled: true,
@@ -602,7 +602,7 @@ describe('ConfigPage schema-driven shell', () => {
 
     const dbPathInput = document.body.querySelector('#dashboard-db-path') as HTMLInputElement | null
     expect(dbPathInput).not.toBeNull()
-    expect(dbPathInput?.placeholder).toBe('.agent-qa/runs.db')
+    expect(dbPathInput?.placeholder).toBe('.etus-agent/runs.db')
     expect(view.textContent).not.toContain('Tests Directory')
     expect(document.body.querySelector('#dashboard-tests-dir')).toBeNull()
 
@@ -617,7 +617,7 @@ describe('ConfigPage schema-driven shell', () => {
     expect(view.querySelector('[data-testid="location"]')?.getAttribute('data-search')).toBe('?bucket=services&item=cache')
     const cacheDirInput = document.body.querySelector('#cache-dir') as HTMLInputElement | null
     expect(cacheDirInput).not.toBeNull()
-    expect(cacheDirInput?.placeholder).toBe('.agent-qa/cache')
+    expect(cacheDirInput?.placeholder).toBe('.etus-agent/cache')
   })
 
   it('renders Auth States as a list-only Services destination without secret details', async () => {
@@ -629,7 +629,7 @@ describe('ConfigPage schema-driven shell', () => {
           target: 'staging-web',
           name: 'admin',
           capturedAt: '2026-05-17T10:00:00.000Z',
-          storageStatePath: '.agent-qa/auth-states/staging-web/admin/storage-state.json',
+          storageStatePath: '.etus-agent/auth-states/staging-web/admin/storage-state.json',
           payload: { cookies: [{ name: 'sid', value: 'secret-session' }] },
           localStorage: 'unsafe-storage-value',
           indexedDB: 'unsafe-indexed-db',
@@ -666,7 +666,7 @@ describe('ConfigPage schema-driven shell', () => {
       'Rename',
       'Reveal path',
       'View payload',
-      '.agent-qa/auth-states',
+      '.etus-agent/auth-states',
       'storage-state.json',
       'secret-session',
       'unsafe-storage-value',
@@ -706,11 +706,11 @@ describe('ConfigPage schema-driven shell', () => {
 
     const memoryDirInput = document.body.querySelector('#memory-dir') as HTMLInputElement | null
     expect(memoryDirInput).not.toBeNull()
-    expect(memoryDirInput?.placeholder).toBe('agent-qa-memory')
-    expect(memoryDirInput?.value).toBe('agent-qa-memory')
+    expect(memoryDirInput?.placeholder).toBe('etus-agent-memory')
+    expect(memoryDirInput?.value).toBe('etus-agent-memory')
 
     await act(async () => {
-      setInputValue(memoryDirInput!, '.agent-qa/custom-memory')
+      setInputValue(memoryDirInput!, '.etus-agent/custom-memory')
     })
     await flushRender()
 
@@ -723,7 +723,7 @@ describe('ConfigPage schema-driven shell', () => {
       'services.memory': {
         enabled: true,
         provider: 'local',
-        dir: '.agent-qa/custom-memory',
+        dir: '.etus-agent/custom-memory',
         minTrust: 0.3,
         maxInjections: 3,
         curatorEnabled: true,

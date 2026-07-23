@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest'
-import { isCanonicalRunId } from '@etus/agent-qa-ids'
-import { createBetterSqlite3Database } from '@etus/agent-qa-core'
+import { isCanonicalRunId } from '@etus/agent-ids'
+import { createBetterSqlite3Database } from '@etus/agent-core'
 import { existsSync, mkdtempSync, rmSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
@@ -198,15 +198,15 @@ describe('DashboardDatabase', () => {
       expect(timeout).toBe(5000)
     })
 
-    it('uses .agent-qa/runs.db as the default database path', () => {
-      const workspaceDir = mkdtempSync(join(tmpdir(), 'agent-qa-dashboard-db-default-'))
+    it('uses .etus-agent/runs.db as the default database path', () => {
+      const workspaceDir = mkdtempSync(join(tmpdir(), 'etus-agent-dashboard-db-default-'))
       const originalCwd = process.cwd()
       let defaultDb: DashboardDatabase | undefined
       try {
         process.chdir(workspaceDir)
         defaultDb = new DashboardDatabase()
         defaultDb.close()
-        expect(existsSync(join(workspaceDir, '.agent-qa', 'runs.db'))).toBe(true)
+        expect(existsSync(join(workspaceDir, '.etus-agent', 'runs.db'))).toBe(true)
       } finally {
         defaultDb?.close()
         process.chdir(originalCwd)

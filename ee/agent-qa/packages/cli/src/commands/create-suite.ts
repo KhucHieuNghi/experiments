@@ -1,5 +1,5 @@
 import { Command } from 'commander'
-import { generateSuiteId } from '@etus/agent-qa-ids'
+import { generateSuiteId } from '@etus/agent-ids'
 import { stringify } from 'yaml'
 import { writeFile, mkdir } from 'node:fs/promises'
 import { existsSync } from 'node:fs'

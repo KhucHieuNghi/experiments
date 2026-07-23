@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ETUS - AI-Powered QA Agent</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+  <div class="docs-layout">
+    <aside class="docs-sidebar">
+      <div class="docs-logo">ETUS <span>docs</span></div>
+      <nav class="docs-nav">
+        <div class="docs-nav-group">
+          <div class="docs-nav-label">Getting Started</div>
+          <a href="index.html">Overview</a>
+          <a href="quickstart.html">Quickstart</a>
+        </div>
+        <div class="docs-nav-group">
+          <div class="docs-nav-label">Core Concepts</div>
+          <a href="configuration.html">Configuration</a>
+          <a href="tests.html">Tests</a>
+          <a href="suites.html">Suites</a>
+          <a href="hooks.html">Hooks</a>
+        </div>
+        <div class="docs-nav-group">
+          <div class="docs-nav-label">Features</div>
+          <a href="memory.html">Memory</a>
+          <a href="caching.html">Caching</a>
+          <a href="web-testing.html">Web Testing</a>
+          <a href="auth-state.html">Auth State</a>
+        </div>
+        <div class="docs-nav-group">
+          <div class="docs-nav-label">Reference</div>
+          <a href="cli.html">CLI Commands</a>
+          <a href="env-vars.html">Environment Variables</a>
+        </div>
+      </nav>
+    </aside>
+    <main class="docs-main">
+      <button class="docs-menu-btn">Menu</button>
+
+      <h1>What is ETUS</h1>
+      <p class="docs-subtitle">An AI-powered QA agent that writes, runs, and improves end-to-end tests using natural language. Bring your own LLM, describe what to test, and let ETUS handle the rest.</p>
+
+      <div class="docs-card-grid">
+        <a class="docs-card" href="quickstart.html">
+          <h3>Quickstart</h3>
+          <p>Install ETUS and run your first test in under five minutes.</p>
+        </a>
+        <a class="docs-card" href="configuration.html">
+          <h3>Configuration</h3>
+          <p>File-backed config with layered resolution from global to per-test.</p>
+        </a>
+        <a class="docs-card" href="memory.html">
+          <h3>Memory</h3>
+          <p>Persistent observations that make your agent smarter over time.</p>
+        </a>
+        <a class="docs-card" href="caching.html">
+          <h3>Caching</h3>
+          <p>Action plan caching for 5x faster runs and 3x fewer tokens.</p>
+        </a>
+        <a class="docs-card" href="tests.html">
+          <h3>Tests</h3>
+          <p>Write natural language test steps in simple YAML files.</p>
+        </a>
+        <a class="docs-card" href="web-testing.html">
+          <h3>Web Testing</h3>
+          <p>Playwright-based browser automation with smart waits and accessibility.</p>
+        </a>
+        <a class="docs-card" href="auth-state.html">
+          <h3>Auth State</h3>
+          <p>Capture login once, reuse by name, keep credentials out of artifacts.</p>
+        </a>
+        <a class="docs-card" href="suites.html">
+          <h3>Suites</h3>
+          <p>Group tests with shared hooks and configuration overrides.</p>
+        </a>
+        <a class="docs-card" href="hooks.html">
+          <h3>Hooks</h3>
+          <p>Run sandboxed scripts for setup, teardown, and data generation.</p>
+        </a>
+      </div>
+
+      <hr>
+
+      <h2>How it works</h2>
+      <div class="docs-steps">
+        <div class="docs-step">
+          <h3>Write tests in natural language</h3>
+          <p>Describe user journeys as plain-English steps in YAML. No page objects, no selectors, no brittle locator chains.</p>
+        </div>
+        <div class="docs-step">
+          <h3>Bring your own LLM</h3>
+          <p>Connect any OpenAI-compatible provider. ETUS orchestrates the model but never locks you into a single vendor.</p>
+        </div>
+        <div class="docs-step">
+          <h3>Run tests</h3>
+          <p>ETUS launches a browser, interprets each step, interacts with the page, and validates outcomes autonomously.</p>
+        </div>
+        <div class="docs-step">
+          <h3>Generate memory</h3>
+          <p>After each run the agent curates observations about your product into a persistent memory layer.</p>
+        </div>
+        <div class="docs-step">
+          <h3>Improve the next run</h3>
+          <p>Memory feeds back into planning so the agent gets faster, more accurate, and more context-aware with every execution. Grow a product-aware QA agent over time.</p>
+        </div>
+      </div>
+
+      <div class="docs-footer">
+        <p>ETUS Documentation</p>
+      </div>
+    </main>
+  </div>
+  <script src="assets/docs.js"></script>
+</body>
+</html>

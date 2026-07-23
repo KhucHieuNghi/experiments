@@ -46,7 +46,7 @@ export function MemorySection({ config, onConfigChange }: MemorySectionProps) {
 
   const [enabled, setEnabled] = useState(memory.enabled ?? true)
   const [provider, setProvider] = useState(memory.provider ?? "local")
-  const [dir, setDir] = useState(memory.dir ?? "agent-qa-memory")
+  const [dir, setDir] = useState(memory.dir ?? "etus-agent-memory")
   const [minTrust, setMinTrust] = useState(String(memory.minTrust ?? 0.3))
   const [maxInjections, setMaxInjections] = useState(String(memory.maxInjections ?? 3))
   const [curatorEnabled, setCuratorEnabled] = useState(memory.curatorEnabled ?? true)
@@ -192,7 +192,7 @@ export function MemorySection({ config, onConfigChange }: MemorySectionProps) {
             <Label htmlFor="memory-dir">Memory Directory</Label>
             <Input
               id="memory-dir"
-              placeholder="agent-qa-memory"
+              placeholder="etus-agent-memory"
               value={dir}
               onChange={(e) => setDir(e.target.value)}
             />

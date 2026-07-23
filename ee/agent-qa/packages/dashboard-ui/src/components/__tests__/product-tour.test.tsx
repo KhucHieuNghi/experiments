@@ -469,7 +469,7 @@ function expectNoDialog() {
 
 function expectNoPrivateTourCopy(rendered: string) {
   const forbiddenCopy = [
-    'agent-qa.config.yaml',
+    'etus-agent.config.yaml',
     'file://',
     'http://localhost',
     'local logs',
@@ -529,7 +529,7 @@ describe('AppLayout product tour integration', () => {
   it('auto-starts the intro card on /runs with no cookie', async () => {
     await renderAppAt('/runs')
 
-    expect(PRODUCT_TOUR_COOKIE).toBe('agent_qa_product_tour_state')
+    expect(PRODUCT_TOUR_COOKIE).toBe('etus_agent_product_tour_state')
     expect(container?.querySelector('[data-testid="runs-page"]')).not.toBeNull()
     expect(dialog()).not.toBeNull()
     expect(dialog()?.getAttribute('aria-modal')).toBe('false')

@@ -12,7 +12,7 @@ import {
   parseSuiteFile,
   resolveMemoryRoot,
   resolveWorkspacePaths,
-} from '@etus/agent-qa-core'
+} from '@etus/agent-core'
 import { resolveConfig } from '../config.js'
 
 interface OrphanInfo {
@@ -74,7 +74,7 @@ export function createCleanMemoryCommand(): Command {
     .option('-y, --yes', 'skip confirmation prompt')
     .action(async (_opts, command) => {
       const opts = command.opts()
-      const configPath = command.parent?.opts()?.config ?? 'agent-qa.config.yaml'
+      const configPath = command.parent?.opts()?.config ?? 'etus-agent.config.yaml'
       const config = await resolveConfig({ configPath })
       const workspace = resolveWorkspacePaths({ config, configPath })
 

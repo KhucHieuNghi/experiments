@@ -33,6 +33,6 @@ export function resolveFarmCredentials(
 
   const displayName = DISPLAY_NAMES[provider] ?? provider
   throw new Error(
-    `${displayName} credentials not found. Set ${envKeys.username} and ${envKeys.accessKey} env vars, or add provider credentials to agent-qa.local.yaml.`,
+    `${displayName} credentials not found. Set ${envKeys.username} and ${envKeys.accessKey} env vars, or add provider credentials to etus-agent.local.yaml.`,
   )
 }

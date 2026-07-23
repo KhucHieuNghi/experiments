@@ -5,8 +5,8 @@ import { getPublicPackages, publicPackageNames } from './packages.mjs'
 import { rewriteInternalWorkspaceRanges } from './version.mjs'
 
 const dependencyBlocks = ['dependencies', 'devDependencies', 'peerDependencies', 'optionalDependencies']
-const entryPackageName = 'agent-qa'
-const requiredCliSkills = ['agent-qa-authoring', 'agent-qa-result-triage', 'agent-qa-debug-fix']
+const entryPackageName = 'etus-agent'
+const requiredCliSkills = ['etus-agent-authoring', 'etus-agent-result-triage', 'etus-agent-debug-fix']
 const sourceOnlyScripts = ['prepack', 'prepare', 'prepublishOnly', 'postpack', 'copy:skills']
 
 function rejectGeneratedOrLocalFiles(path) {
@@ -70,7 +70,7 @@ function validateExactInternalRanges(pkg, targetVersion) {
     const block = pkg[blockName]
     if (!block || typeof block !== 'object') continue
     for (const [name, range] of Object.entries(block)) {
-      if (name.startsWith('@etus/agent-qa-') && range !== targetVersion) {
+      if (name.startsWith('@etus/agent-') && range !== targetVersion) {
         throw new Error(`${pkg.name} ${blockName}.${name} must be exact ${targetVersion}`)
       }
     }

@@ -78,7 +78,7 @@ vi.mock('webdriverio', () => ({
 }))
 
 import { IOSPlatformAdapter } from '../adapter.js'
-import type { PlatformConfig } from '@etus/agent-qa-core'
+import type { PlatformConfig } from '@etus/agent-core'
 import zlib from 'node:zlib'
 
 // --- PNG helpers (avoids adding sharp as ios dep per Pitfall 5) ---

@@ -1,17 +1,17 @@
 export { MCP_STDIO_STARTUP_MESSAGE, createMcpServer, startMcpServer } from './server.js'
 export type { StartMcpServerOptions } from './server.js'
 export {
-  AGENT_QA_SCHEMA_REFERENCES,
+  ETUS_AGENT_SCHEMA_REFERENCES,
   classifyRunFailureFromDashboardData,
   resolveDashboardApiUrl,
   createAgentQaMcpServer,
   validateAgentQaDefinition,
-} from './agent-qa-server.js'
+} from './etus-agent-server.js'
 export type {
   AgentQaMcpServerOptions,
   FailureCategory,
   FailureClassification,
-} from './agent-qa-server.js'
+} from './etus-agent-server.js'
 export {
   SCHEMA_REFERENCE_NAMES,
   VALIDATION_KINDS,

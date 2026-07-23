@@ -4,7 +4,7 @@ import {
   formatAppiumInstallGuidance,
   resolveAppiumExecutable,
   type ResolvedAppiumExecutable,
-} from '@etus/agent-qa-core'
+} from '@etus/agent-core'
 import treeKill from 'tree-kill'
 import pc from 'picocolors'
 

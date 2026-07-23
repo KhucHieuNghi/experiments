@@ -101,11 +101,11 @@ describe('provider dispatch', () => {
       provider: 'anthropic-compatible',
       model: 'claude-compatible',
       baseURL: 'https://remote.example/api/v1/messages',
-      providerHeaders: { 'x-workspace': 'agent-qa' },
+      providerHeaders: { 'x-workspace': 'etus-agent' },
     })
 
     expect(createAnthropic).toHaveBeenCalledWith(expect.objectContaining({
-      headers: { 'x-workspace': 'agent-qa' },
+      headers: { 'x-workspace': 'etus-agent' },
     }))
   })
 
@@ -119,14 +119,14 @@ describe('provider dispatch', () => {
       model: 'claude-compatible',
       baseURL: 'https://remote.example/api/v1/messages',
       apiKey: 'sk-saved',
-      providerHeaders: { 'x-workspace': 'agent-qa' },
+      providerHeaders: { 'x-workspace': 'etus-agent' },
       fetch,
     })
 
     expect(createAnthropic).toHaveBeenCalledWith({
       baseURL: 'https://remote.example/api/v1/messages',
       apiKey: 'sk-saved',
-      headers: { 'x-workspace': 'agent-qa' },
+      headers: { 'x-workspace': 'etus-agent' },
       fetch,
     })
   })
@@ -164,14 +164,14 @@ describe('provider dispatch', () => {
       model: 'deepseek-chat',
       apiKey: 'sk-saved',
       baseURL: 'https://remote.example/api/v1',
-      providerHeaders: { 'x-workspace': 'agent-qa' },
+      providerHeaders: { 'x-workspace': 'etus-agent' },
       fetch,
     })
 
     expect(createOpenAI).toHaveBeenCalledWith({
       apiKey: 'sk-saved',
       baseURL: 'https://remote.example/api/v1',
-      headers: { 'x-workspace': 'agent-qa' },
+      headers: { 'x-workspace': 'etus-agent' },
       fetch,
     })
     expect(chat).toHaveBeenCalledWith('deepseek-chat')

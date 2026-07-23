@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Web Testing - ETUS Documentation</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+  <div class="docs-layout">
+    <aside class="docs-sidebar">
+      <div class="docs-logo">ETUS <span>docs</span></div>
+      <nav class="docs-nav">
+        <div class="docs-nav-group">
+          <div class="docs-nav-label">Getting Started</div>
+          <a href="index.html">Overview</a>
+          <a href="quickstart.html">Quickstart</a>
+        </div>
+        <div class="docs-nav-group">
+          <div class="docs-nav-label">Core Concepts</div>
+          <a href="configuration.html">Configuration</a>
+          <a href="tests.html">Tests</a>
+          <a href="suites.html">Suites</a>
+          <a href="hooks.html">Hooks</a>
+        </div>
+        <div class="docs-nav-group">
+          <div class="docs-nav-label">Features</div>
+          <a href="memory.html">Memory</a>
+          <a href="caching.html">Caching</a>
+          <a href="web-testing.html">Web Testing</a>
+          <a href="auth-state.html">Auth State</a>
+        </div>
+        <div class="docs-nav-group">
+          <div class="docs-nav-label">Reference</div>
+          <a href="cli.html">CLI Commands</a>
+          <a href="env-vars.html">Environment Variables</a>
+        </div>
+      </nav>
+    </aside>
+    <main class="docs-main">
+      <button class="docs-menu-btn">Menu</button>
+      <div class="docs-breadcrumb"><a href="index.html">Docs</a> / Web Testing</div>
+
+      <h1>Web Testing</h1>
+      <p class="docs-subtitle">ETUS uses Playwright under the hood to drive real browsers. It supports Chromium, Firefox, and WebKit with intelligent DOM extraction, smart waits, and built-in accessibility validation.</p>
+
+      <h2>Supported browsers</h2>
+      <table>
+        <thead>
+          <tr><th>Browser</th><th>Config value</th><th>Engine</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Chromium</td><td><code>chromium</code></td><td>Chromium (same as Chrome/Edge)</td></tr>
+          <tr><td>Firefox</td><td><code>firefox</code></td><td>Gecko</td></tr>
+          <tr><td>WebKit</td><td><code>webkit</code></td><td>WebKit (same as Safari)</td></tr>
+        </tbody>
+      </table>
+
+      <p>Install all browsers with:</p>
+      <pre><code>npx etus-agent install-browsers --all</code></pre>
+
+      <h2>DOM extraction</h2>
+      <p>ETUS extracts a structured representation of the page DOM before each action. This extraction:</p>
+      <ul>
+        <li>Traverses shadow DOM boundaries</li>
+        <li>Captures ARIA roles, labels, and states</li>
+        <li>Identifies interactive elements (buttons, links, inputs, selects)</li>
+        <li>Records element visibility and position</li>
+        <li>Handles dynamic content and lazy-loaded elements</li>
+      </ul>
+
+      <h2>Smart waits</h2>
+      <p>Before acting, ETUS waits for page stability using multiple signals:</p>
+      <ul>
+        <li><strong>DOM ready</strong> &mdash; document has finished loading</li>
+        <li><strong>Network idle</strong> &mdash; no pending network requests for 500ms</li>
+        <li><strong>Animations complete</strong> &mdash; CSS transitions and animations have settled</li>
+        <li><strong>Element stable</strong> &mdash; target element is visible, attached, and not moving</li>
+      </ul>
+      <p>This eliminates the need for manual sleep/wait statements in tests.</p>
+
+      <h2>Action validation</h2>
+      <p>Every browser action is validated before and after execution:</p>
+      <ul>
+        <li>Pre-action: element exists, is visible, is enabled, and is not obscured</li>
+        <li>Post-action: expected state change occurred (navigation, DOM mutation, etc.)</li>
+        <li>Retry: if validation fails, the agent re-evaluates and retries with alternative strategies</li>
+      </ul>
+
+      <h2>Accessibility checks</h2>
+      <p>ETUS runs accessibility validation using axe-core against WCAG 2.0 AA standards. This includes:</p>
+      <ul>
+        <li>Color contrast ratio verification</li>
+        <li>ARIA attribute correctness</li>
+        <li>Keyboard navigability</li>
+        <li>Form label associations</li>
+        <li>Image alt text presence</li>
+      </ul>
+      <p>Accessibility violations are reported alongside test results and captured in memory for future reference.</p>
+
+      <h2>Video recording</h2>
+      <p>Enable video recording to capture the full browser session:</p>
+      <pre><code>use:
+  video: true</code></pre>
+      <p>Videos are saved to the run artifacts directory and linked from the dashboard.</p>
+
+      <h2>Console and network logs</h2>
+      <p>ETUS captures browser console output and network requests during execution:</p>
+      <ul>
+        <li>Console errors and warnings are flagged in results</li>
+        <li>Failed network requests (4xx, 5xx) are highlighted</li>
+        <li>Logs are available in the dashboard run detail view</li>
+      </ul>
+
+      <h2>Configuration</h2>
+      <pre><code># etus-agent.config.yaml
+use:
+  browser: chromium          # chromium | firefox | webkit
+  headless: true             # Run without visible browser window
+  viewport:
+    width: 1280
+    height: 720
+  video: false               # Record browser session
+  timeout: 30000             # Action timeout in ms</code></pre>
+
+      <div class="docs-callout">
+        <strong>Tip</strong><br>
+        Use <code>ETUS_AGENT_HEADLESS=false</code> during local development to watch the agent interact with the page in real time.
+      </div>
+
+      <div class="docs-footer">
+        <p>ETUS Documentation</p>
+      </div>
+    </main>
+  </div>
+  <script src="assets/docs.js"></script>
+</body>
+</html>

@@ -101,7 +101,7 @@ const {
 
 vi.mock('glob', () => ({ glob: mockGlob }))
 
-vi.mock('@etus/agent-qa-core', () => {
+vi.mock('@etus/agent-core', () => {
   class MockMobileSetupError extends Error {
     category: string
     constructor(input: { category: string; message: string }) {
@@ -151,12 +151,12 @@ vi.mock('@etus/agent-qa-core', () => {
   LLMPlanner: mockLLMPlanner,
   LLMVerifier: mockLLMVerifier,
   FileActionCache: mockFileActionCache,
-  ATTR_TRIGGER: 'agent-qa.trigger',
-  ATTR_RUNNER: 'agent-qa.runner',
-  DEFAULT_AGENT_QA_ARTIFACTS_DIR: '.agent-qa/artifacts',
-  DEFAULT_AGENT_QA_CACHE_DIR: '.agent-qa/cache',
-  DEFAULT_AGENT_QA_SCREENSHOTS_DIR: '.agent-qa/artifacts/screenshots',
-  DEFAULT_AGENT_QA_VIDEOS_DIR: '.agent-qa/artifacts/videos',
+  ATTR_TRIGGER: 'etus-agent.trigger',
+  ATTR_RUNNER: 'etus-agent.runner',
+  DEFAULT_ETUS_AGENT_ARTIFACTS_DIR: '.etus-agent/artifacts',
+  DEFAULT_ETUS_AGENT_CACHE_DIR: '.etus-agent/cache',
+  DEFAULT_ETUS_AGENT_SCREENSHOTS_DIR: '.etus-agent/artifacts/screenshots',
+  DEFAULT_ETUS_AGENT_VIDEOS_DIR: '.etus-agent/artifacts/videos',
   parseEnvFile: vi.fn(() => ({})),
   registerAllProviders: vi.fn(),
   getProvider: vi.fn(() => ({
@@ -174,7 +174,7 @@ vi.mock('@etus/agent-qa-core', () => {
     const attributes: Record<string, string> = {}
     for (const [key, value] of Object.entries(input)) {
       if (!key) throw new Error(`${sourceLabel}: Attribute key must be non-empty`)
-      if (key.startsWith('agent-qa.')) throw new Error(`${sourceLabel}: Attribute key "${key}" uses the reserved prefix "agent-qa."`)
+      if (key.startsWith('etus-agent.')) throw new Error(`${sourceLabel}: Attribute key "${key}" uses the reserved prefix "etus-agent."`)
       if (typeof value !== 'string') throw new Error(`${sourceLabel}: Attribute value for "${key}" must be a string`)
       attributes[key] = value
     }
@@ -189,14 +189,14 @@ vi.mock('@etus/agent-qa-core', () => {
     for (const [key, value] of Object.entries(input)) {
       if (!key) throw new Error(`${sourceLabel}: Attribute key must be non-empty`)
       if (typeof value !== 'string') throw new Error(`${sourceLabel}: Attribute value for "${key}" must be a string`)
-      if (key === 'agent-qa.trigger' && !['cli', 'dashboard', 'api', 'mcp'].includes(value)) {
+      if (key === 'etus-agent.trigger' && !['cli', 'dashboard', 'api', 'mcp'].includes(value)) {
         throw new Error(`${sourceLabel}: Attribute value for "${key}" must be one of: cli, dashboard, api, mcp`)
       }
-      if (key === 'agent-qa.runner' && !['local', 'browserstack'].includes(value)) {
+      if (key === 'etus-agent.runner' && !['local', 'browserstack'].includes(value)) {
         throw new Error(`${sourceLabel}: Attribute value for "${key}" must be one of: local, browserstack`)
       }
-      if (key.startsWith('agent-qa.') && key !== 'agent-qa.trigger' && key !== 'agent-qa.runner') {
-        throw new Error(`${sourceLabel}: Attribute key "${key}" uses the reserved prefix "agent-qa."`)
+      if (key.startsWith('etus-agent.') && key !== 'etus-agent.trigger' && key !== 'etus-agent.runner') {
+        throw new Error(`${sourceLabel}: Attribute key "${key}" uses the reserved prefix "etus-agent."`)
       }
       attributes[key] = value
     }
@@ -216,13 +216,13 @@ vi.mock('@etus/agent-qa-core', () => {
       rawAttributes[key] = value
     }
     for (const key of Object.keys(rawAttributes)) {
-      if (key.startsWith('agent-qa.')) throw new Error(`--run-attr: Attribute key "${key}" uses the reserved prefix "agent-qa."`)
+      if (key.startsWith('etus-agent.')) throw new Error(`--run-attr: Attribute key "${key}" uses the reserved prefix "etus-agent."`)
     }
     return { attributes: rawAttributes, duplicateKeys: [...duplicateKeys].sort() }
   }),
   buildInternalRunAttributes: vi.fn(({ trigger, runner }: { trigger: string; runner: string }) => ({
-    'agent-qa.trigger': trigger,
-    'agent-qa.runner': runner,
+    'etus-agent.trigger': trigger,
+    'etus-agent.runner': runner,
   })),
   mergeRunAttributes: vi.fn((internal: Record<string, string>, user: Record<string, string>) => ({
     ...user,
@@ -230,9 +230,9 @@ vi.mock('@etus/agent-qa-core', () => {
   })),
   redactAuthStateValue: vi.fn((value: unknown) => value),
   formatRunAttributesBlock: vi.fn((attributes: Record<string, string>) => {
-    const order = ([key]: [string, string]) => key === 'agent-qa.trigger'
+    const order = ([key]: [string, string]) => key === 'etus-agent.trigger'
       ? [0, 0, key]
-      : key === 'agent-qa.runner'
+      : key === 'etus-agent.runner'
         ? [0, 1, key]
         : [1, 0, key]
     const entries = Object.entries(attributes).sort((left, right) => {
@@ -359,7 +359,7 @@ vi.mock('@etus/agent-qa-core', () => {
   collectAllInjectedIds: vi.fn(() => new Map()),
   createMemoryProvider: mockCreateMemoryProvider,
   resolveMemoryRoot: vi.fn((config: any, configDir: string) => {
-    const memoryDir = config?.services?.memory?.dir ?? 'agent-qa-memory'
+    const memoryDir = config?.services?.memory?.dir ?? 'etus-agent-memory'
     return memoryDir.startsWith('/') ? memoryDir : resolve(configDir, memoryDir)
   }),
   generateRunId: mockGenerateRunId,
@@ -449,7 +449,7 @@ vi.mock('@etus/agent-qa-core', () => {
   }),
 }})
 
-vi.mock('@etus/agent-qa-android', () => ({
+vi.mock('@etus/agent-android', () => ({
   AndroidPlatformAdapter: vi.fn(function () {
     return {
       setup: mockAndroidAdapterSetup,
@@ -460,7 +460,7 @@ vi.mock('@etus/agent-qa-android', () => ({
   }),
 }))
 
-vi.mock('@etus/agent-qa-web', () => ({
+vi.mock('@etus/agent-web', () => ({
   runAccessibilityCheck: mockRunAccessibilityCheck,
   WebPlatformAdapter: vi.fn(function () {
     return {
@@ -477,7 +477,7 @@ vi.mock('@etus/agent-qa-web', () => ({
   }),
 }))
 
-vi.mock('@etus/agent-qa-dashboard', () => ({
+vi.mock('@etus/agent-dashboard', () => ({
   DashboardDatabase: mockDashboardDatabase,
   DashboardReporter: mockDashboardReporter,
   resolveDashboardDbPath: mockResolveDashboardDbPath,
@@ -533,7 +533,7 @@ function defaultConfig() {
     },
     // Flat aliases removed — run command now reads from workspace.* (4-bucket config)
     services: {
-      cache: { dir: '.agent-qa/cache', ttl: '7d' },
+      cache: { dir: '.etus-agent/cache', ttl: '7d' },
       logging: { level: 'warn' },
       dashboard: undefined as any,
     },
@@ -583,7 +583,7 @@ const tempDirs: string[] = []
 
 beforeEach(() => {
   vi.clearAllMocks()
-  const secretsDir = mkdtempSync(join(tmpdir(), 'agent-qa-run-secrets-'))
+  const secretsDir = mkdtempSync(join(tmpdir(), 'etus-agent-run-secrets-'))
   tempDirs.push(secretsDir)
   defaultSecretsFilePath = join(secretsDir, '.env.secrets.local')
   defaultEnvFilePath = join(secretsDir, '.env')
@@ -598,8 +598,8 @@ beforeEach(() => {
   mockDashboardReporter.mockImplementation(function () { return {} })
   mockResolveDashboardDbPath.mockImplementation(({ configDir, configuredDbPath }: { configDir: string; configuredDbPath?: string }) => {
     if (configuredDbPath?.trim()) return resolve(configDir, configuredDbPath)
-    const defaultPath = resolve(configDir, '.agent-qa/runs.db')
-    const legacyPath = resolve(configDir, '.agent-qa/dashboard.db')
+    const defaultPath = resolve(configDir, '.etus-agent/runs.db')
+    const legacyPath = resolve(configDir, '.etus-agent/dashboard.db')
     if (!existsSync(defaultPath) && existsSync(legacyPath)) {
       mkdirSync(dirname(defaultPath), { recursive: true })
       renameSync(legacyPath, defaultPath)
@@ -665,11 +665,11 @@ afterEach(async () => {
   exitSpy.mockRestore()
   logSpy.mockRestore()
   errorSpy.mockRestore()
-  delete process.env.AGENT_QA_RUN_ID
-  delete process.env.AGENT_QA_SUITE_QUEUE_ID
-  delete process.env.AGENT_QA_PARENT_RUN_ID
-  delete process.env.AGENT_QA_RUN_ATTRIBUTES_JSON
-  delete process.env.AGENT_QA_LIVE_EVENTS
+  delete process.env.ETUS_AGENT_RUN_ID
+  delete process.env.ETUS_AGENT_SUITE_QUEUE_ID
+  delete process.env.ETUS_AGENT_PARENT_RUN_ID
+  delete process.env.ETUS_AGENT_RUN_ATTRIBUTES_JSON
+  delete process.env.ETUS_AGENT_LIVE_EVENTS
   delete process.env.BROWSERSTACK_USERNAME
   delete process.env.BROWSERSTACK_ACCESS_KEY
   defaultSecretsFilePath = undefined
@@ -686,7 +686,7 @@ async function runCommand(...args: string[]) {
 
 async function runCommandWithGlobalArgs(globalArgs: string[], ...runArgs: string[]) {
   const program = new Command()
-  program.option('--config <path>', 'config file path', 'agent-qa.config.yaml')
+  program.option('--config <path>', 'config file path', 'etus-agent.config.yaml')
   program.option('--log-level <level>', 'log verbosity: silent|error|warn|info|debug')
   program.option('--verbose', 'shorthand for --log-level debug')
   program.option('--quiet', 'shorthand for --log-level silent')
@@ -696,7 +696,7 @@ async function runCommandWithGlobalArgs(globalArgs: string[], ...runArgs: string
   program.addCommand(run)
 
   try {
-    await program.parseAsync(['node', 'agent-qa', ...globalArgs, 'run', ...runArgs])
+    await program.parseAsync(['node', 'etus-agent', ...globalArgs, 'run', ...runArgs])
   } catch (err) {
     if ((err as Error).message !== 'process.exit') throw err
   }
@@ -711,7 +711,7 @@ async function parseRemovedRunFlag(...runArgs: string[]) {
   run.exitOverride()
   program.addCommand(run)
 
-  return program.parseAsync(['node', 'agent-qa', 'run', ...runArgs])
+  return program.parseAsync(['node', 'etus-agent', 'run', ...runArgs])
 }
 
 async function waitForCondition(predicate: () => boolean, attempts = 20) {
@@ -736,26 +736,26 @@ function deferredRunResult(name: string) {
 }
 
 async function createTempSuiteWorkspace() {
-  const rootDir = await mkdtemp(join(tmpdir(), 'agent-qa-run-suite-'))
+  const rootDir = await mkdtemp(join(tmpdir(), 'etus-agent-run-suite-'))
   tempDirs.push(rootDir)
   const testsDir = join(rootDir, 'tests')
   await mkdir(testsDir, { recursive: true })
   const suitePath = join(rootDir, 'smoke.suite.yaml')
   const testPath = join(testsDir, 'login.yaml')
-  const configPath = join(rootDir, 'agent-qa.config.yaml')
+  const configPath = join(rootDir, 'etus-agent.config.yaml')
   await writeFile(suitePath, 'name: Smoke Suite\n')
   await writeFile(testPath, 'name: Login Test\n')
   return { rootDir, suitePath, testPath, configPath }
 }
 
 async function createMultiSuiteWorkspace() {
-  const rootDir = await mkdtemp(join(tmpdir(), 'agent-qa-run-multi-suite-'))
+  const rootDir = await mkdtemp(join(tmpdir(), 'etus-agent-run-multi-suite-'))
   tempDirs.push(rootDir)
   const suitesDir = join(rootDir, 'suites')
   const testsDir = join(rootDir, 'tests')
   await mkdir(suitesDir, { recursive: true })
   await mkdir(testsDir, { recursive: true })
-  const configPath = join(rootDir, 'agent-qa.config.yaml')
+  const configPath = join(rootDir, 'etus-agent.config.yaml')
   const suiteA = join(suitesDir, 'a.suite.yaml')
   const suiteB = join(suitesDir, 'b.suite.yaml')
   const suiteC = join(suitesDir, 'c.suite.yaml')
@@ -807,7 +807,7 @@ describe('run command — secrets file preflight', () => {
 
   it('exits 1 when the configured secrets file is missing', async () => {
     const cfg = defaultConfig()
-    cfg.workspace.secretsFile = join(tmpdir(), 'agent-qa-missing-secrets.local')
+    cfg.workspace.secretsFile = join(tmpdir(), 'etus-agent-missing-secrets.local')
     mockResolveConfig.mockResolvedValue(cfg)
 
     await runCommand('--dry-run', 'tests/**/*.yaml')
@@ -819,7 +819,7 @@ describe('run command — secrets file preflight', () => {
   })
 
   it('loads secrets into runtime config without adding secret values to artifact metadata', async () => {
-    const rootDir = await mkdtemp(join(tmpdir(), 'agent-qa-run-secret-load-'))
+    const rootDir = await mkdtemp(join(tmpdir(), 'etus-agent-run-secret-load-'))
     tempDirs.push(rootDir)
     const secretsPath = join(rootDir, '.secrets.local')
     await writeFile(secretsPath, 'LOGIN_PASSWORD=super-secret\n')
@@ -956,7 +956,7 @@ describe('run command — reduced flag surface and target resolution', () => {
 describe('run command — auth state consumption', () => {
   it('resolves a direct web test auth state before adapter setup and still executes the test', async () => {
     const cfg = defaultConfig()
-    ;(cfg.services as any).authState = { dir: '.agent-qa/auth-states' }
+    ;(cfg.services as any).authState = { dir: '.etus-agent/auth-states' }
     mockResolveConfig.mockResolvedValue(cfg)
     mockGlob.mockResolvedValue(['tests/auth.yaml'])
     mockParseAllTests.mockResolvedValue({
@@ -974,7 +974,7 @@ describe('run command — auth state consumption', () => {
     await runCommand('tests/**/*.yaml')
 
     expect(mockResolveAuthStateForRun).toHaveBeenCalledWith(expect.objectContaining({
-      authStateDir: '.agent-qa/auth-states',
+      authStateDir: '.etus-agent/auth-states',
       targetName: 'test-app',
       stateName: 'admin',
       target: { platform: 'web' },
@@ -1177,7 +1177,7 @@ describe('run command — auth state consumption', () => {
 
   it('fails direct auth-state preflight before adapter setup without printing paths', async () => {
     mockResolveAuthStateForRun.mockRejectedValueOnce(
-      new Error('Auth state "admin" for target "test-app" was not found or could not be read. Run agent-qa auth-state capture --target test-app --name admin.'),
+      new Error('Auth state "admin" for target "test-app" was not found or could not be read. Run etus-agent auth-state capture --target test-app --name admin.'),
     )
     mockGlob.mockResolvedValue(['tests/auth.yaml'])
     mockParseAllTests.mockResolvedValue({
@@ -1192,9 +1192,9 @@ describe('run command — auth state consumption', () => {
     expect(mockRunTestWithRetry).not.toHaveBeenCalled()
     const allErrors = errorSpy.mock.calls.map((c: string[]) => c.join(' ')).join('\n')
     expect(allErrors).toContain('Auth state "admin" for target "test-app"')
-    expect(allErrors).toContain('agent-qa auth-state capture --target test-app --name admin')
+    expect(allErrors).toContain('etus-agent auth-state capture --target test-app --name admin')
     expect(allErrors).not.toContain('/internal/auth')
-    expect(allErrors).not.toContain('.agent-qa/auth-states')
+    expect(allErrors).not.toContain('.etus-agent/auth-states')
   })
 
   it('fails direct mobile targets with auth state before adapter setup', async () => {
@@ -1349,7 +1349,7 @@ describe('run command — auth state consumption', () => {
     expect(allErrors).toContain('Suite auth state "admin"')
     expect(allErrors).toContain('child test auth state "super-admin"')
     expect(allErrors).not.toContain('/internal/auth')
-    expect(allErrors).not.toContain('.agent-qa/auth-states')
+    expect(allErrors).not.toContain('.etus-agent/auth-states')
   })
 })
 
@@ -1384,7 +1384,7 @@ describe('run command — mobile app state and device resolution', () => {
   }
 
   it('passes direct mobile test device and global app state into the resolver', async () => {
-    const { resolveMobileRunConfig } = await import('@etus/agent-qa-core')
+    const { resolveMobileRunConfig } = await import('@etus/agent-core')
     mockResolveConfig.mockResolvedValue(mobileConfig())
     mockMobileTarget()
     mockGlob.mockResolvedValue(['tests/mobile.yaml'])
@@ -1415,7 +1415,7 @@ describe('run command — mobile app state and device resolution', () => {
   })
 
   it('passes direct mobile test app-state override into the resolver', async () => {
-    const { resolveMobileRunConfig } = await import('@etus/agent-qa-core')
+    const { resolveMobileRunConfig } = await import('@etus/agent-core')
     mockResolveConfig.mockResolvedValue(mobileConfig())
     mockMobileTarget()
     mockGlob.mockResolvedValue(['tests/mobile.yaml'])
@@ -1459,7 +1459,7 @@ describe('run command — mobile app state and device resolution', () => {
   })
 
   it('does not call the mobile resolver for web direct tests without use.device', async () => {
-    const { resolveMobileRunConfig } = await import('@etus/agent-qa-core')
+    const { resolveMobileRunConfig } = await import('@etus/agent-core')
     const cfg = defaultConfig()
     ;(cfg.use as any).mobile = { appState: 'preserve' }
     mockResolveConfig.mockResolvedValue(cfg)
@@ -1483,7 +1483,7 @@ describe('run command — mobile app state and device resolution', () => {
   })
 
   it('uses suite-level use.device for mobile suites', async () => {
-    const { resolveMobileRunConfig } = await import('@etus/agent-qa-core')
+    const { resolveMobileRunConfig } = await import('@etus/agent-core')
     const { suitePath, configPath } = await createTempSuiteWorkspace()
     mockResolveConfig.mockResolvedValue(mobileConfig())
     mockMobileTarget()
@@ -1507,7 +1507,7 @@ describe('run command — mobile app state and device resolution', () => {
   })
 
   it('accepts one shared child use.device for mobile suites without suite use.device', async () => {
-    const { resolveMobileRunConfig } = await import('@etus/agent-qa-core')
+    const { resolveMobileRunConfig } = await import('@etus/agent-core')
     const { suitePath, configPath } = await createTempSuiteWorkspace()
     mockResolveConfig.mockResolvedValue(mobileConfig())
     mockMobileTarget()
@@ -1583,7 +1583,7 @@ describe('run command — mobile app state and device resolution', () => {
   })
 
   it('runs web suites without device settings', async () => {
-    const { resolveMobileRunConfig } = await import('@etus/agent-qa-core')
+    const { resolveMobileRunConfig } = await import('@etus/agent-core')
     const { suitePath, configPath } = await createTempSuiteWorkspace()
     const cfg = defaultConfig()
     ;(cfg.use as any).mobile = { appState: 'preserve' }
@@ -1645,8 +1645,8 @@ describe('run command — run attributes', () => {
 
     const startContext = mockMultiReporterInstance.onTestStart.mock.calls[0][2]
     expect(startContext.artifact.metadata.attributes).toMatchObject({
-      'agent-qa.trigger': 'cli',
-      'agent-qa.runner': 'local',
+      'etus-agent.trigger': 'cli',
+      'etus-agent.runner': 'local',
       'git.branch': 'phase223-main',
       'user.email': 'CI',
     })
@@ -1676,21 +1676,21 @@ describe('run command — run attributes', () => {
     warnSpy.mockRestore()
   })
 
-  it('rejects protected agent-qa.* attribute keys before execution', async () => {
-    await runCommand('tests/**/*.yaml', '--run-attr', 'agent-qa.trigger=evil')
+  it('rejects protected etus-agent.* attribute keys before execution', async () => {
+    await runCommand('tests/**/*.yaml', '--run-attr', 'etus-agent.trigger=evil')
 
     expect(exitSpy).toHaveBeenCalledWith(2)
     expect(mockRunTestWithRetry).not.toHaveBeenCalled()
     const allErrors = errorSpy.mock.calls.map((c: string[]) => c.join(' ')).join('\n')
-    expect(allErrors).toContain('reserved prefix "agent-qa."')
+    expect(allErrors).toContain('reserved prefix "etus-agent."')
   })
 
   it('rejects invalid inherited protected run attributes before execution', async () => {
-    process.env.AGENT_QA_RUN_ID = 'r_dashboard-alpha-bravo-charlie-delta-echo-foxtrot-golf-hotel'
-    process.env.AGENT_QA_RUN_ATTRIBUTES_JSON = JSON.stringify({
-      'agent-qa.trigger': 'dashboard',
-      'agent-qa.runner': 'local',
-      'agent-qa.custom': 'evil',
+    process.env.ETUS_AGENT_RUN_ID = 'r_dashboard-alpha-bravo-charlie-delta-echo-foxtrot-golf-hotel'
+    process.env.ETUS_AGENT_RUN_ATTRIBUTES_JSON = JSON.stringify({
+      'etus-agent.trigger': 'dashboard',
+      'etus-agent.runner': 'local',
+      'etus-agent.custom': 'evil',
     })
 
     await runCommand('tests/**/*.yaml')
@@ -1699,15 +1699,15 @@ describe('run command — run attributes', () => {
     expect(mockRunTestWithRetry).not.toHaveBeenCalled()
     const allErrors = errorSpy.mock.calls.map((c: string[]) => c.join(' ')).join('\n')
     expect(allErrors).toContain('inherited run attributes')
-    expect(allErrors).toContain('agent-qa.custom')
-    expect(allErrors).toContain('reserved prefix "agent-qa."')
+    expect(allErrors).toContain('etus-agent.custom')
+    expect(allErrors).toContain('reserved prefix "etus-agent."')
   })
 
-  it('inherits retry-child attributes from AGENT_QA_PARENT_RUN_ID without a child run id', async () => {
-    process.env.AGENT_QA_PARENT_RUN_ID = 'r_parent-alpha-bravo-charlie-delta-echo-foxtrot-golf-hotel-india'
-    process.env.AGENT_QA_RUN_ATTRIBUTES_JSON = JSON.stringify({
-      'agent-qa.trigger': 'dashboard',
-      'agent-qa.runner': 'local',
+  it('inherits retry-child attributes from ETUS_AGENT_PARENT_RUN_ID without a child run id', async () => {
+    process.env.ETUS_AGENT_PARENT_RUN_ID = 'r_parent-alpha-bravo-charlie-delta-echo-foxtrot-golf-hotel-india'
+    process.env.ETUS_AGENT_RUN_ATTRIBUTES_JSON = JSON.stringify({
+      'etus-agent.trigger': 'dashboard',
+      'etus-agent.runner': 'local',
       'git.branch': 'phase247-review',
     })
     mockGlob.mockResolvedValue(['tests/a.yaml'])
@@ -1724,14 +1724,14 @@ describe('run command — run attributes', () => {
 
     const startContext = mockMultiReporterInstance.onTestStart.mock.calls[0][2]
     expect(startContext.artifact.metadata.attributes).toMatchObject({
-      'agent-qa.trigger': 'dashboard',
-      'agent-qa.runner': 'local',
+      'etus-agent.trigger': 'dashboard',
+      'etus-agent.runner': 'local',
       'git.branch': 'phase247-review',
     })
   })
 
   it('recomputes inherited runner attributes after direct BrowserStack device resolution', async () => {
-    const { resolveMobileRunConfig } = await import('@etus/agent-qa-core')
+    const { resolveMobileRunConfig } = await import('@etus/agent-core')
     const cfg = defaultConfig()
     cfg.registry.targets = {
       'mobile-browser': {
@@ -1766,10 +1766,10 @@ describe('run command — run attributes', () => {
     }))
     process.env.BROWSERSTACK_USERNAME = 'user'
     process.env.BROWSERSTACK_ACCESS_KEY = 'key'
-    process.env.AGENT_QA_RUN_ID = 'r_dashboard-alpha-bravo-charlie-delta-echo-foxtrot-golf-hotel'
-    process.env.AGENT_QA_RUN_ATTRIBUTES_JSON = JSON.stringify({
-      'agent-qa.trigger': 'dashboard',
-      'agent-qa.runner': 'local',
+    process.env.ETUS_AGENT_RUN_ID = 'r_dashboard-alpha-bravo-charlie-delta-echo-foxtrot-golf-hotel'
+    process.env.ETUS_AGENT_RUN_ATTRIBUTES_JSON = JSON.stringify({
+      'etus-agent.trigger': 'dashboard',
+      'etus-agent.runner': 'local',
       'git.branch': 'phase247-review',
     })
     mockGlob.mockResolvedValue(['tests/mobile.yaml'])
@@ -1789,14 +1789,14 @@ describe('run command — run attributes', () => {
 
     const startContext = mockMultiReporterInstance.onTestStart.mock.calls[0][2]
     expect(startContext.artifact.metadata.attributes).toMatchObject({
-      'agent-qa.trigger': 'dashboard',
-      'agent-qa.runner': 'browserstack',
+      'etus-agent.trigger': 'dashboard',
+      'etus-agent.runner': 'browserstack',
       'git.branch': 'phase247-review',
     })
   })
 
   it('recomputes inherited runner attributes after suite BrowserStack device resolution', async () => {
-    const { resolveMobileRunConfig } = await import('@etus/agent-qa-core')
+    const { resolveMobileRunConfig } = await import('@etus/agent-core')
     const { suitePath, configPath } = await createTempSuiteWorkspace()
     const cfg = defaultConfig()
     cfg.registry.targets = {
@@ -1832,10 +1832,10 @@ describe('run command — run attributes', () => {
     }))
     process.env.BROWSERSTACK_USERNAME = 'user'
     process.env.BROWSERSTACK_ACCESS_KEY = 'key'
-    process.env.AGENT_QA_SUITE_QUEUE_ID = 'r_suite-alpha-bravo-charlie-delta-echo-foxtrot-golf-hotel-india'
-    process.env.AGENT_QA_RUN_ATTRIBUTES_JSON = JSON.stringify({
-      'agent-qa.trigger': 'api',
-      'agent-qa.runner': 'local',
+    process.env.ETUS_AGENT_SUITE_QUEUE_ID = 'r_suite-alpha-bravo-charlie-delta-echo-foxtrot-golf-hotel-india'
+    process.env.ETUS_AGENT_RUN_ATTRIBUTES_JSON = JSON.stringify({
+      'etus-agent.trigger': 'api',
+      'etus-agent.runner': 'local',
       'git.branch': 'phase247-review',
     })
     mockParseSuiteFile.mockResolvedValue({
@@ -1853,8 +1853,8 @@ describe('run command — run attributes', () => {
 
     const suiteConfig = mockRunSuite.mock.calls[0][2] as Record<string, any>
     expect(suiteConfig.artifactContext.metadata.attributes).toMatchObject({
-      'agent-qa.trigger': 'api',
-      'agent-qa.runner': 'browserstack',
+      'etus-agent.trigger': 'api',
+      'etus-agent.runner': 'browserstack',
       'git.branch': 'phase247-review',
     })
   })
@@ -1999,14 +1999,14 @@ describe('run command — framework error handling', () => {
     expect(exitSpy).toHaveBeenCalledWith(2)
     const allErrors = errorSpy.mock.calls.map((c: string[]) => c.join(' ')).join('\n')
     expect(allErrors).toContain('ETUS browser support is not installed for WebKit')
-    expect(allErrors).toContain('agent-qa install-browsers --webkit')
+    expect(allErrors).toContain('etus-agent install-browsers --webkit')
     expect(allErrors).not.toContain('npx playwright install')
     expect(allErrors).not.toContain('Looks like Playwright was just installed')
   })
 
   it('prints run IDs for running rows finalized during framework crash cleanup', async () => {
     const cfg = defaultConfig()
-    cfg.services.dashboard = { dbPath: '.agent-qa/runs.db' } as any
+    cfg.services.dashboard = { dbPath: '.etus-agent/runs.db' } as any
     mockResolveConfig.mockResolvedValue(cfg)
     mockGlob.mockResolvedValue(['tests/a.yaml'])
     mockParseAllTests.mockResolvedValue({
@@ -2131,7 +2131,7 @@ describe('run command — reporter integration', () => {
       config: expect.objectContaining({ workspace: expect.any(Object) }),
       surface: 'cli',
     }))
-    const { MultiReporter } = await import('@etus/agent-qa-core')
+    const { MultiReporter } = await import('@etus/agent-core')
     expect(vi.mocked(MultiReporter).mock.calls[0][0]).toEqual(
       expect.arrayContaining([mockAnalyticsRunReporterInstance]),
     )
@@ -2248,7 +2248,7 @@ describe('run command — reporter integration', () => {
       { effectiveLogLevel: 'warn', reporterSelection: expect.objectContaining({ console: false, stdoutLive: true }) },
     ],
     [
-      'AGENT_QA_LIVE_EVENTS=true',
+      'ETUS_AGENT_LIVE_EVENTS=true',
       [],
       ['tests/**/*.yaml'],
       'true',
@@ -2264,7 +2264,7 @@ describe('run command — reporter integration', () => {
   ])('does not print the update notice for %s', async (_label, globalArgs, runArgs, liveEvents, expectedContext) => {
     setupPassingDirectRun()
     mockShouldPrintAgentQaUpdateNotice.mockReturnValue(false)
-    if (liveEvents) process.env.AGENT_QA_LIVE_EVENTS = liveEvents
+    if (liveEvents) process.env.ETUS_AGENT_LIVE_EVENTS = liveEvents
 
     await runCommandWithGlobalArgs(globalArgs as string[], ...(runArgs as string[]))
 
@@ -2337,7 +2337,7 @@ describe('run command — reporter integration', () => {
 
   it.each(['android', 'ios'] as const)('emits best-effort analytics for dashboard-triggered %s setup failures', async (platform) => {
     const cfg = defaultConfig()
-    cfg.services.dashboard = { dbPath: '.agent-qa/runs.db' } as any
+    cfg.services.dashboard = { dbPath: '.etus-agent/runs.db' } as any
     cfg.registry.targets = {
       'mobile-app': {
         platform,
@@ -2357,10 +2357,10 @@ describe('run command — reporter integration', () => {
         ? { appPackage: 'com.example.app' }
         : { bundleId: 'com.example.app' }),
     })
-    process.env.AGENT_QA_RUN_ID = 'r_dashboard-alpha-bravo-charlie-delta-echo-foxtrot-golf-hotel'
-    process.env.AGENT_QA_RUN_ATTRIBUTES_JSON = JSON.stringify({
-      'agent-qa.trigger': 'dashboard',
-      'agent-qa.runner': 'local',
+    process.env.ETUS_AGENT_RUN_ID = 'r_dashboard-alpha-bravo-charlie-delta-echo-foxtrot-golf-hotel'
+    process.env.ETUS_AGENT_RUN_ATTRIBUTES_JSON = JSON.stringify({
+      'etus-agent.trigger': 'dashboard',
+      'etus-agent.runner': 'local',
     })
     mockGlob.mockResolvedValue(['tests/mobile.yaml'])
     mockParseAllTests.mockResolvedValue({
@@ -2375,14 +2375,14 @@ describe('run command — reporter integration', () => {
       failed: 1,
       results: [
         expect.objectContaining({
-          runId: process.env.AGENT_QA_RUN_ID,
+          runId: process.env.ETUS_AGENT_RUN_ID,
           status: 'failed',
           metadata: expect.objectContaining({
             phase: 'setup',
             platform,
             attributes: expect.objectContaining({
-              'agent-qa.trigger': 'dashboard',
-              'agent-qa.runner': 'local',
+              'etus-agent.trigger': 'dashboard',
+              'etus-agent.runner': 'local',
             }),
             runtime: expect.objectContaining({
               platform,
@@ -2436,8 +2436,8 @@ describe('run command — reporter integration', () => {
             phase: 'setup',
             platform,
             attributes: expect.objectContaining({
-              'agent-qa.trigger': 'cli',
-              'agent-qa.runner': 'local',
+              'etus-agent.trigger': 'cli',
+              'etus-agent.runner': 'local',
             }),
           }),
         }),
@@ -2462,7 +2462,7 @@ describe('run command — reporter integration', () => {
 
     await runCommand('tests/**/*.yaml')
 
-    const { ConsoleReporter } = await import('@etus/agent-qa-core')
+    const { ConsoleReporter } = await import('@etus/agent-core')
     expect(ConsoleReporter).toHaveBeenCalledWith(expect.objectContaining({ verbose: false }))
   })
 
@@ -2481,19 +2481,19 @@ describe('run command — reporter integration', () => {
     })
 
     const program = new Command()
-    program.option('--config <path>', 'config file path', 'agent-qa.config.yaml')
+    program.option('--config <path>', 'config file path', 'etus-agent.config.yaml')
     program.option('--log-level <level>', 'log verbosity: silent|error|warn|info|debug')
     program.option('--verbose', 'shorthand for --log-level debug')
     program.option('--quiet', 'shorthand for --log-level silent')
     program.addCommand(createRunCommand())
 
     try {
-      await program.parseAsync(['node', 'agent-qa', '--verbose', 'run', 'tests/**/*.yaml'])
+      await program.parseAsync(['node', 'etus-agent', '--verbose', 'run', 'tests/**/*.yaml'])
     } catch (err) {
       if ((err as Error).message !== 'process.exit') throw err
     }
 
-    const { ConsoleReporter } = await import('@etus/agent-qa-core')
+    const { ConsoleReporter } = await import('@etus/agent-core')
     expect(ConsoleReporter).toHaveBeenCalledWith(expect.objectContaining({ verbose: false }))
   })
 
@@ -2513,7 +2513,7 @@ describe('run command — reporter integration', () => {
 
     await runCommand('--junit-output', 'test-results.xml', 'tests/**/*.yaml')
 
-    const { JUnitReporter } = await import('@etus/agent-qa-core')
+    const { JUnitReporter } = await import('@etus/agent-core')
     expect(JUnitReporter).toHaveBeenCalledWith({ outputPath: 'test-results.xml' })
   })
 
@@ -2533,7 +2533,7 @@ describe('run command — reporter integration', () => {
 
     await runCommand('tests/**/*.yaml', '--reporter', 'console')
 
-    const { ConsoleReporter, JUnitReporter, StdoutLiveReporter } = await import('@etus/agent-qa-core')
+    const { ConsoleReporter, JUnitReporter, StdoutLiveReporter } = await import('@etus/agent-core')
     expect(ConsoleReporter).toHaveBeenCalled()
     expect(JUnitReporter).not.toHaveBeenCalled()
     expect(StdoutLiveReporter).not.toHaveBeenCalled()
@@ -2556,7 +2556,7 @@ describe('run command — reporter integration', () => {
 
     await runCommand('tests/**/*.yaml', '--reporter', 'console,junit', '--junit-output', 'test-results.xml')
 
-    const { ConsoleReporter, JUnitReporter } = await import('@etus/agent-qa-core')
+    const { ConsoleReporter, JUnitReporter } = await import('@etus/agent-core')
     expect(ConsoleReporter).toHaveBeenCalled()
     expect(JUnitReporter).toHaveBeenCalledWith({ outputPath: 'test-results.xml' })
   })
@@ -2577,7 +2577,7 @@ describe('run command — reporter integration', () => {
 
     await runCommand('tests/**/*.yaml', '--reporter', 'stdout-live')
 
-    const { ConsoleReporter, StdoutLiveReporter } = await import('@etus/agent-qa-core')
+    const { ConsoleReporter, StdoutLiveReporter } = await import('@etus/agent-core')
     expect(ConsoleReporter).not.toHaveBeenCalled()
     expect(StdoutLiveReporter).toHaveBeenCalledWith(expect.objectContaining({
       active: true,
@@ -2601,7 +2601,7 @@ describe('run command — reporter integration', () => {
 
     await runCommand('tests/**/*.yaml', '--reporter', 'dashboard')
 
-    const { ConsoleReporter } = await import('@etus/agent-qa-core')
+    const { ConsoleReporter } = await import('@etus/agent-core')
     expect(ConsoleReporter).not.toHaveBeenCalled()
     expect(mockDashboardDatabase).toHaveBeenCalled()
     expect(mockDashboardReporter).toHaveBeenCalled()
@@ -2830,9 +2830,9 @@ describe('run command — reporter integration', () => {
     )
   })
 
-  it('reuses queued AGENT_QA_RUN_ID for single-test reporter context and result summary', async () => {
+  it('reuses queued ETUS_AGENT_RUN_ID for single-test reporter context and result summary', async () => {
     const runId = 'r_queue-alpha-bravo-charlie-delta-echo-foxtrot-golf-hotel-india'
-    process.env.AGENT_QA_RUN_ID = runId
+    process.env.ETUS_AGENT_RUN_ID = runId
     mockGlob.mockResolvedValue(['tests/a.yaml'])
     mockParseAllTests.mockResolvedValue({
       tests: [makeTest()],
@@ -3234,7 +3234,7 @@ describe('run command — DashboardReporter wiring', () => {
       configuredDbPath: undefined,
     })
     expect(mockDashboardDatabase).toHaveBeenCalledWith({
-      dbPath: resolve(process.cwd(), '.agent-qa/runs.db'),
+      dbPath: resolve(process.cwd(), '.etus-agent/runs.db'),
     })
     expect(mockDashboardReporter).toHaveBeenCalled()
     expect(mockRunTestWithRetry.mock.calls[0][1]).toEqual(expect.objectContaining({
@@ -3244,7 +3244,7 @@ describe('run command — DashboardReporter wiring', () => {
 
   it('honors an explicit dashboard dbPath override', async () => {
     const cfg = defaultConfig()
-    cfg.services.dashboard = { dbPath: '.agent-qa/dashboard.db' } as any
+    cfg.services.dashboard = { dbPath: '.etus-agent/dashboard.db' } as any
     mockResolveConfig.mockResolvedValue(cfg)
     mockGlob.mockResolvedValue(['tests/a.yaml'])
     mockParseAllTests.mockResolvedValue({
@@ -3263,20 +3263,20 @@ describe('run command — DashboardReporter wiring', () => {
 
     expect(mockResolveDashboardDbPath).toHaveBeenCalledWith({
       configDir: process.cwd(),
-      configuredDbPath: '.agent-qa/dashboard.db',
+      configuredDbPath: '.etus-agent/dashboard.db',
     })
     expect(mockDashboardDatabase).toHaveBeenCalledWith({
-      dbPath: resolve(process.cwd(), '.agent-qa/dashboard.db'),
+      dbPath: resolve(process.cwd(), '.etus-agent/dashboard.db'),
     })
   })
 
   it('migrates legacy default dashboard.db to runs.db through the resolver', async () => {
-    const projectDir = mkdtempSync(join(tmpdir(), 'agent-qa-run-db-migration-'))
+    const projectDir = mkdtempSync(join(tmpdir(), 'etus-agent-run-db-migration-'))
     tempDirs.push(projectDir)
-    const configPath = join(projectDir, 'agent-qa.config.yaml')
+    const configPath = join(projectDir, 'etus-agent.config.yaml')
     writeFileSync(configPath, 'services:\n  dashboard: {}\n')
-    mkdirSync(join(projectDir, '.agent-qa'), { recursive: true })
-    writeFileSync(join(projectDir, '.agent-qa', 'dashboard.db'), 'legacy-runs')
+    mkdirSync(join(projectDir, '.etus-agent'), { recursive: true })
+    writeFileSync(join(projectDir, '.etus-agent', 'dashboard.db'), 'legacy-runs')
 
     const cfg = defaultConfig()
     cfg.services.dashboard = {} as any
@@ -3296,10 +3296,10 @@ describe('run command — DashboardReporter wiring', () => {
 
     await runCommandWithGlobalArgs(['--config', configPath], 'tests/**/*.yaml')
 
-    expect(existsSync(join(projectDir, '.agent-qa', 'dashboard.db'))).toBe(false)
-    expect(existsSync(join(projectDir, '.agent-qa', 'runs.db'))).toBe(true)
+    expect(existsSync(join(projectDir, '.etus-agent', 'dashboard.db'))).toBe(false)
+    expect(existsSync(join(projectDir, '.etus-agent', 'runs.db'))).toBe(true)
     expect(mockDashboardDatabase).toHaveBeenCalledWith({
-      dbPath: join(projectDir, '.agent-qa', 'runs.db'),
+      dbPath: join(projectDir, '.etus-agent', 'runs.db'),
     })
   })
 
@@ -3356,7 +3356,7 @@ describe('run command — DashboardReporter wiring', () => {
 })
 
 describe('run command — dashboard video recording root', () => {
-  it('uses .agent-qa/artifacts/videos for standalone recording by default', async () => {
+  it('uses .etus-agent/artifacts/videos for standalone recording by default', async () => {
     const cfg = defaultConfig()
     mockResolveConfig.mockResolvedValue(cfg)
     mockGlob.mockResolvedValue(['tests/a.yaml'])
@@ -3377,7 +3377,7 @@ describe('run command — dashboard video recording root', () => {
     expect(mockWebAdapterSetup).toHaveBeenCalledWith(
       expect.objectContaining({
         recording: expect.objectContaining({
-          videoDir: resolve(process.cwd(), '.agent-qa/artifacts/videos'),
+          videoDir: resolve(process.cwd(), '.etus-agent/artifacts/videos'),
         }),
       }),
     )
@@ -3386,7 +3386,7 @@ describe('run command — dashboard video recording root', () => {
   it('uses artifactsDir/videos for suite recording in dashboard mode', async () => {
     const { rootDir, suitePath, configPath } = await createTempSuiteWorkspace()
     const cfg = defaultConfig()
-    cfg.services.dashboard = { dbPath: '.agent-qa/runs.db', artifactsDir: 'dashboard-artifacts' } as any
+    cfg.services.dashboard = { dbPath: '.etus-agent/runs.db', artifactsDir: 'dashboard-artifacts' } as any
     mockResolveConfig.mockResolvedValue(cfg)
     mockParseSuiteFile.mockResolvedValue({
       name: 'Smoke Suite',
@@ -3415,7 +3415,7 @@ describe('run command — dashboard video recording root', () => {
 
   it('uses artifactsDir/videos for adapter setup when standalone recording is enabled', async () => {
     const cfg = defaultConfig()
-    cfg.services.dashboard = { dbPath: '.agent-qa/runs.db', artifactsDir: 'dashboard-artifacts' } as any
+    cfg.services.dashboard = { dbPath: '.etus-agent/runs.db', artifactsDir: 'dashboard-artifacts' } as any
     mockResolveConfig.mockResolvedValue(cfg)
     mockGlob.mockResolvedValue(['tests/a.yaml'])
     mockParseAllTests.mockResolvedValue({
@@ -3443,7 +3443,7 @@ describe('run command — dashboard video recording root', () => {
 
   it('uses artifactsDir/videos for per-test recording overrides in dashboard mode', async () => {
     const cfg = defaultConfig()
-    cfg.services.dashboard = { dbPath: '.agent-qa/runs.db', artifactsDir: 'dashboard-artifacts' } as any
+    cfg.services.dashboard = { dbPath: '.etus-agent/runs.db', artifactsDir: 'dashboard-artifacts' } as any
     mockResolveConfig.mockResolvedValue(cfg)
     mockGlob.mockResolvedValue(['tests/a.yaml'])
     mockParseAllTests.mockResolvedValue({
@@ -3497,13 +3497,13 @@ describe('run command — runtime memory override', () => {
   })
 
   it('resolves services.memory.dir from the config directory for runtime memory', async () => {
-    const configDir = mkdtempSync(join(tmpdir(), 'agent-qa-memory-config-'))
+    const configDir = mkdtempSync(join(tmpdir(), 'etus-agent-memory-config-'))
     tempDirs.push(configDir)
     const cfg = defaultConfig()
     ;(cfg.services as any).memory = {
       enabled: true,
       provider: 'local',
-      dir: '.agent-qa/custom-memory',
+      dir: '.etus-agent/custom-memory',
       curatorEnabled: false,
       ablationEnabled: false,
     }
@@ -3524,9 +3524,9 @@ describe('run command — runtime memory override', () => {
       duration: 100,
     })
 
-    await runCommandWithGlobalArgs(['--config', join(configDir, 'agent-qa.config.yaml')], 'tests/**/*.yaml')
+    await runCommandWithGlobalArgs(['--config', join(configDir, 'etus-agent.config.yaml')], 'tests/**/*.yaml')
 
-    const expectedRoot = join(configDir, '.agent-qa/custom-memory')
+    const expectedRoot = join(configDir, '.etus-agent/custom-memory')
     expect(mockCreateMemoryProvider).toHaveBeenCalledWith(expect.objectContaining({
       provider: 'local',
       memoryRoot: expectedRoot,
@@ -3543,10 +3543,10 @@ describe('run command — runtime memory override', () => {
 
 describe('run command — runtime cache paths', () => {
   it('resolves services.cache.dir and ttl from the config directory', async () => {
-    const configDir = mkdtempSync(join(tmpdir(), 'agent-qa-cache-config-'))
+    const configDir = mkdtempSync(join(tmpdir(), 'etus-agent-cache-config-'))
     tempDirs.push(configDir)
     const cfg = defaultConfig()
-    cfg.services.cache = { dir: '.agent-qa/custom-cache', ttl: '7d' } as any
+    cfg.services.cache = { dir: '.etus-agent/custom-cache', ttl: '7d' } as any
     mockResolveConfig.mockResolvedValue(cfg)
     mockGlob.mockResolvedValue(['tests/a.yaml'])
     mockParseAllTests.mockResolvedValue({
@@ -3561,10 +3561,10 @@ describe('run command — runtime cache paths', () => {
       duration: 100,
     })
 
-    await runCommandWithGlobalArgs(['--config', join(configDir, 'agent-qa.config.yaml')], 'tests/**/*.yaml')
+    await runCommandWithGlobalArgs(['--config', join(configDir, 'etus-agent.config.yaml')], 'tests/**/*.yaml')
 
     expect(mockFileActionCache).toHaveBeenCalledWith(expect.objectContaining({
-      dir: join(configDir, '.agent-qa/custom-cache'),
+      dir: join(configDir, '.etus-agent/custom-cache'),
       ttl: '7d',
     }))
   })
@@ -3653,14 +3653,14 @@ describe('run command — runtime cache paths', () => {
   })
 
   it('invalidates failed-run cache entries under the configured cache directory', async () => {
-    const configDir = mkdtempSync(join(tmpdir(), 'agent-qa-cache-invalidate-'))
+    const configDir = mkdtempSync(join(tmpdir(), 'etus-agent-cache-invalidate-'))
     tempDirs.push(configDir)
-    const cacheEntry = join(configDir, '.agent-qa/custom-cache/mock-hash')
+    const cacheEntry = join(configDir, '.etus-agent/custom-cache/mock-hash')
     mkdirSync(cacheEntry, { recursive: true })
     writeFileSync(join(cacheEntry, 'entry.json'), '{}')
 
     const cfg = defaultConfig()
-    cfg.services.cache = { dir: '.agent-qa/custom-cache', ttl: '7d' } as any
+    cfg.services.cache = { dir: '.etus-agent/custom-cache', ttl: '7d' } as any
     mockResolveConfig.mockResolvedValue(cfg)
     mockGlob.mockResolvedValue(['tests/a.yaml'])
     mockParseAllTests.mockResolvedValue({
@@ -3675,7 +3675,7 @@ describe('run command — runtime cache paths', () => {
       duration: 100,
     })
 
-    await runCommandWithGlobalArgs(['--config', join(configDir, 'agent-qa.config.yaml')], 'tests/**/*.yaml')
+    await runCommandWithGlobalArgs(['--config', join(configDir, 'etus-agent.config.yaml')], 'tests/**/*.yaml')
 
     expect(existsSync(cacheEntry)).toBe(false)
   })

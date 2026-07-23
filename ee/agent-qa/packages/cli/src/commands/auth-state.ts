@@ -10,10 +10,10 @@ import {
   removeAuthStateTarget,
   resolveAuthStatePaths,
   writeAuthStateFiles,
-} from '@etus/agent-qa-core'
+} from '@etus/agent-core'
 import { resolveConfig } from '../config.js'
 import { resolveTarget } from '../targets.js'
-import type { AgentQaConfig, AuthStateMetadata } from '@etus/agent-qa-core'
+import type { AgentQaConfig, AuthStateMetadata } from '@etus/agent-core'
 
 type BrowserName = 'chromium' | 'firefox' | 'webkit'
 type ConfirmationResult = 'confirmed' | 'cancelled' | 'browser-closed'
@@ -117,7 +117,7 @@ async function loadCommandContext(command: Command): Promise<{
   configDir: string
   config: AgentQaConfig
 }> {
-  const configPath = getGlobalConfigPath(command) ?? 'agent-qa.config.yaml'
+  const configPath = getGlobalConfigPath(command) ?? 'etus-agent.config.yaml'
   const configDir = dirname(resolvePath(configPath))
   const config = await resolveConfig({ configPath, loadAuthPlugins: false })
   return { configPath, configDir, config }

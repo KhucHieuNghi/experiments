@@ -9,7 +9,6 @@ import {
   useState,
 } from 'react'
 import { useNavigate } from 'react-router'
-import { FaGithub } from 'react-icons/fa'
 
 import { Button } from '@/components/ui/button'
 import { fetchTestFiles } from '@/lib/api'
@@ -107,7 +106,7 @@ export function ProductTourProvider({ children, pathname, hideHeader }: ProductT
 
   const restartTour = useCallback(() => {
     clearProductTourStateCookie()
-    const nextContext = { ...runtimeContext, githubNudgeDismissed: false }
+    const nextContext = { ...runtimeContext }
     setRuntimeContext(nextContext)
     const firstStep = getFirstProductTourStep(nextContext)
     persistActiveStep(firstStep, new Date().toISOString())
@@ -120,7 +119,6 @@ export function ProductTourProvider({ children, pathname, hideHeader }: ProductT
       tourVersion: PRODUCT_TOUR_VERSION,
       skippedAt: new Date().toISOString(),
     })
-    setRuntimeContext((current) => ({ ...current, githubNudgeDismissed: true }))
     setActiveStepId(null)
     setAutoStartChecked(true)
   }, [])
@@ -131,7 +129,6 @@ export function ProductTourProvider({ children, pathname, hideHeader }: ProductT
       tourVersion: PRODUCT_TOUR_VERSION,
       completedAt: new Date().toISOString(),
     })
-    setRuntimeContext((current) => ({ ...current, githubNudgeDismissed: true }))
     setActiveStepId(null)
     setAutoStartChecked(true)
   }, [])
@@ -407,7 +404,6 @@ export function ProductTourOverlay() {
           <div>
             <Button variant="outline" size="sm" asChild>
               <a href={step.action.href} target="_blank" rel="noopener noreferrer">
-                {step.action.icon === 'github' ? <FaGithub className="size-4" /> : null}
                 {step.action.label}
               </a>
             </Button>

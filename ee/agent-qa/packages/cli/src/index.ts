@@ -1,6 +1,6 @@
-import { getAgentQaVersion } from '@etus/agent-qa-core'
+import { getAgentQaVersion } from '@etus/agent-core'
 
-export * from '@etus/agent-qa-core'
+export * from '@etus/agent-core'
 export const VERSION = getAgentQaVersion()
 export * from './config.js'
 export * from './targets.js'

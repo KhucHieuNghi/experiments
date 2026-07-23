@@ -65,8 +65,8 @@ describe('MemoryConfigSchema', () => {
   })
 
   it('accepts a custom memory directory', () => {
-    const result = MemoryConfigSchema.parse({ dir: '.agent-qa/custom-memory' })
-    expect(result.dir).toBe('.agent-qa/custom-memory')
+    const result = MemoryConfigSchema.parse({ dir: '.etus-agent/custom-memory' })
+    expect(result.dir).toBe('.etus-agent/custom-memory')
   })
 
   it('rejects an empty memory directory', () => {
@@ -86,7 +86,7 @@ describe('ServicesSchema with memory', () => {
       memory: {
         enabled: false,
         provider: 'local',
-        dir: '.agent-qa/custom-memory',
+        dir: '.etus-agent/custom-memory',
         minTrust: 0.7,
         maxInjections: 10,
       },
@@ -97,18 +97,18 @@ describe('ServicesSchema with memory', () => {
 
 describe('resolveMemoryRoot', () => {
   it('resolves the default memory root from the config directory', () => {
-    expect(resolveMemoryRoot({}, '/workspace/project')).toBe('/workspace/project/agent-qa-memory')
+    expect(resolveMemoryRoot({}, '/workspace/project')).toBe('/workspace/project/etus-agent-memory')
   })
 
   it('resolves a relative custom memory root from the config directory', () => {
     expect(
-      resolveMemoryRoot({ services: { memory: { dir: '.agent-qa/custom-memory' } } }, '/workspace/project'),
-    ).toBe('/workspace/project/.agent-qa/custom-memory')
+      resolveMemoryRoot({ services: { memory: { dir: '.etus-agent/custom-memory' } } }, '/workspace/project'),
+    ).toBe('/workspace/project/.etus-agent/custom-memory')
   })
 
   it('preserves an absolute custom memory root', () => {
     expect(
-      resolveMemoryRoot({ services: { memory: { dir: '/var/tmp/agent-qa-memory' } } }, '/workspace/project'),
-    ).toBe('/var/tmp/agent-qa-memory')
+      resolveMemoryRoot({ services: { memory: { dir: '/var/tmp/etus-agent-memory' } } }, '/workspace/project'),
+    ).toBe('/var/tmp/etus-agent-memory')
   })
 })

@@ -399,8 +399,8 @@ beforeEach(() => {
         duration: 1200,
         attributes: {
           "git.branch": "phase223-main",
-          "agent-qa.trigger": "cli",
-          "agent-qa.runner": "local",
+          "etus-agent.trigger": "cli",
+          "etus-agent.runner": "local",
         },
         environment: null,
         metadata: null,

@@ -6,7 +6,7 @@ import { getAgentQaVersion } from '../version.js'
 
 const require = createRequire(import.meta.url)
 
-const AGENT_QA_NPM_REGISTRY_URL = 'https://registry.npmjs.org/agent-qa'
+const ETUS_AGENT_NPM_REGISTRY_URL = 'https://registry.npmjs.org/etus-agent'
 
 export const VERSION_CHECK_CACHE_TTL_MS = 24 * 60 * 60 * 1000
 export const VERSION_CHECK_TIMEOUT_MS = 5000
@@ -46,7 +46,7 @@ interface SemverApi {
 let semverApi: SemverApi | undefined
 
 export function getAgentQaVersionCheckCachePath(homeDir?: string): string {
-  return join(homeDir ?? homedir(), '.agent-qa', 'version-check.json')
+  return join(homeDir ?? homedir(), '.etus-agent', 'version-check.json')
 }
 
 export async function getAgentQaUpdateStatus(
@@ -248,7 +248,7 @@ async function fetchLatestVersion(
     const fetcher = fetchImpl ?? globalThis.fetch?.bind(globalThis)
     if (typeof fetcher !== 'function') return undefined
 
-    const response = await fetcher(AGENT_QA_NPM_REGISTRY_URL, {
+    const response = await fetcher(ETUS_AGENT_NPM_REGISTRY_URL, {
       headers: { accept: 'application/json' },
       signal: AbortSignal.timeout(timeoutMs),
     })

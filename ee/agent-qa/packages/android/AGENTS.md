@@ -1,4 +1,4 @@
-# ETUS package instructions: @etus/agent-qa-android
+# ETUS package instructions: @etus/agent-android
 
 Inherit the root ETUS branding, security, and release rules.
 
@@ -17,9 +17,9 @@ UiAutomator2 capabilities, and Android mobile action execution.
 
 ## Commands
 
-- Test: `pnpm --filter @etus/agent-qa-android test`
-- Typecheck: `pnpm --filter @etus/agent-qa-android typecheck`
-- Build: `pnpm --filter @etus/agent-qa-android build`
+- Test: `pnpm --filter @etus/agent-android test`
+- Typecheck: `pnpm --filter @etus/agent-android typecheck`
+- Build: `pnpm --filter @etus/agent-android build`
 
 ## Local Rules
 
@@ -37,6 +37,6 @@ UiAutomator2 capabilities, and Android mobile action execution.
 Run focused package checks:
 
 ```bash
-pnpm --filter @etus/agent-qa-android test
-pnpm --filter @etus/agent-qa-android typecheck
+pnpm --filter @etus/agent-android test
+pnpm --filter @etus/agent-android typecheck
 ```

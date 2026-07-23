@@ -11,7 +11,7 @@ const mockExecute = vi.fn().mockResolvedValue({ success: true })
 const mockScreenshot = vi.fn().mockResolvedValue(Buffer.from('fake-screenshot'))
 const mockObserve = vi.fn().mockResolvedValue({ tree: '', elements: [], timestamp: 0, metadata: {} })
 
-vi.mock('@etus/agent-qa-web', () => ({
+vi.mock('@etus/agent-web', () => ({
   WebPlatformAdapter: vi.fn().mockImplementation(function () {
     return {
       platform: 'web',
@@ -24,7 +24,7 @@ vi.mock('@etus/agent-qa-web', () => ({
   }),
 }))
 
-vi.mock('@etus/agent-qa-android', () => ({
+vi.mock('@etus/agent-android', () => ({
   AndroidPlatformAdapter: vi.fn().mockImplementation(function () {
     throw new Error('mock Android adapter unavailable')
   }),
@@ -92,7 +92,7 @@ const mockVariableStoreInstance = {
   snapshot: vi.fn(() => Object.fromEntries(variableStoreEntries)),
 }
 
-vi.mock('@etus/agent-qa-core', () => {
+vi.mock('@etus/agent-core', () => {
   class LocalSecretStore {
     private secrets: Record<string, string>
     constructor(secrets: Record<string, string> = {}) {
@@ -132,8 +132,8 @@ vi.mock('@etus/agent-qa-core', () => {
     const secretRedacted = redactSecretValue(value, context.secretRedactor)
     if (typeof secretRedacted === 'string') {
       if (
-        secretRedacted.includes('AGENT_QA_AUTH_STATE_JSON')
-        || secretRedacted.includes('/workspace/.agent-qa-auth-state/storage-state.json')
+        secretRedacted.includes('ETUS_AGENT_AUTH_STATE_JSON')
+        || secretRedacted.includes('/workspace/.etus-agent-auth-state/storage-state.json')
         || (secretRedacted.includes('"cookies"') && secretRedacted.includes('"origins"'))
       ) {
         return '[auth state redacted]'
@@ -147,7 +147,7 @@ vi.mock('@etus/agent-qa-core', () => {
         return '[auth state redacted]'
       }
       return Object.fromEntries(Object.entries(secretRedacted).map(([key, item]) => {
-        if (/^(authState|storageStatePath|AGENT_QA_AUTH_STATE_JSON|AGENT_QA_AUTH_STATE_STORAGE_STATE_PATH)$/i.test(key)) {
+        if (/^(authState|storageStatePath|ETUS_AGENT_AUTH_STATE_JSON|ETUS_AGENT_AUTH_STATE_STORAGE_STATE_PATH)$/i.test(key)) {
           return [key, '[auth state redacted]']
         }
         if (/^(ACCESS_TOKEN|SESSION_TOKEN|AUTH_TOKEN|csrf)$/i.test(key)) {
@@ -198,7 +198,7 @@ vi.mock('@etus/agent-qa-core', () => {
 })
 
 import { LiveSession } from '../live-editor/live-session.js'
-import { SecretRedactor, SecretStore } from '@etus/agent-qa-core'
+import { SecretRedactor, SecretStore } from '@etus/agent-core'
 
 const webConfig: LiveSessionConfig = {
   platform: 'web',
@@ -389,7 +389,7 @@ describe('LiveSession', () => {
         reasoning: 'use authState: demo-acc',
         plannedAction: { type: 'waitFor', condition: storageState },
         result: 'failure',
-        error: '/workspace/.agent-qa-auth-state/storage-state.json',
+        error: '/workspace/.etus-agent-auth-state/storage-state.json',
         screenStateBefore: storageState,
       },
       variableSnapshot: { SESSION_TOKEN: { value: 'live-session-token', source: 'hook' } },
@@ -403,7 +403,7 @@ describe('LiveSession', () => {
     expect(serialized).not.toContain('live-cookie-secret')
     expect(serialized).not.toContain('live-local-secret')
     expect(serialized).not.toContain('demo-acc')
-    expect(serialized).not.toContain('/workspace/.agent-qa-auth-state/storage-state.json')
+    expect(serialized).not.toContain('/workspace/.etus-agent-auth-state/storage-state.json')
     expect(serialized).not.toContain('live-session-token')
   })
 

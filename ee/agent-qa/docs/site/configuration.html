@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Configuration - ETUS Documentation</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+  <div class="docs-layout">
+    <aside class="docs-sidebar">
+      <div class="docs-logo">ETUS <span>docs</span></div>
+      <nav class="docs-nav">
+        <div class="docs-nav-group">
+          <div class="docs-nav-label">Getting Started</div>
+          <a href="index.html">Overview</a>
+          <a href="quickstart.html">Quickstart</a>
+        </div>
+        <div class="docs-nav-group">
+          <div class="docs-nav-label">Core Concepts</div>
+          <a href="configuration.html">Configuration</a>
+          <a href="tests.html">Tests</a>
+          <a href="suites.html">Suites</a>
+          <a href="hooks.html">Hooks</a>
+        </div>
+        <div class="docs-nav-group">
+          <div class="docs-nav-label">Features</div>
+          <a href="memory.html">Memory</a>
+          <a href="caching.html">Caching</a>
+          <a href="web-testing.html">Web Testing</a>
+          <a href="auth-state.html">Auth State</a>
+        </div>
+        <div class="docs-nav-group">
+          <div class="docs-nav-label">Reference</div>
+          <a href="cli.html">CLI Commands</a>
+          <a href="env-vars.html">Environment Variables</a>
+        </div>
+      </nav>
+    </aside>
+    <main class="docs-main">
+      <button class="docs-menu-btn">Menu</button>
+      <div class="docs-breadcrumb"><a href="index.html">Docs</a> / Configuration</div>
+
+      <h1>Configuration</h1>
+      <p class="docs-subtitle">ETUS uses a layered, file-backed configuration system. Settings resolve from global config down through suites, tests, and CLI flags.</p>
+
+      <h2>Resolution order</h2>
+      <p>Configuration is resolved with the following precedence (highest wins):</p>
+      <ol>
+        <li>CLI flags (e.g., <code>--log-level debug</code>)</li>
+        <li>Environment variables (<code>ETUS_AGENT_*</code>)</li>
+        <li>Per-test <code>use</code> overrides</li>
+        <li>Suite-level <code>use</code> overrides</li>
+        <li>Local override file (<code>etus-agent.local.yaml</code>)</li>
+        <li>Global config file (<code>etus-agent.config.yaml</code>)</li>
+      </ol>
+
+      <h2>Configuration concepts</h2>
+      <div class="docs-card-grid">
+        <div class="docs-card">
+          <h3>Global Config</h3>
+          <p>The <code>etus-agent.config.yaml</code> file at project root. Defines LLM provider, browser settings, services, and defaults.</p>
+        </div>
+        <div class="docs-card">
+          <h3>Local Override</h3>
+          <p>The <code>etus-agent.local.yaml</code> file. Machine-specific overrides (API keys, ports) that stay out of version control.</p>
+        </div>
+        <div class="docs-card">
+          <h3>Test Overrides</h3>
+          <p>Per-test <code>use</code> block. Override browser, base URL, or other settings for a single test.</p>
+        </div>
+        <div class="docs-card">
+          <h3>Suite Overrides</h3>
+          <p>Suite-level <code>use</code> block applies to all tests in the suite unless a test overrides further.</p>
+        </div>
+        <div class="docs-card">
+          <h3>Variables</h3>
+          <p>Template variables with <code>{{var}}</code> syntax. Secrets use <code>{{secret:NAME}}</code> for redaction in output.</p>
+        </div>
+        <div class="docs-card">
+          <h3>Auth Store</h3>
+          <p>Credentials stored at <code>~/.etus-agent/auth.json</code>. Managed by <code>etus-agent auth</code> commands.</p>
+        </div>
+      </div>
+
+      <h2>Typical project structure</h2>
+      <pre><code>my-project/
+  etus-agent.config.yaml      # Global config (committed)
+  etus-agent.local.yaml       # Local overrides (gitignored)
+  tests/
+    login.yaml                # Test files
+    checkout.yaml
+  suites/
+    smoke.yaml                # Suite definitions
+    regression.yaml
+  hooks/
+    hooks.yaml                # Hook definitions
+    scripts/
+      seed-db.mjs            # Hook scripts
+  etus-agent-memory/          # Memory observations
+    products/
+    suites/
+    tests/
+  .etus-agent/                # Runtime artifacts (gitignored)
+    cache/                    # Action plan cache
+    runs/                     # Run history</code></pre>
+
+      <h2>Full config reference</h2>
+      <pre><code># etus-agent.config.yaml
+version: 1
+
+llm:
+  provider: openai           # openai | anthropic | azure | custom
+  model: gpt-4o
+  apiKey: ${OPENAI_API_KEY}
+  temperature: 0.2
+  maxTokens: 4096
+
+use:
+  browser: chromium          # chromium | firefox | webkit
+  baseUrl: http://localhost:3000
+  headless: true
+  viewport: { width: 1280, height: 720 }
+  video: false
+  timeout: 30000
+
+services:
+  cache:
+    dir: .etus-agent/cache
+    ttl: 86400               # Seconds
+  memory:
+    dir: etus-agent-memory
+  dashboard:
+    port: 4100
+  mcp:
+    port: 4200
+
+variables:
+  env: staging
+  region: us-east-1</code></pre>
+
+      <div class="docs-callout">
+        <strong>Info</strong><br>
+        Use <code>npx etus-agent config</code> to print the resolved configuration for debugging. See <a href="cli.html">CLI Commands</a> for details.
+      </div>
+
+      <div class="docs-footer">
+        <p>ETUS Documentation</p>
+      </div>
+    </main>
+  </div>
+  <script src="assets/docs.js"></script>
+</body>
+</html>

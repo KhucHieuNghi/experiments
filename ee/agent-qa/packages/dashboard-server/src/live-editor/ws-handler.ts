@@ -1,5 +1,5 @@
 import type WebSocket from 'ws'
-import { parseTestFile } from '@etus/agent-qa-core'
+import { parseTestFile } from '@etus/agent-core'
 import type { LiveSession } from './live-session.js'
 import type {
   LiveStepResultPayload,

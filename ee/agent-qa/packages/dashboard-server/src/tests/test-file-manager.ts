@@ -1,12 +1,12 @@
 import { readFile, writeFile, mkdir, rm, stat } from 'node:fs/promises'
 import { dirname, basename } from 'node:path'
-import { generateTestId } from '@etus/agent-qa-ids'
+import { generateTestId } from '@etus/agent-ids'
 import { parse as parseYaml } from 'yaml'
 import {
   discoverWorkspaceFiles,
   resolveWorkspaceFileTarget,
   type ResolvedWorkspacePaths,
-} from '@etus/agent-qa-core'
+} from '@etus/agent-core'
 
 export interface TestFileInfo {
   path: string
@@ -189,7 +189,7 @@ export class TestFileManager {
 
   async validate(content: string): Promise<TestValidationResult> {
     try {
-      const { parseTestFile } = await import('@etus/agent-qa-core')
+      const { parseTestFile } = await import('@etus/agent-core')
       const result = parseTestFile(content, '<editor>')
 
       if (result.errors.length === 0) {

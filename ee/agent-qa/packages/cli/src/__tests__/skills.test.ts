@@ -6,22 +6,22 @@ import { Command } from 'commander'
 import { createSkillsCommand, listAgentQaSkills, resolveAgentQaSkillsDirectory } from '../commands/skills.js'
 
 async function seedPackageRoot(withPackagedSkills = true) {
-  const root = await mkdtemp(path.join(tmpdir(), 'agent-qa-skills-'))
-  await writeFile(path.join(root, 'package.json'), JSON.stringify({ name: 'agent-qa' }))
+  const root = await mkdtemp(path.join(tmpdir(), 'etus-agent-skills-'))
+  await writeFile(path.join(root, 'package.json'), JSON.stringify({ name: 'etus-agent' }))
 
   if (withPackagedSkills) {
-    await mkdir(path.join(root, 'skills', 'agent-qa-authoring'), { recursive: true })
-    await mkdir(path.join(root, 'skills', 'agent-qa-debug-fix'), { recursive: true })
-    await writeFile(path.join(root, 'skills', 'agent-qa-authoring', 'SKILL.md'), [
+    await mkdir(path.join(root, 'skills', 'etus-agent-authoring'), { recursive: true })
+    await mkdir(path.join(root, 'skills', 'etus-agent-debug-fix'), { recursive: true })
+    await writeFile(path.join(root, 'skills', 'etus-agent-authoring', 'SKILL.md'), [
       '---',
-      'name: agent-qa-authoring',
+      'name: etus-agent-authoring',
       'description: Author tests safely',
       '---',
       '',
     ].join('\n'))
-    await writeFile(path.join(root, 'skills', 'agent-qa-debug-fix', 'SKILL.md'), [
+    await writeFile(path.join(root, 'skills', 'etus-agent-debug-fix', 'SKILL.md'), [
       '---',
-      'name: agent-qa-debug-fix',
+      'name: etus-agent-debug-fix',
       'description: Debug failed runs',
       '---',
       '',
@@ -43,7 +43,7 @@ async function runSkillsCommand(root: string, ...args: string[]) {
   }))
 
   process.exitCode = 0
-  await program.parseAsync(['node', 'agent-qa', 'skills', ...args])
+  await program.parseAsync(['node', 'etus-agent', 'skills', ...args])
   return { stdout, stderr, exitCode: process.exitCode }
 }
 
@@ -56,15 +56,15 @@ describe('skills command', () => {
     roots.length = 0
   })
 
-  it('resolves packaged skills from the agent-qa package root', async () => {
+  it('resolves packaged skills from the etus-agent package root', async () => {
     const root = await seedPackageRoot()
     roots.push(root)
 
     const resolved = resolveAgentQaSkillsDirectory(path.join(root, 'dist'))
     expect(resolved).toEqual({ path: path.join(root, 'skills'), source: 'package' })
     expect(listAgentQaSkills(resolved.path).map(skill => skill.name)).toEqual([
-      'agent-qa-authoring',
-      'agent-qa-debug-fix',
+      'etus-agent-authoring',
+      'etus-agent-debug-fix',
     ])
   })
 
@@ -77,8 +77,8 @@ describe('skills command', () => {
     expect(result.exitCode).toBe(0)
     expect(result.stdout).toContain('ETUS skills')
     expect(result.stdout).toContain(`Path: ${path.join(root, 'skills')}`)
-    expect(result.stdout).toContain('agent-qa-authoring')
-    expect(result.stdout).toContain('agent-qa-debug-fix')
+    expect(result.stdout).toContain('etus-agent-authoring')
+    expect(result.stdout).toContain('etus-agent-debug-fix')
     expect(result.stderr).toBe('')
   })
 
@@ -92,7 +92,7 @@ describe('skills command', () => {
     expect(result.exitCode).toBe(0)
     expect(payload.path).toBe(path.join(root, 'skills'))
     expect(payload.source).toBe('package')
-    expect(payload.skills.map(skill => skill.name)).toEqual(['agent-qa-authoring', 'agent-qa-debug-fix'])
+    expect(payload.skills.map(skill => skill.name)).toEqual(['etus-agent-authoring', 'etus-agent-debug-fix'])
   })
 
   it('reports missing skills without writing user files', async () => {

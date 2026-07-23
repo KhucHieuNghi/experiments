@@ -4,12 +4,12 @@ import { parse as parseYaml } from 'yaml'
 import {
   MobileSetupError,
   resolveMobileRunConfig,
-} from '@etus/agent-qa-core'
+} from '@etus/agent-core'
 import type {
   MobilePlatform,
   PlatformConfig,
   ResolvedMobileRunConfig,
-} from '@etus/agent-qa-core'
+} from '@etus/agent-core'
 import type { AppiumManager } from '../execution/appium-manager.js'
 import type { ConfigManager } from '../config/index.js'
 
@@ -44,7 +44,7 @@ export interface PrepareMobileLiveSessionInput {
 }
 
 async function loadLocalBindings(configPath: string): Promise<LocalMobileBindings | null> {
-  const filePath = join(dirname(configPath), 'agent-qa.local.yaml')
+  const filePath = join(dirname(configPath), 'etus-agent.local.yaml')
   try {
     const content = await readFile(filePath, 'utf-8')
     const parsed = parseYaml(content) as LocalMobileBindings | null

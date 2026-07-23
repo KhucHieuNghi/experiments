@@ -1,4 +1,4 @@
-import type { PlatformConfig } from '@etus/agent-qa-core'
+import type { PlatformConfig } from '@etus/agent-core'
 
 export interface AndroidAdapterConfig extends PlatformConfig {
   appiumUrl?: string

@@ -58,7 +58,7 @@ export function RunNavbar({ run, steps, shortcutsOpen, onToggleShortcuts, onOpen
   const farmUrl = (run.metadata as Record<string, unknown>)?.farmSessionUrl as string | undefined
 
   const handleRerun = () => {
-    const wasLocal = run.attributes["agent-qa.runner"] === "local"
+    const wasLocal = run.attributes["etus-agent.runner"] === "local"
     triggerRun({ file: run.filePath ?? run.name, local: wasLocal })
       .then((result) => {
         toast.success("Re-run started")

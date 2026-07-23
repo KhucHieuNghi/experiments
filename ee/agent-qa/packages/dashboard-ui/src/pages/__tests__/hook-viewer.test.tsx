@@ -228,7 +228,7 @@ describe('HookViewerPage', () => {
       variables: { TOKEN: 'abc' },
       sandbox: {
         runtime: 'bun',
-        image: 'etus/agent-qa-hook-runner-bun',
+        image: 'etus/etus-agent-hook-bun',
         networkMode: 'disabled',
       },
     })

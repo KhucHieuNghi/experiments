@@ -13,7 +13,7 @@ export function setupYamlLinter(
   const lint = async () => {
     const content = model.getValue()
     if (!content.trim()) {
-      monaco.editor.setModelMarkers(model, 'agent-qa', [])
+      monaco.editor.setModelMarkers(model, 'etus-agent', [])
       onMarkersChange?.([])
       return
     }
@@ -33,7 +33,7 @@ export function setupYamlLinter(
           endColumn: lineContent.length + 1,
         }
       })
-      monaco.editor.setModelMarkers(model, 'agent-qa', markers)
+      monaco.editor.setModelMarkers(model, 'etus-agent', markers)
       onMarkersChange?.(markers)
     } catch {
       // Network error — silently skip validation
@@ -58,5 +58,5 @@ export function setupYamlLinter(
 }
 
 export function getValidationErrors(model: monaco.editor.ITextModel): monaco.editor.IMarkerData[] {
-  return monaco.editor.getModelMarkers({ resource: model.uri, owner: 'agent-qa' })
+  return monaco.editor.getModelMarkers({ resource: model.uri, owner: 'etus-agent' })
 }

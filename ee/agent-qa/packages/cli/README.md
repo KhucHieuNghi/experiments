@@ -1,67 +1,130 @@
 # ETUS
 
-The self-improving agentic QA harness with Memory.
+The self-improving Agentic QA harness with Memory.
 
-Write tests in natural language for web and mobile. ETUS learns from past runs,
+Write tests in natural language for web. ETUS learns from past runs,
 adapts to UI changes, and catches regressions before you ship.
-
-[Product](https://www.onpoint.vn)
 
 ## Features
 
-- **Write tests in natural language for web and mobile**: Define actions and assertions in human language while agents work from visible roles, labels, and screen state.
-- **Self-healing test execution**: When any sub-action, such as click, fill, or select, fails, ETUS re-observes the UI and tries a different path in the same run. Tests recover from UI drift and flaky interactions instead of failing on the first broken action.
-- **Self-improves with Memory**: With every test run, ETUS builds execution memory from product, suite, and test observations, then adds that context to future runs. ETUS also curates memory from steps that were healed during execution, helping future runs avoid the same mistake.
-- **Built for humans and machines**: A polished dashboard and CLI for developers, plus MCP and skills for coding agents.
-- **Accelerate runs with smart Cache**: The action cache reuses validated plans across similar subsequent test runs, reducing planner work, token usage, and runtime overhead.
-- **Run sandboxed hooks during tests**: Run Node, Bun, Python, or Bash hooks in isolated Docker containers to set up environments, call APIs, seed fixtures, tear down state, or pass structured outputs back into the active test run.
-- **Open source, reviewable QA**: The harness is open source, and tests, configs, hooks, memory, and suite logic all live as version-controlled code, so every change can be diffed, reviewed, reused, and shared across teams.
-- **Bring your own LLM**: Run tests with the model of your choice via OpenAI- and Anthropic-compatible endpoints, Gemini, local or open-source models, and subscriptions like Codex and Claude Code.
+- **Natural-language test authoring** — Define actions and assertions in human language while agents work from visible roles, labels, and screen state
+- **Self-healing execution** — When any sub-action fails, ETUS re-observes the UI and tries a different path in the same run
+- **Memory-aware runs** — Builds execution memory from every run and applies context to future runs
+- **Smart cache** — Reuses validated action plans across runs to reduce LLM costs and runtime
+- **Web testing** — Playwright-based (Chromium, Firefox, WebKit)
+- **Dashboard + MCP** — Visual dashboard for humans, MCP tools for coding agents
+- **Sandboxed hooks** — Node, Bun, Python, Bash hooks in Docker containers
+- **Accessibility checks** — WCAG 2.0 AA/AAA auditing per step via axe-core
+- **Bring your own LLM** — OpenAI-compatible, Anthropic-compatible, Gemini, or subscription auth
+
+## Install
+
+```sh
+npm install -D etus-agent
+```
+
+For Codex or Claude Code subscription auth:
+
+```sh
+npm install -D @etus/agent-subscription-auth
+```
+
+Docker is required for hooks (Node, Bun, Python, Bash sandbox containers).
 
 ## Quickstart
 
-Install the package:
-
 ```sh
-npm install -D agent-qa
+# Initialize project
+npx etus-agent init
+
+# Install browser support
+npx etus-agent install-browsers --chromium
+
+# Start dashboard
+npx etus-agent dashboard --open
 ```
 
-For Codex or Claude Code subscription auth, also install:
+## Run Tests
 
 ```sh
-npm install -D @etus/agent-qa-subscription-auth
+# Run a single test
+npx etus-agent run tests/login.yaml
+
+# Run all tests
+npx etus-agent run
+
+# Run a suite
+npx etus-agent run suites/smoke.suite.yaml
 ```
 
-Install Docker before using hooks. ETUS runs hooks in a sandboxed runtime, and
-Docker is required for the Node, Bun, Python, and Bash hook containers.
+## CLI Commands
 
-Initialize ETUS and install the runtime support you need:
+| Command | Description |
+|---------|-------------|
+| `init` | Initialize project (creates config, examples) |
+| `run` | Execute tests or suites |
+| `dashboard` | Start web dashboard |
+| `mcp` | Start MCP server (for IDE integration) |
+| `auth set` | Save LLM API key |
+| `auth test` | Verify LLM connection |
+| `auth status` | Show credential status |
+| `auth login` | OAuth login for subscription providers |
+| `doctor` | Validate environment |
+| `install-browsers` | Install Playwright browsers |
+| `config get/set` | Manage config values |
+| `validate` | Validate test/suite files |
+| `cache` | Manage action cache |
+| `clean-memory` | Prune stale observations |
 
-```sh
-npx agent-qa init
-npx agent-qa install-browsers --chromium
-# Mobile projects:
-npx agent-qa install-mobile-drivers --all
+## Configuration
+
+Config file: `etus-agent.config.yaml`
+
+```yaml
+workspace:
+  testMatch: ['tests/**/*.yaml']
+  suiteMatch: ['suites/**/*.suite.yaml']
+
+registry:
+  llms:
+    - name: default
+      provider: openai-compatible
+      model: anthropic/claude-sonnet-4
+      baseURL: https://openrouter.ai/api/v1
+  targets:
+    my-app: { platform: web, url: https://myapp.com }
+
+use:
+  browser: { name: chromium, headless: true }
+  llm: default
 ```
 
-Start the dashboard, complete auth, and run tests from the UI:
+## Environment Variables
 
-```sh
-npx agent-qa dashboard --open
-```
+| Variable | Description |
+|----------|-------------|
+| `ETUS_AGENT_DASHBOARD_PORT` | Dashboard port (default: 3100) |
+| `ETUS_AGENT_MCP_PORT` | MCP server port (default: 3471) |
+| `ETUS_AGENT_CACHE_DIR` | Cache directory |
+| `ETUS_AGENT_CACHE_TTL` | Cache TTL (e.g., "7d") |
+| `ETUS_AGENT_LOG_LEVEL` | Log level (debug/info/warn/error) |
+| `ETUS_AGENT_HEADLESS` | Browser headless mode (true/false) |
 
-For product support and updates, use [ETUS support](https://www.onpoint.vn).
+## Roadmap
 
-## CLI
+| Feature | Status |
+|---------|--------|
+| Reduce Token Usage (context pruning, DOM summarization) | Coming Soon |
+| Full Video Recording (end-to-end with timeline sync) | Coming Soon |
+| AI Scenario Suggestions (auto-generate test cases) | Coming Soon |
+| Auto Bypass CAPTCHA (reCAPTCHA, hCaptcha, Turnstile) | Coming Soon |
+| Docker-First Execution (single `docker run`) | Coming Soon |
+| Cloud Device Farm (BrowserStack, Sauce Labs) | Coming Soon |
+| Mobile Testing (Android & iOS) | Coming Soon |
+| Visual Regression (AI-powered screenshot diff) | Coming Soon |
+| Scheduled Runs (cron-based execution) | Coming Soon |
 
-Run tests from the CLI:
+## Links
 
-```sh
-npx agent-qa run tests/hacker-news-top-story.yaml
-```
-
-## Docs
-
-- [Product](https://www.onpoint.vn)
 - [License](LICENSE.md)
 - [Notice](NOTICE.md)

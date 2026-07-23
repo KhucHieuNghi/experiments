@@ -3,18 +3,18 @@ import {
   HooksFileSchema,
   SuiteDefinitionSchema,
   TestDefinitionSchema,
-} from '@etus/agent-qa-core'
+} from '@etus/agent-core'
 import {
   getEntityIdContracts,
   type EntityIdType,
-} from '@etus/agent-qa-ids'
+} from '@etus/agent-ids'
 
 export const SCHEMA_REFERENCE_NAMES = ['config', 'test', 'suite', 'hooks', 'ids'] as const
 export type SchemaReferenceName = typeof SCHEMA_REFERENCE_NAMES[number]
 export const VALIDATION_KINDS = ['config', 'test', 'suite', 'hooks'] as const
 export type ValidationKind = typeof VALIDATION_KINDS[number]
 
-export const AGENT_QA_SCHEMA_REFERENCES = {
+export const ETUS_AGENT_SCHEMA_REFERENCES = {
   config: {
     name: 'ETUS config',
     rootKeys: ['workspace', 'services', 'registry', 'use', 'analytics'],
@@ -59,7 +59,7 @@ export const AGENT_QA_SCHEMA_REFERENCES = {
   },
   ids: {
     name: 'ETUS canonical IDs',
-    instruction: 'Generate IDs with agent_qa_generate_id or `agent-qa ids generate <type>`; never hand-write IDs.',
+    instruction: 'Generate IDs with etus_agent_generate_id or `etus-agent ids generate <type>`; never hand-write IDs.',
     contracts: getEntityIdContracts(),
   },
 } as const

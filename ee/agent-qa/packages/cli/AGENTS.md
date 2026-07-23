@@ -1,4 +1,4 @@
-# ETUS package instructions: agent-qa
+# ETUS package instructions: etus-agent
 
 Inherit the root ETUS branding, security, and release rules.
 
@@ -23,10 +23,10 @@ commands, validation commands, and packaged skills.
 
 ## Commands
 
-- Test: `pnpm --filter agent-qa test`
-- Typecheck: `pnpm --filter agent-qa typecheck`
-- Build: `pnpm --filter agent-qa build`
-- Copy packaged skills: `pnpm --filter agent-qa copy:skills`
+- Test: `pnpm --filter etus-agent test`
+- Typecheck: `pnpm --filter etus-agent typecheck`
+- Build: `pnpm --filter etus-agent build`
+- Copy packaged skills: `pnpm --filter etus-agent copy:skills`
 
 ## Local Rules
 
@@ -47,7 +47,7 @@ commands, validation commands, and packaged skills.
 Run focused CLI checks:
 
 ```bash
-pnpm --filter agent-qa test
-pnpm --filter agent-qa typecheck
-pnpm --filter agent-qa copy:skills
+pnpm --filter etus-agent test
+pnpm --filter etus-agent typecheck
+pnpm --filter etus-agent copy:skills
 ```

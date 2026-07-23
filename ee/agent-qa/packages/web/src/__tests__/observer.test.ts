@@ -233,7 +233,7 @@ describe('observePage', () => {
     expect(state.metadata.domContext).toBeUndefined()
   })
 
-  it('calls page.evaluate to hide data-agent-qa-internal elements before snapshot', async () => {
+  it('calls page.evaluate to hide data-etus-agent-internal elements before snapshot', async () => {
     const mockAriaSnapshot = vi.fn().mockResolvedValue('- button "OK"')
     const evaluateCalls: number[] = []
     let snapshotCallOrder = 0

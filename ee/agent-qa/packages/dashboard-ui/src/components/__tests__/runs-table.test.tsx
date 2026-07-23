@@ -78,8 +78,8 @@ const runs: SuiteRunRow[] = [
     status: "failed",
     duration: 22000,
     attributes: {
-      "agent-qa.trigger": "cli",
-      "agent-qa.runner": "browserstack",
+      "etus-agent.trigger": "cli",
+      "etus-agent.runner": "browserstack",
       "git.branch": "phase223-main",
       "user.email": "CI",
     },
@@ -111,8 +111,8 @@ const runs: SuiteRunRow[] = [
         status: "passed",
         duration: 4300,
         attributes: {
-          "agent-qa.trigger": "cli",
-          "agent-qa.runner": "browserstack",
+          "etus-agent.trigger": "cli",
+          "etus-agent.runner": "browserstack",
           "git.branch": "phase223-main",
         },
         environment: null,
@@ -145,8 +145,8 @@ const runs: SuiteRunRow[] = [
     status: "passed",
     duration: 1800,
     attributes: {
-      "agent-qa.trigger": "dashboard",
-      "agent-qa.runner": "local",
+      "etus-agent.trigger": "dashboard",
+      "etus-agent.runner": "local",
       "myCustomKey.xx": "custom-123",
     },
     environment: null,

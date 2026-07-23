@@ -28,7 +28,7 @@ function findPackageRoot(startDir: string): string {
     if (existsSync(packagePath)) {
       try {
         const pkg = JSON.parse(readFileSync(packagePath, 'utf-8')) as { name?: string }
-        if (pkg.name === 'agent-qa') {
+        if (pkg.name === 'etus-agent') {
           return current
         }
       } catch {

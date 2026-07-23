@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { Command } from 'commander'
-import { isCanonicalTestId } from '@etus/agent-qa-ids'
+import { isCanonicalTestId } from '@etus/agent-ids'
 import { createIdsCommand } from '../commands/ids.js'
 
 let logSpy: ReturnType<typeof vi.spyOn>
@@ -25,7 +25,7 @@ describe('createIdsCommand', () => {
     const program = new Command()
     program.addCommand(createIdsCommand())
 
-    await program.parseAsync(['node', 'agent-qa', 'ids', 'generate', 'test'])
+    await program.parseAsync(['node', 'etus-agent', 'ids', 'generate', 'test'])
 
     const id = String(logSpy.mock.calls[0][0])
     expect(isCanonicalTestId(id)).toBe(true)
@@ -37,7 +37,7 @@ describe('createIdsCommand', () => {
     program.addCommand(createIdsCommand())
     const id = 't_alpha-bravo-charlie-delta-echo-foxtrot-golf-hotel-india-juliet'
 
-    await program.parseAsync(['node', 'agent-qa', 'ids', 'validate', 'test', id, '--json'])
+    await program.parseAsync(['node', 'etus-agent', 'ids', 'validate', 'test', id, '--json'])
 
     const result = JSON.parse(String(logSpy.mock.calls[0][0]))
     expect(result).toMatchObject({
@@ -52,7 +52,7 @@ describe('createIdsCommand', () => {
     const program = new Command()
     program.addCommand(createIdsCommand())
 
-    await program.parseAsync(['node', 'agent-qa', 'ids', 'validate', 'suite', 't_bad-id', '--json'])
+    await program.parseAsync(['node', 'etus-agent', 'ids', 'validate', 'suite', 't_bad-id', '--json'])
 
     const result = JSON.parse(String(logSpy.mock.calls[0][0]))
     expect(result.valid).toBe(false)

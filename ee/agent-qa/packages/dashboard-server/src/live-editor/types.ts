@@ -6,7 +6,7 @@ import type {
   ModelConfig,
   SecretRedactor,
   SecretStore,
-} from '@etus/agent-qa-core'
+} from '@etus/agent-core'
 
 export type LiveSessionLLMConfig = Pick<
   ModelConfig,

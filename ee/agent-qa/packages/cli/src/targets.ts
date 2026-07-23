@@ -1,4 +1,4 @@
-import type { AgentQaConfig } from '@etus/agent-qa-core'
+import type { AgentQaConfig } from '@etus/agent-core'
 
 export interface ResolvedTarget {
   name: string

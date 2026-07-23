@@ -419,7 +419,7 @@ describe('HookEditorPage', () => {
     expect((container.querySelector('#hook-file') as HTMLInputElement | null)?.value).toBe('./hooks/new-hook.ts')
     expect(container.textContent).toContain('Source')
     expect(container.textContent).toContain('TypeScript')
-    expect(String(latestMonacoProps?.value ?? '')).toContain('/tmp/agent-qa.env')
+    expect(String(latestMonacoProps?.value ?? '')).toContain('/tmp/etus-agent.env')
 
     await act(async () => {
       ;(container.querySelector('[data-testid="hook-save"]') as HTMLButtonElement | null)?.click()
@@ -433,7 +433,7 @@ describe('HookEditorPage', () => {
           runtime: 'bun',
           file: './hooks/new-hook.ts',
         }),
-        source: expect.stringContaining('/tmp/agent-qa.env'),
+        source: expect.stringContaining('/tmp/etus-agent.env'),
       }),
     )
     expect(navigateSpy).toHaveBeenCalledWith(

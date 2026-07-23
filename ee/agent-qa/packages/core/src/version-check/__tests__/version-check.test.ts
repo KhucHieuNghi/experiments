@@ -70,16 +70,16 @@ describe('getAgentQaVersionCheckCachePath', () => {
   let tempHome: string
 
   beforeEach(async () => {
-    tempHome = await mkdtemp(join(tmpdir(), 'agent-qa-version-home-'))
+    tempHome = await mkdtemp(join(tmpdir(), 'etus-agent-version-home-'))
   })
 
   afterEach(async () => {
     await rm(tempHome, { recursive: true, force: true })
   })
 
-  it('returns tempHome/.agent-qa/version-check.json', () => {
+  it('returns tempHome/.etus-agent/version-check.json', () => {
     expect(getAgentQaVersionCheckCachePath(tempHome)).toBe(
-      join(tempHome, '.agent-qa', 'version-check.json'),
+      join(tempHome, '.etus-agent', 'version-check.json'),
     )
   })
 })
@@ -89,7 +89,7 @@ describe('getAgentQaUpdateStatus', () => {
   let cachePath: string
 
   beforeEach(async () => {
-    tempDir = await mkdtemp(join(tmpdir(), 'agent-qa-version-check-'))
+    tempDir = await mkdtemp(join(tmpdir(), 'etus-agent-version-check-'))
     cachePath = join(tempDir, 'version-check.json')
   })
 
@@ -141,7 +141,7 @@ describe('getAgentQaUpdateStatus', () => {
     })
 
     expect(fetchImpl).toHaveBeenCalledTimes(1)
-    expect(String(calls[0][0])).toBe('https://registry.npmjs.org/agent-qa')
+    expect(String(calls[0][0])).toBe('https://registry.npmjs.org/etus-agent')
     expect(getAcceptHeader(calls[0][1])).toBe('application/json')
     expect(calls[0][1]?.signal).toBeInstanceOf(AbortSignal)
     expect(status).toEqual({

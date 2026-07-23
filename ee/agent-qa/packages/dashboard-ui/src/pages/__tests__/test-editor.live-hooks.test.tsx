@@ -481,7 +481,7 @@ describe('TestEditorPage live hook safeguards', () => {
       path: 'tests/live-hook-test.yaml',
       content: BASE_YAML.replace('authState: admin', 'authState: ../admin.json'),
     })
-    saveLiveAuthStateMock.mockRejectedValue(new Error('EACCES .agent-qa/auth-states/demo-target/admin.json secret-cookie'))
+    saveLiveAuthStateMock.mockRejectedValue(new Error('EACCES .etus-agent/auth-states/demo-target/admin.json secret-cookie'))
     const rootElement = await render(<TestEditorPage />)
 
     await click(getButtonByText(rootElement, 'Connect Live Session'))

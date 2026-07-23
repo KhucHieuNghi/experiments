@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Caching - ETUS Documentation</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+  <div class="docs-layout">
+    <aside class="docs-sidebar">
+      <div class="docs-logo">ETUS <span>docs</span></div>
+      <nav class="docs-nav">
+        <div class="docs-nav-group">
+          <div class="docs-nav-label">Getting Started</div>
+          <a href="index.html">Overview</a>
+          <a href="quickstart.html">Quickstart</a>
+        </div>
+        <div class="docs-nav-group">
+          <div class="docs-nav-label">Core Concepts</div>
+          <a href="configuration.html">Configuration</a>
+          <a href="tests.html">Tests</a>
+          <a href="suites.html">Suites</a>
+          <a href="hooks.html">Hooks</a>
+        </div>
+        <div class="docs-nav-group">
+          <div class="docs-nav-label">Features</div>
+          <a href="memory.html">Memory</a>
+          <a href="caching.html">Caching</a>
+          <a href="web-testing.html">Web Testing</a>
+          <a href="auth-state.html">Auth State</a>
+        </div>
+        <div class="docs-nav-group">
+          <div class="docs-nav-label">Reference</div>
+          <a href="cli.html">CLI Commands</a>
+          <a href="env-vars.html">Environment Variables</a>
+        </div>
+      </nav>
+    </aside>
+    <main class="docs-main">
+      <button class="docs-menu-btn">Menu</button>
+      <div class="docs-breadcrumb"><a href="index.html">Docs</a> / Caching</div>
+
+      <h1>Caching</h1>
+      <p class="docs-subtitle">ETUS caches action plans to dramatically speed up repeat test runs. Cached runs are up to 5x faster and use 3x fewer LLM tokens.</p>
+
+      <h2>What gets cached</h2>
+      <p>When ETUS interprets a test step, it generates a <em>sub-action plan</em>&mdash;the sequence of browser actions to perform. These plans are cached so that identical steps don't require another LLM call on subsequent runs.</p>
+
+      <h2>Cache key</h2>
+      <p>Each cache entry is keyed by a SHA-256 hash of:</p>
+      <ul>
+        <li>Resolved configuration</li>
+        <li>Suite context (if running within a suite)</li>
+        <li>Test definition</li>
+        <li>Step text</li>
+        <li>Platform (browser + viewport)</li>
+        <li>Step index within the test</li>
+      </ul>
+      <p>Changing any of these inputs produces a new key, causing a cache miss.</p>
+
+      <h2>Hit, miss, and invalidation</h2>
+      <table>
+        <thead>
+          <tr><th>Scenario</th><th>Behavior</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Cache hit</td><td>Cached plan is loaded and executed directly. No LLM call.</td></tr>
+          <tr><td>Cache miss</td><td>LLM generates a new plan. Result is cached for future runs.</td></tr>
+          <tr><td>TTL expired</td><td>Entry is treated as a miss and regenerated.</td></tr>
+          <tr><td>Step text changed</td><td>New key is generated; old entry is orphaned.</td></tr>
+        </tbody>
+      </table>
+
+      <h2>Prefix invalidation</h2>
+      <p>You can invalidate all cache entries for a specific test or suite by purging with a prefix:</p>
+      <pre><code># Purge all entries for a specific test
+npx etus-agent cache purge --prefix test_login_success
+
+# Purge all entries for a suite
+npx etus-agent cache purge --prefix suite_smoke_critical
+
+# Purge everything
+npx etus-agent cache purge --all</code></pre>
+
+      <h2>Configuration</h2>
+      <pre><code># etus-agent.config.yaml
+services:
+  cache:
+    dir: .etus-agent/cache
+    ttl: 86400             # Time-to-live in seconds (default: 24 hours)</code></pre>
+
+      <p>Environment variable overrides:</p>
+      <ul>
+        <li><code>ETUS_AGENT_CACHE_DIR</code> &mdash; override the cache directory path</li>
+        <li><code>ETUS_AGENT_CACHE_TTL</code> &mdash; override the TTL value in seconds</li>
+      </ul>
+
+      <h2>Disabling the cache</h2>
+      <p>Use the <code>--no-cache</code> flag to skip the cache for a single run:</p>
+      <pre><code>npx etus-agent run tests/login.yaml --no-cache</code></pre>
+      <p>This forces fresh LLM calls for every step but still writes new entries to the cache.</p>
+
+      <h2>Performance impact</h2>
+      <div class="docs-card-grid">
+        <div class="docs-card">
+          <h3>5x faster</h3>
+          <p>Cached runs skip LLM round-trips entirely, executing plans in milliseconds.</p>
+        </div>
+        <div class="docs-card">
+          <h3>3x fewer tokens</h3>
+          <p>Each cache hit eliminates the prompt and completion tokens for that step.</p>
+        </div>
+        <div class="docs-card">
+          <h3>Deterministic</h3>
+          <p>Cached plans produce consistent behavior across runs, reducing flakiness.</p>
+        </div>
+      </div>
+
+      <div class="docs-callout">
+        <strong>Info</strong><br>
+        The cache directory (<code>.etus-agent/cache</code>) should be in your <code>.gitignore</code>. It is machine-specific and regenerates automatically.
+      </div>
+
+      <div class="docs-footer">
+        <p>ETUS Documentation</p>
+      </div>
+    </main>
+  </div>
+  <script src="assets/docs.js"></script>
+</body>
+</html>

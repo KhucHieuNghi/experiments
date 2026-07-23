@@ -9,12 +9,12 @@ const { mockCaptureAnalytics, mockResolveAnalyticsStandardProperties } = vi.hois
   mockResolveAnalyticsStandardProperties: vi.fn(async () => ({
     surface: 'dashboard-server',
     runtime_context: 'user',
-    agent_qa_version: '0.1.0',
+    etus_agent_version: '0.1.0',
   })),
 }))
 
-vi.mock('@etus/agent-qa-core', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('@etus/agent-qa-core')>()
+vi.mock('@etus/agent-core', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@etus/agent-core')>()
   return {
     ...actual,
     captureAnalytics: mockCaptureAnalytics,
@@ -24,7 +24,7 @@ vi.mock('@etus/agent-qa-core', async (importOriginal) => {
 
 vi.mock('../execution/test-runner.js', () => {
   class MockTestRunner {
-    static resolveCliBin = vi.fn(() => '/mock/agent-qa')
+    static resolveCliBin = vi.fn(() => '/mock/etus-agent')
     execute = vi.fn()
     kill = vi.fn()
     killAll = vi.fn()
@@ -59,9 +59,9 @@ afterEach(() => {
 })
 
 function createConfig(content: string): string {
-  const dir = mkdtempSync(join(tmpdir(), 'agent-qa-mcp-server-'))
+  const dir = mkdtempSync(join(tmpdir(), 'etus-agent-mcp-server-'))
   tempDirs.push(dir)
-  const configPath = join(dir, 'agent-qa.config.yaml')
+  const configPath = join(dir, 'etus-agent.config.yaml')
   writeFileSync(configPath, content)
   return configPath
 }
@@ -84,7 +84,7 @@ describe('dashboard MCP startup', () => {
     expect(started.mcp.url).toMatch(/^http:\/\/127\.0\.0\.1:\d+\/mcp$/)
     expect(mockCaptureAnalytics).toHaveBeenCalledWith(
       expect.objectContaining({
-        name: 'agent-qa.mcp.server.lifecycle',
+        name: 'etus-agent.mcp.server.lifecycle',
         properties: expect.objectContaining({
           surface: 'dashboard-server',
           mcp_server_state: 'started',
@@ -118,7 +118,7 @@ describe('dashboard MCP startup', () => {
     })
     expect(mockCaptureAnalytics).toHaveBeenCalledWith(
       expect.objectContaining({
-        name: 'agent-qa.mcp.server.lifecycle',
+        name: 'etus-agent.mcp.server.lifecycle',
         properties: expect.objectContaining({
           surface: 'dashboard-server',
           mcp_server_state: 'disabled',
@@ -158,7 +158,7 @@ describe('dashboard MCP startup', () => {
     expect(started.mcp.enabled).toBe(true)
     expect(mockCaptureAnalytics).toHaveBeenCalledWith(
       expect.objectContaining({
-        name: 'agent-qa.mcp.server.lifecycle',
+        name: 'etus-agent.mcp.server.lifecycle',
         properties: expect.objectContaining({
           mcp_server_state: 'started',
           mcp_transport: 'http',

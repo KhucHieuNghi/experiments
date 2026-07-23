@@ -1,6 +1,6 @@
 import path from 'node:path'
 
-export const DEFAULT_MEMORY_DIR = 'agent-qa-memory'
+export const DEFAULT_MEMORY_DIR = 'etus-agent-memory'
 
 export interface MemoryRootConfig {
   services?: {

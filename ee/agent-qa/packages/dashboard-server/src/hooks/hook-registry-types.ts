@@ -1,4 +1,4 @@
-import type { HookDefinition, HookRuntime } from '@etus/agent-qa-core'
+import type { HookDefinition, HookRuntime } from '@etus/agent-core'
 
 export type HookFieldName = 'id' | 'name' | 'runtime' | 'file' | 'timeout' | 'network' | 'registry'
 

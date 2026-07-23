@@ -15,7 +15,7 @@ const { mockGetAgentQaUpdateStatus } = vi.hoisted(() => ({
   mockGetAgentQaUpdateStatus: vi.fn(),
 }))
 
-vi.mock('@etus/agent-qa-core', () => ({
+vi.mock('@etus/agent-core', () => ({
   getAgentQaUpdateStatus: mockGetAgentQaUpdateStatus,
 }))
 
@@ -42,7 +42,7 @@ afterEach(() => {
 })
 
 function makeTempProject(): string {
-  const dir = mkdtempSync(join(tmpdir(), 'agent-qa-version-notice-'))
+  const dir = mkdtempSync(join(tmpdir(), 'etus-agent-version-notice-'))
   createdDirs.push(dir)
   return dir
 }
@@ -63,7 +63,7 @@ function makeDevDependencyProject(options: {
   const dir = makeTempProject()
   writePackageJson(dir, {
     ...(options.packageManager ? { packageManager: options.packageManager } : {}),
-    devDependencies: { 'agent-qa': '0.1.18' },
+    devDependencies: { 'etus-agent': '0.1.18' },
   })
   for (const lockfile of options.lockfiles ?? []) {
     writeLockfile(dir, lockfile)
@@ -128,19 +128,19 @@ describe('inferAgentQaDevDependencyUpdateCommand', () => {
       inferAgentQaDevDependencyUpdateCommand(
         makeDevDependencyProject({ packageManager: 'pnpm@10.6.1' }),
       ),
-    ).toBe('pnpm add -D agent-qa@latest')
+    ).toBe('pnpm add -D etus-agent@latest')
 
     expect(
       inferAgentQaDevDependencyUpdateCommand(
         makeDevDependencyProject({ lockfiles: ['pnpm-lock.yaml'] }),
       ),
-    ).toBe('pnpm add -D agent-qa@latest')
+    ).toBe('pnpm add -D etus-agent@latest')
   })
 
   it.each([
-    ['npm@10.9.0', 'npm install --save-dev agent-qa@latest'],
-    ['yarn@4.10.3', 'yarn add --dev agent-qa@latest'],
-    ['bun@1.3.4', 'bun add --dev agent-qa@latest'],
+    ['npm@10.9.0', 'npm install --save-dev etus-agent@latest'],
+    ['yarn@4.10.3', 'yarn add --dev etus-agent@latest'],
+    ['bun@1.3.4', 'bun add --dev etus-agent@latest'],
   ])('infers %s from packageManager', (packageManager, command) => {
     expect(
       inferAgentQaDevDependencyUpdateCommand(makeDevDependencyProject({ packageManager })),
@@ -148,11 +148,11 @@ describe('inferAgentQaDevDependencyUpdateCommand', () => {
   })
 
   it.each([
-    ['package-lock.json', 'npm install --save-dev agent-qa@latest'],
-    ['npm-shrinkwrap.json', 'npm install --save-dev agent-qa@latest'],
-    ['yarn.lock', 'yarn add --dev agent-qa@latest'],
-    ['bun.lock', 'bun add --dev agent-qa@latest'],
-    ['bun.lockb', 'bun add --dev agent-qa@latest'],
+    ['package-lock.json', 'npm install --save-dev etus-agent@latest'],
+    ['npm-shrinkwrap.json', 'npm install --save-dev etus-agent@latest'],
+    ['yarn.lock', 'yarn add --dev etus-agent@latest'],
+    ['bun.lock', 'bun add --dev etus-agent@latest'],
+    ['bun.lockb', 'bun add --dev etus-agent@latest'],
   ])('infers %s as the only lockfile', (lockfile, command) => {
     expect(
       inferAgentQaDevDependencyUpdateCommand(makeDevDependencyProject({ lockfiles: [lockfile] })),
@@ -161,14 +161,14 @@ describe('inferAgentQaDevDependencyUpdateCommand', () => {
 
   it('returns undefined for uncertain or unsafe package layouts', () => {
     const dependenciesOnly = makeTempProject()
-    writePackageJson(dependenciesOnly, { dependencies: { 'agent-qa': '0.1.18' }, packageManager: 'pnpm@10.6.1' })
+    writePackageJson(dependenciesOnly, { dependencies: { 'etus-agent': '0.1.18' }, packageManager: 'pnpm@10.6.1' })
 
     const noPackageJson = makeTempProject()
     const malformedPackageJson = makeTempProject()
     writePackageJson(malformedPackageJson, '{ not json')
 
     const noPackageManagerOrLock = makeTempProject()
-    writePackageJson(noPackageManagerOrLock, { devDependencies: { 'agent-qa': '0.1.18' } })
+    writePackageJson(noPackageManagerOrLock, { devDependencies: { 'etus-agent': '0.1.18' } })
 
     const unknownPackageManager = makeDevDependencyProject({ packageManager: 'deno@2.2.0' })
     const multipleLockfiles = makeDevDependencyProject({
@@ -202,7 +202,7 @@ describe('printAgentQaUpdateNoticeIfNeeded', () => {
     expect(output).toContain('Update available: ETUS v0.1.19')
     expect(output).toContain('Current version: v0.1.18')
     expect(output).toContain('Releases: https://www.onpoint.vn')
-    expect(output).toContain('Update: pnpm add -D agent-qa@latest')
+    expect(output).toContain('Update: pnpm add -D etus-agent@latest')
   })
 
   it.each([
@@ -219,7 +219,7 @@ describe('printAgentQaUpdateNoticeIfNeeded', () => {
     }],
     ['dependencies only', () => {
       const dir = makeTempProject()
-      writePackageJson(dir, { packageManager: 'pnpm@10.6.1', dependencies: { 'agent-qa': '0.1.18' } })
+      writePackageJson(dir, { packageManager: 'pnpm@10.6.1', dependencies: { 'etus-agent': '0.1.18' } })
       return dir
     }],
     ['unknown package manager', () => makeDevDependencyProject({ packageManager: 'deno@2.2.0' })],

@@ -132,8 +132,8 @@ export class ConsoleReporter implements Reporter {
   onRunStart(tests: TestDefinition[]): void {
     this.resetCounters()
     if (this.inSuite) return
-    const model = process.env.AGENT_QA_LLM_MODEL
-    const provider = process.env.AGENT_QA_LLM_PROVIDER
+    const model = process.env.ETUS_AGENT_LLM_MODEL
+    const provider = process.env.ETUS_AGENT_LLM_PROVIDER
     const modelInfo = model ? `  ${this.c(pc.dim, `Model: ${model}${provider ? ` (${provider})` : ''}`)}\n` : ''
     console.log(this.c(pc.bold, `\nRunning ${tests.length} test(s)...\n`) + modelInfo)
   }

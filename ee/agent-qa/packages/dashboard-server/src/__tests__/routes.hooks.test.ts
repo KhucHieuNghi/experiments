@@ -9,8 +9,8 @@ const { mockRunHookInSandbox } = vi.hoisted(() => ({
   mockRunHookInSandbox: vi.fn(),
 }))
 
-vi.mock('@etus/agent-qa-core', async () => {
-  const actual = await vi.importActual<typeof import('@etus/agent-qa-core')>('@etus/agent-qa-core')
+vi.mock('@etus/agent-core', async () => {
+  const actual = await vi.importActual<typeof import('@etus/agent-core')>('@etus/agent-core')
   return {
     ...actual,
     runHookInSandbox: (...args: unknown[]) => mockRunHookInSandbox(...args),
@@ -19,7 +19,7 @@ vi.mock('@etus/agent-qa-core', async () => {
 
 import { ConfigManager } from '../config/index.js'
 import { createRouter } from '../server/routes.js'
-import { resolveWorkspacePaths, type ResolvedWorkspacePaths } from '@etus/agent-qa-core'
+import { resolveWorkspacePaths, type ResolvedWorkspacePaths } from '@etus/agent-core'
 
 const SEEDED_HOOK_ID = 'h_amber-birch-coral-delta-ember-falcon-garden-harbor-island-jungle'
 const SEEDED_HOOK_ID_TWO = 'h_aster-bloom-cloud-drift-ember-field-glade-hollow-ivory-jasper'
@@ -120,7 +120,7 @@ async function createConfigWorkspace(
   workspacePaths: ResolvedWorkspacePaths
   dir: string
 }> {
-  const dir = await mkdtemp(join(tmpdir(), 'agent-qa-hooks-routes-'))
+  const dir = await mkdtemp(join(tmpdir(), 'etus-agent-hooks-routes-'))
   tempDirs.push(dir)
 
   const normalizedConfigContent = withRequiredWorkspaceConfig(configContent)
@@ -929,7 +929,7 @@ describe('POST /api/hooks/:hookId/run', () => {
       variables: { RESULT: 'abc' },
       sandbox: {
         runtime: 'node',
-        image: 'etus/agent-qa-hook-runner-node',
+        image: 'etus/etus-agent-hook-node',
         networkMode: 'disabled',
         dockerVersion: null,
         networkLogsAvailable: false,
@@ -1048,7 +1048,7 @@ describe('POST /api/hooks/:hookId/run', () => {
     expect(JSON.parse(res.body)).toEqual(expect.objectContaining({
       sandbox: {
         runtime: 'bun',
-        image: 'etus/agent-qa-hook-runner-bun',
+        image: 'etus/etus-agent-hook-bun',
         networkMode: 'enabled',
         dockerVersion: null,
         networkLogsAvailable: false,

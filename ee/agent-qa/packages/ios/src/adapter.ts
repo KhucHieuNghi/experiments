@@ -1,6 +1,6 @@
-import type { PlatformAdapter, PlatformConfig, ScreenState, Action, ActionResult, ObserveOptions, ConsoleLogEntry } from '@etus/agent-qa-core'
-import { MobileSetupError, parseMobileSource, MobileElementResolver, KEY_MAP, computeSwipe, computePinch, computeFingerPositions, alignToWindow, warnIfOutOfBounds } from '@etus/agent-qa-core'
-import type { MobileRefMap } from '@etus/agent-qa-core'
+import type { PlatformAdapter, PlatformConfig, ScreenState, Action, ActionResult, ObserveOptions, ConsoleLogEntry } from '@etus/agent-core'
+import { MobileSetupError, parseMobileSource, MobileElementResolver, KEY_MAP, computeSwipe, computePinch, computeFingerPositions, alignToWindow, warnIfOutOfBounds } from '@etus/agent-core'
+import type { MobileRefMap } from '@etus/agent-core'
 import { createIOSSession } from './session.js'
 import type { IOSAdapterConfig } from './types.js'
 

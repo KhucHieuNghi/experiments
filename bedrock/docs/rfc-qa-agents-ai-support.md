@@ -776,6 +776,68 @@ Nguyen tac MVP:
 - Record la shared context de thao luan, khong phai approval artifact tu dong.
 - Storage/publish channel de quyet dinh sau; product value truoc mat nam o chat luong record.
 
+### Scope ownership: business/product vs engineer/technology
+
+Decision 2026-07-23: QA-Agents phai tach ro **scope cua business/product** va
+**scope cua engineer/technology**. Neu khong tach, AI se de tron expected
+behavior voi implementation guess, lam QA tin nham vao inference.
+
+| Scope group | Owner chinh | QA-Agents duoc lam | QA-Agents khong duoc tu quyet |
+|---|---|---|---|
+| Business/Product | Product owner, Business owner, BA | Tong hop intent, business rule, customer impact, priority, out-of-scope, release risk, historical decision; tao question khi thieu source | Chot expected behavior moi, doi business rule, accept release risk, override product priority |
+| QA/Verification | QA owner, QA lead | Tao verification context record, test matrix, evidence checklist, defect wording draft, sign-off note draft, final verification memory | Tu dong pass/fail release, bo qua missing evidence, bien AI inference thanh QA sign-off |
+| Engineer/Technology | Engineer owner, Tech lead, DevOps/SRE khi can | Tong hop implementation hints, impacted layers, PR/code/test/CI signals, deploy/build constraints, non-functional risk | Chot architecture/implementation thay engineer, khang dinh code behavior neu khong co source, write PR/ticket/CI action trong Phase 1 |
+| AI/System/AWS | QA-Agents service owner, platform/security owner | Retrieve approved docs, label source-backed/inferred/unknown, run Bedrock prompt contracts, Guardrails, AgentCore session/trace, persist draft/evidence metadata | Tro thanh authority ve business/technical truth; luu memory ngoai policy; goi write tools khong approval |
+| Third-party systems | Tool/system owner | Lam source/link: ticketing, PR, CI, docs, chat, test management, evidence store | Bi agent write truc tiep trong MVP; can Gateway/Identity/Policy/human approval neu sang Phase 2 |
+
+Business/Product scope gom:
+
+- Customer/user segment, business goal, KPI/impact, priority.
+- Expected behavior, acceptance criteria, out-of-scope, exception/rule.
+- Historical decision, policy, release note, customer promise.
+- Release risk acceptance va business trade-off.
+
+Engineer/Technology scope gom:
+
+- Implementation shape: UI, API, database, config, permission, background job, integration.
+- Codebase signal: component, route, endpoint, schema, config, existing tests, PR diff.
+- Runtime/deployment constraints: environment, build version, feature flag, migration, cache, queue, observability.
+- Technical risk: regression surface, compatibility, performance, security, data integrity, rollback.
+
+QA scope gom:
+
+- Translate business intent + technical signal thanh verification plan.
+- Mark unknown/ambiguous areas and route question dung owner.
+- Execute manual/automated tests, capture evidence, write defect and final note.
+- Update final verification memory chi sau khi evidence co gia tri.
+
+AI authority rules:
+
+- **Source-backed**: co citation/link/source ro; AI co the summarize va de xuat.
+- **Inferred**: suy luan tu source gan ke; phai gan nhan confidence/risk va can human review.
+- **Unknown**: khong co source du; phai tao clarification block, khong duoc dien vao nhu fact.
+- **Owner locked**: business decision chi Product/Business owner chot; technical decision chi Engineer/Tech owner chot; QA sign-off chi QA chot.
+
+### Runtime/container boundary
+
+Proposal can phan biet frame trong moi diagram:
+
+| Frame | Nam o dau | Thanh phan thuoc frame | Ghi chu |
+|---|---|---|---|
+| Human workspace | Nguoi dung/team | QA, Product, Engineer, QA Lead, reviewer | Nguoi chot decision va review AI output |
+| User machine/local environment | May QA/developer hoac local runner | Browser UI, ETUS CLI/Dashboard, Playwright/Appium, Docker hooks, local YAML/artifacts/cache/memory khi chay local | Co the chua thuoc AWS; can policy ve secrets/local data |
+| AWS account/control plane | AWS cloud cua to chuc | CloudFront, WAF, Cognito, API Gateway, Lambda, Step Functions, SQS, EventBridge, DynamoDB, S3, KMS, CloudWatch, Bedrock, AgentCore | Nen la production boundary cho auth, storage, governance, observability |
+| Third-party/external systems | SaaS hoac he thong ben ngoai AWS | Jira/ClickUp/Linear, GitHub/GitLab, CI, Slack/Teams, Notion/Confluence/Drive, external LLM/provider neu dung | Phase 1 uu tien read/manual links; Phase 2 moi Gateway + Identity + Policy |
+| Target system under test | App/web/mobile/backend can QA | Staging/prod-like app, API, device/browser farm, test data system | Co the nam trong AWS, local, hoac third-party; diagram phai label ro |
+
+Frame rule cho architecture:
+
+- UI cua nguoi dung khong mac dinh nam trong AWS; neu serve bang CloudFront thi UI asset nam AWS, nhung browser session nam tren may nguoi dung.
+- ETUS local runner, Appium device, Docker hook va local artifact khong thuoc AWS neu chua deploy/host len AWS.
+- Bedrock/AgentCore/CloudWatch/S3/DynamoDB la AWS control plane, khong phai replacement bat buoc cho ETUS runtime.
+- Ticketing/PR/CI/docs/chat la third-party/external systems cho den khi co governed tool integration.
+- Neu mot target system nam trong AWS, diagram phai ve rieng la "system under test", khong tron voi QA-Agents control plane.
+
 ### Core entities
 
 | Entity | Mo ta | Source |
@@ -862,6 +924,12 @@ evidence:
 
 Decision 2026-07-23 revised: Phase 1 dung **Bedrock + retrieval/RAG don gian + AgentCore runtime boundary**.
 
+Related Bedrock/AWS docs trong repo can doc truoc khi review technical detail cua QA-Agents proposal:
+
+- [`aws-ai-project-stack-map.html`](aws-ai-project-stack-map.html): visual map ve AWS AI project stack, Bedrock, AgentCore, app runtime, data, security va ops.
+- [`aws-ai-ecosystem-stack-guide.md`](aws-ai-ecosystem-stack-guide.md): source-of-truth Markdown cho cach chon AWS layers theo need.
+- [`aws-bedrock-agent-ecosystem-research.md`](aws-bedrock-agent-ecosystem-research.md): research notes ve Bedrock/AgentCore ecosystem va implication cho agent platform.
+
 Ly do:
 
 - Phase 1 output la artifact draft/review, khong phai autonomous agent action.
@@ -890,6 +958,121 @@ Phase 1 ap dung AWS AI ecosystem theo huong sau:
 | Tool policy va outbound auth | AgentCore Gateway + Identity + Policy | Phase 2; can khi agent co the tao/update ticket/document |
 | Observability/evaluation | CloudWatch + AgentCore Evaluations/Bedrock eval | Can trace, token, tool latency, quality score |
 | Evidence/file storage | S3/Drive/Docs tuy stack hien co | Can retention va permission boundary |
+
+### Knowledge Base boundary cho QA-Agents
+
+Decision 2026-07-23: Knowledge Base cua QA-Agents phai la **approved retrieval boundary**, khong phai noi ingest tat ca tai lieu/chat/log. Muc tieu la giup QA-Agents tao verification context co source, freshness va owner ro.
+
+Day la dieu kien tien quyet truoc khi QA-AI agent tao test plan, suggest verification steps hoac ho tro verify ticket. Neu agent chua biet source nao duoc tin, source nao stale/forbidden, owner nao chot business/technical truth va gap nao phai hoi lai, thi agent khong duoc tao output nhu fact. Output dung luc nay la Clarification Block hoac `unknown`, khong phai test instruction tu tin.
+
+Knowledge Base nen retrieve:
+
+- Product/business rule co owner.
+- Historical decision, exception, release note.
+- QA guideline, test strategy, previous final verification record.
+- Approved source-of-truth docs.
+- Current behavior chi khi co review trail/source ro.
+
+Knowledge Base khong nen ingest mac dinh:
+
+- Raw chat threads.
+- Unreviewed personal notes.
+- Production logs.
+- Secrets, credentials, tokens, API keys.
+- PII/customer data.
+- Raw support tickets neu chua redact va approve.
+- Stale docs khong co owner/freshness/review status.
+- AI summary khong link ve primary source.
+
+Metadata toi thieu cho indexed source:
+
+| Metadata | Muc dich |
+|---|---|
+| `source_type` | Product spec, decision log, QA record, release note, runbook, ETUS memory |
+| `owner` | Product, QA, Engineering, Platform, Security |
+| `product_area` | Domain/module/workflow/service/feature area |
+| `permission_level` | Ai duoc retrieve source nay |
+| `freshness` | Current, review needed, stale, deprecated |
+| `last_reviewed_at` | Ngay human review gan nhat |
+| `source_url` | Link ve primary source |
+| `confidence` | High/medium/low theo source quality |
+| `data_classification` | Public/internal/confidential/restricted |
+
+Citation/freshness rules:
+
+- Claim quan trong trong Verification Context Record phai cite approved source neu co.
+- Neu khong co source, output phai label `unknown`.
+- Neu source stale/deprecated/ownerless/not reviewed, output phai label `inferred` hoac `unknown`.
+- Conflicting sources phai surface thanh mismatch, khong de AI silently resolve.
+- Knowledge Base khong override Product/Engineer/QA authority.
+
+Phase 1 boundary:
+
+- Read-only retrieval over approved docs.
+- ACL, metadata filter va citation requirement.
+- No auto-write vao source-of-truth docs.
+- Raw chat/unreviewed content khong dung lam retrieval input.
+- Generated record luu rieng cho den khi QA review.
+
+Phase 2 expansion:
+
+- AgentCore Memory luu governed session/domain memory.
+- AgentCore Gateway expose approved source-of-truth, ticket, PR, CI, ETUS va evidence tools.
+- AgentCore Identity/Policy enforce read/write access.
+- ETUS verified behavioral memory chi promote vao Knowledge Base khi co source test, evidence, trust, no active contradiction va owner review neu can.
+
+### Technical operating model de system chay dung
+
+Decision 2026-07-23: QA-AI Agents phai duoc build nhu mot controlled verification platform, khong phai chatbot tu do va khong phai autonomous QA worker. De chay dung tu MVP den enhanced layers, can cac gate sau:
+
+| Lens | Technical requirement |
+|---|---|
+| QA engineering | Test case phai map ve requirement, business rule/current behavior, risk, priority va evidence required; final note phai link scope verified, evidence, defects, known risk va release confidence |
+| AI engineering | Prompt/output contract phai versioned; claim phai label `source-backed`/`inferred`/`unknown`; retrieval va hallucination phai duoc evaluate bang golden ticket set |
+| Software engineering | API/session/record phai co schema validation, idempotency, draft/approved state, prompt/model/source version, audit log va replayable trace ID |
+| Cloud engineering | Runtime/auth/storage/log/eval phai co IAM least privilege, KMS, CloudWatch, TTL/retention, Guardrails, Gateway/Identity/Policy khi co tool action |
+
+MVP strict lifecycle:
+
+1. Receive ticket + QA-entered context.
+2. Validate schema, user identity, permission, data classification va request size.
+3. Retrieve approved Knowledge Base sources voi metadata filters.
+4. Build prompt voi source snippets, metadata va output contract.
+5. Call Bedrock Converse voi Guardrails.
+6. Produce Ready-for-QA Verification Context Record.
+7. Persist draft record, source links, model metadata, token usage, latency va trace ID.
+8. QA review/edit/approve/block/request clarification.
+9. Chi approved context moi di tiep sang test matrix, evidence checklist, ETUS suggestion hoac final note.
+
+MVP khong duoc:
+
+- Auto write ticket/comment/source-of-truth doc.
+- Auto pass/fail test hoac release.
+- Goi PR/CI/ticket/evidence tools truc tiep.
+- Store memory khong review.
+- Treat code search result nhu business truth.
+
+Enhancement layers:
+
+| Layer | Capability | Exit criteria |
+|---|---|---|
+| MVP | Draft-only context assistant | QA chap nhan context record va dung duoc truoc khi test |
+| MVP+ | Evidence-aware QA workbench | Final notes link evidence, risk va verified scope on dinh |
+| Execution integration | ETUS-assisted verification | ETUS evidence attach duoc vao record nhung khong replace QA sign-off |
+| Governed tools | Ticket/PR/CI/docs integrations | Agent read/draft-write qua Gateway/Identity/Policy va human approval |
+| Managed memory | Cross-ticket/project learning | Memory improve context nhung khong propagate contradiction |
+| Continuous evaluation | Quality/regression loop | Prompt/model/tool changes duoc evaluate truoc rollout |
+| Semi-automated verification | Constrained agentic workflows | Agent chay bounded workflow, QA van own sign-off |
+
+Technical Definition of Done:
+
+- QA reviewer trace duoc claim ve source/inference/unknown.
+- Product reviewer thay duoc business decision nao can confirm.
+- Engineer thay duoc implementation signal nao la evidence vs hint.
+- Cloud/Security reviewer thay duoc data storage, access boundary va audit trail.
+- AI engineer evaluate duoc output tren repeatable dataset.
+- Software engineer replay duoc session bang prompt version, model version, source set va trace ID.
+- QA lead compare duoc planned tests, executed tests, evidence, defects va release confidence.
 
 Phase 1 pragmatic path: AgentCore-wrapped Bedrock/RAG draft-only
 
@@ -921,6 +1104,129 @@ QA-Agents app
   -> Policy approval for write actions
   -> Observability + Evaluations
 ```
+
+## 12A. Source-derived architecture: ETUS QA-Agents hien co
+
+Decision 2026-07-23: ETUS khong nen duoc xem nhu mot demo rieng le nam ngoai RFC. ETUS hien da co nhieu thanh phan dung voi product direction cua QA-Agents: local-first QA harness, memory-aware execution, dashboard evidence, MCP surface cho coding agents, va skills cho authoring/debug/triage. Proposal Bedrock nen coi ETUS la **execution/evidence harness hien co**, con AWS Bedrock/AgentCore la **production control plane** co the cloud-hoa, govern va scale cac capability do.
+
+### 12A.1 Current system shape
+
+Tong quan source/onboarding hien tai:
+
+| Layer | Thanh phan ETUS | Vai tro |
+|---|---|---|
+| Human/operator surface | Dashboard UI, CLI | QA/developer author test, run, inspect, triage, config, memory, insights |
+| Agent-facing surface | MCP server, packaged skills | Coding agents co tool contract de tao test/suite/hook, enqueue run, doc artifact/log, cancel, classify failure |
+| Local app/runtime | Dashboard server | HTTP API, static UI, run queue, child process runner, SQLite DB, live editor, artifacts |
+| Core execution | Core runner + agent loop | Resolve config, variables, secrets, hooks, cache, memory; observe -> plan -> execute -> verify per step |
+| Platform adapters | Web Playwright, Android/iOS Appium | Browser/mobile observe, action execution, screenshots, logs, accessibility/screen context |
+| State/evidence | SQLite, YAML files, artifacts, logs, cache, memory | Run history, steps, reasoning traces, token events, screenshots, reports, memory observations |
+| Extension/sandbox | Docker hook sandbox | Setup/teardown, fixtures, env/secrets, pre/post actions |
+
+Primary execution sequence:
+
+```text
+QA/developer/agent selects YAML test or suite
+  -> CLI/Dashboard resolves config, target, model, variables, hooks, cache, memory
+  -> Core runner initializes adapter and navigates to target
+  -> Per step:
+       observe screen/DOM
+       read sub-action cache
+       call planner if cache miss
+       execute normalized action through adapter
+       verify when step is complete
+       capture screenshot, trace, token, annotation, logs
+  -> Finalize result, artifacts, SQLite records, cache, memory deltas
+  -> Dashboard/MCP expose run evidence for triage
+```
+
+### 12A.2 Memory hien tai cua ETUS
+
+ETUS memory hien tai la **curated behavioral QA memory**, khong chi la conversation memory.
+
+Observed source shape:
+
+- Memory scopes: `product`, `suite`, `test`.
+- Storage tiers: `products`, `suites`, `tests`.
+- Observation format: Markdown file co YAML frontmatter va body.
+- Key fields: `id`, `title`, `content`, `trust`, `created`, `last_confirmed`, `confirmed_count`, `contradicted_count`, `source_test`; suite observations co them `position` va `suite_snapshot`.
+- Memory API/UI reads catalog by product, product detail, scoped observations, invalid files.
+- Security: observation title/body duoc scan truoc khi accept/read; invalid parse/security files duoc report thay vi silently trust.
+- Curator flow sau run:
+  - neu run pass: LLM curator dung A.U.D.N. framework:
+    - `ADD`: ghi observation moi neu hanh vi dang nho;
+    - `UPDATE`: confirm observation da dung/relevant, tang trust;
+    - `DEPRECATE`: giam trust khi observation bi contradict;
+    - `NOOP`: khong ghi gi neu run khong co insight dang nho.
+  - neu run fail: memory co duong deprecate observation lien quan den injected context khi run contradicts behavior.
+  - update/delete chay trong provider lock de tranh race.
+
+Y nghia product:
+
+```text
+ETUS memory = QA behavior memory co provenance va trust.
+AgentCore Memory = managed cloud memory primitive.
+```
+
+Hai thu nay nen ket hop, khong thay the thang nhau. AgentCore Memory co the cung cap short-term/long-term managed store, actor/session scoping, retrieval va observability; ETUS schema cung cap domain taxonomy: product/suite/test observations, trust, confirmation, contradiction, source test, suite snapshot.
+
+### 12A.3 ETUS capability co the dua vao Bedrock ecosystem
+
+| ETUS capability hien co | Co nen dua vao Bedrock proposal? | Cach dung trong he sinh thai AWS |
+|---|---|---|
+| Natural-language runner va planner/verifier loop | Co | Deploy/wrap runner bang AgentCore Runtime khi can cloud endpoint/session/trace; giu local mode cho dev/device-specific runs |
+| Curated product/suite/test memory | Co, uu tien cao | Map sang AgentCore Memory long-term strategies/records; giu ETUS trust/provenance schema nhu domain layer |
+| Dashboard evidence: SQLite runs, steps, logs, token events, artifacts | Co | CloudWatch/OTEL for traces, S3 for artifacts, DynamoDB for session metadata, AgentCore Evaluations for quality loop |
+| MCP server va skills | Co | Phase 2 expose qua AgentCore Gateway nhu MCP/OpenAPI tools co Identity/Policy/human approval |
+| Web/mobile adapters | Co, nhung khong replace ngay | AgentCore Browser co the ho tro managed browser session/replay; Appium/local device flow van can ETUS adapter |
+| Hook sandbox | Co | Map thanh Gateway tools/Lambda/Step Functions/Code Interpreter tuy isolation, network va audit need |
+| Cache/self-healing execution | Co | Dung nhu cost/performance layer; CloudWatch metrics can track cache hit, replanning, healing attempts |
+| Failure triage/reporting | Co | Feed final QA note, defect wording, release confidence record, va eval dataset |
+
+### 12A.4 Architecture recommendation
+
+Khong nen bat dau bang viec "rewrite ETUS len AWS". Nen tach thanh 3 boundary:
+
+1. **Verification context boundary**
+   Bedrock + optional Knowledge Bases tao Ready-for-QA Verification Context Record. Day la artifact truoc execution.
+
+2. **Execution/evidence boundary**
+   ETUS chay verification, thu screenshots/logs/traces/artifacts, va update curated QA memory. Boundary nay co the local-first hoac AgentCore Runtime-hosted tuy target.
+
+3. **Governance/control-plane boundary**
+   AgentCore Gateway/Identity/Policy/Observability/Evaluations quan ly tool access, auth, trace, eval, policy va rollout khi agent duoc phep goi ticket/PR/CI/evidence/source-of-truth tools.
+
+Target Phase 1:
+
+```text
+QA Workbench / manual intake
+  -> Bedrock/AgentCore Runtime assistant creates context record
+  -> QA reviews/approves plan
+  -> ETUS can execute selected tests and capture evidence
+  -> ETUS memory stores verified behavioral observations
+  -> Final source-of-truth note links context + execution evidence
+```
+
+Target Phase 2:
+
+```text
+AgentCore Runtime/Harness hosts QA assistant
+  -> AgentCore Gateway exposes ETUS MCP tools + ticket/PR/CI/evidence tools
+  -> AgentCore Identity/Policy controls who/what can read or write
+  -> AgentCore Memory stores managed session/domain memory with ETUS taxonomy
+  -> CloudWatch + AgentCore Evaluations close the quality loop
+```
+
+### 12A.5 What Bedrock docs should borrow from ETUS now
+
+Bo sung vao proposal/RFC cac principle sau:
+
+- **Memory must be curated, scoped, and contradictable.** Chi "remember everything" se tao false confidence. Memory can scope product/suite/test, trust score, confirmation, contradiction va source.
+- **Evidence is a first-class runtime artifact.** Source-of-truth document phai link run, step, screenshot/log/API/CI artifact, khong chi la AI summary.
+- **Agent tools need local-safe contracts before cloud tools.** ETUS MCP tools/skills la proof point cho schema-aware agent operations; Phase 2 co the dua chung sau Gateway/Policy.
+- **Execution and documentation are one loop.** Verification Context Record truoc run; ETUS execution trong run; final QA note sau run; memory update sau khi co evidence.
+- **Do not replace local device/browser complexity too early.** AgentCore Browser/Code Interpreter rat huu ich cho managed sandbox, nhung web/mobile QA co auth/device/farm constraints nen ETUS adapters van la asset.
+- **Quality loop must include traces and evals.** ETUS traces/token/healing/memory deltas nen tro thanh input cho AgentCore Evaluations va regression dataset.
 
 ## 13. Prompt contracts
 

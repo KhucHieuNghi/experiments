@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest'
 import { DashboardDatabase } from '../db/database.js'
 import { SCHEMA_VERSION } from '../db/schema.js'
-import type { LogEntry } from '@etus/agent-qa-core'
+import type { LogEntry } from '@etus/agent-core'
 
 let db: DashboardDatabase
 

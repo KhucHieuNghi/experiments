@@ -2,13 +2,13 @@ import { mkdir, readFile, rm, writeFile } from 'node:fs/promises'
 import { dirname, relative, resolve } from 'node:path'
 import { parse as parseYaml, stringify as stringifyYaml } from 'yaml'
 import { z } from 'zod'
-import { generateHookId, isCanonicalHookId } from '@etus/agent-qa-ids'
+import { generateHookId, isCanonicalHookId } from '@etus/agent-ids'
 import { AgentQaConfigSchema } from '../schema/config-schema.js'
 import { discoverWorkspaceFiles, resolveWorkspacePaths } from '../workspace/workspace-paths.js'
 import type { HookRuntime } from './types.js'
 
 const DEFAULT_CLEANUP_TARGETS = [
-  '.agent-qa',
+  '.etus-agent',
 ] as const
 
 const HOOK_INLINE_RE = /\{\{runHook:"([^"]+)"\}\}/g
@@ -200,7 +200,7 @@ async function resolveWorkspaceMigrationContext(
   workspaceDir: string,
   configPath?: string,
 ): Promise<WorkspaceMigrationContext> {
-  const resolvedConfigPath = configPath ? resolve(configPath) : resolve(workspaceDir, 'agent-qa.config.yaml')
+  const resolvedConfigPath = configPath ? resolve(configPath) : resolve(workspaceDir, 'etus-agent.config.yaml')
   const rawConfig = await readFile(resolvedConfigPath, 'utf-8')
   const parsedConfig = parseYaml(rawConfig)
   const configResult = AgentQaConfigSchema.safeParse(parsedConfig)

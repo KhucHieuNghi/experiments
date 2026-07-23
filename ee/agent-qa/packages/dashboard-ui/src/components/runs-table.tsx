@@ -78,7 +78,7 @@ const COLUMN_WIDTHS: Partial<Record<string, string>> = {
   createdAt: "128px",
 }
 
-const INTERNAL_ATTRIBUTE_ORDER = ["agent-qa.trigger", "agent-qa.runner"]
+const INTERNAL_ATTRIBUTE_ORDER = ["etus-agent.trigger", "etus-agent.runner"]
 
 function formatPlatform(platform: string) {
   return platform === "ios"

@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Environment Variables - ETUS Documentation</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+  <div class="docs-layout">
+    <aside class="docs-sidebar">
+      <div class="docs-logo">ETUS <span>docs</span></div>
+      <nav class="docs-nav">
+        <div class="docs-nav-group">
+          <div class="docs-nav-label">Getting Started</div>
+          <a href="index.html">Overview</a>
+          <a href="quickstart.html">Quickstart</a>
+        </div>
+        <div class="docs-nav-group">
+          <div class="docs-nav-label">Core Concepts</div>
+          <a href="configuration.html">Configuration</a>
+          <a href="tests.html">Tests</a>
+          <a href="suites.html">Suites</a>
+          <a href="hooks.html">Hooks</a>
+        </div>
+        <div class="docs-nav-group">
+          <div class="docs-nav-label">Features</div>
+          <a href="memory.html">Memory</a>
+          <a href="caching.html">Caching</a>
+          <a href="web-testing.html">Web Testing</a>
+          <a href="auth-state.html">Auth State</a>
+        </div>
+        <div class="docs-nav-group">
+          <div class="docs-nav-label">Reference</div>
+          <a href="cli.html">CLI Commands</a>
+          <a href="env-vars.html">Environment Variables</a>
+        </div>
+      </nav>
+    </aside>
+    <main class="docs-main">
+      <button class="docs-menu-btn">Menu</button>
+      <div class="docs-breadcrumb"><a href="index.html">Docs</a> / Environment Variables</div>
+
+      <h1>Environment Variables</h1>
+      <p class="docs-subtitle">All ETUS environment variables use the <code>ETUS_AGENT_</code> prefix. They override corresponding config file values.</p>
+
+      <h2>Variable reference</h2>
+      <table>
+        <thead>
+          <tr><th>Variable</th><th>Config equivalent</th><th>Description</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>ETUS_AGENT_DASHBOARD_PORT</code></td>
+            <td><code>services.dashboard.port</code></td>
+            <td>Port for the local dashboard server (default: 4100)</td>
+          </tr>
+          <tr>
+            <td><code>ETUS_AGENT_MCP_PORT</code></td>
+            <td><code>services.mcp.port</code></td>
+            <td>Port for the MCP server (default: 4200)</td>
+          </tr>
+          <tr>
+            <td><code>ETUS_AGENT_CACHE_DIR</code></td>
+            <td><code>services.cache.dir</code></td>
+            <td>Directory for action plan cache (default: <code>.etus-agent/cache</code>)</td>
+          </tr>
+          <tr>
+            <td><code>ETUS_AGENT_CACHE_TTL</code></td>
+            <td><code>services.cache.ttl</code></td>
+            <td>Cache time-to-live in seconds (default: 86400)</td>
+          </tr>
+          <tr>
+            <td><code>ETUS_AGENT_LOG_LEVEL</code></td>
+            <td>&mdash;</td>
+            <td>Log level: silent, error, warn, info, debug</td>
+          </tr>
+          <tr>
+            <td><code>ETUS_AGENT_HEADLESS</code></td>
+            <td><code>use.headless</code></td>
+            <td>Run browsers in headless mode (true/false)</td>
+          </tr>
+          <tr>
+            <td><code>ETUS_AGENT_CLI_BIN</code></td>
+            <td>&mdash;</td>
+            <td>Path to the etus-agent binary. Used by the dashboard to spawn child processes.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>How overrides work</h2>
+      <p>Environment variables sit between CLI flags and the local override file in the resolution order:</p>
+      <ol>
+        <li>CLI flags (highest priority)</li>
+        <li>Environment variables</li>
+        <li>Per-test <code>use</code> overrides</li>
+        <li>Suite-level <code>use</code> overrides</li>
+        <li><code>etus-agent.local.yaml</code></li>
+        <li><code>etus-agent.config.yaml</code> (lowest priority)</li>
+      </ol>
+
+      <h2>CI example</h2>
+      <p>In CI environments, set variables to control behavior without modifying config files:</p>
+      <pre><code># GitHub Actions example
+env:
+  ETUS_AGENT_HEADLESS: "true"
+  ETUS_AGENT_LOG_LEVEL: "info"
+  ETUS_AGENT_CACHE_TTL: "3600"
+  OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}</code></pre>
+
+      <div class="docs-callout">
+        <strong>Info</strong><br>
+        LLM API keys (e.g., <code>OPENAI_API_KEY</code>) are referenced in the config file via <code>${OPENAI_API_KEY}</code> syntax. They do not use the <code>ETUS_AGENT_</code> prefix because they belong to the LLM provider, not ETUS.
+      </div>
+
+      <h2>Dashboard child process</h2>
+      <p>The <code>ETUS_AGENT_CLI_BIN</code> variable tells the dashboard where to find the CLI binary when spawning test runs. This is useful in monorepo setups or when the CLI is installed globally:</p>
+      <pre><code>export ETUS_AGENT_CLI_BIN=./node_modules/.bin/etus-agent</code></pre>
+
+      <div class="docs-footer">
+        <p>ETUS Documentation</p>
+      </div>
+    </main>
+  </div>
+  <script src="assets/docs.js"></script>
+</body>
+</html>

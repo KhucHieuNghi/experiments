@@ -9,8 +9,8 @@ function hashStepInstruction(step: string, platform = 'web', configContent = '',
   return createHash('sha256').update(configContent + '||' + '' + '||' + '0' + '||' + testFileContent + '||' + step + '||' + platform + '||' + String(stepIndex)).digest('hex').slice(0, 16)
 }
 
-const TMP_DIR = join(tmpdir(), 'agent-qa-cache-purge-test-' + process.pid)
-const CONFIG_CONTENT = 'cache:\n  dir: .agent-qa/cache\n'
+const TMP_DIR = join(tmpdir(), 'etus-agent-cache-purge-test-' + process.pid)
+const CONFIG_CONTENT = 'cache:\n  dir: .etus-agent/cache\n'
 
 beforeEach(async () => {
   await mkdir(TMP_DIR, { recursive: true })
@@ -144,12 +144,12 @@ describe('purgeAll', () => {
     expect(count).toBe(0)
   })
 
-  it('uses .agent-qa/cache as the command fallback cache directory', async () => {
+  it('uses .etus-agent/cache as the command fallback cache directory', async () => {
     const { createCacheCommand } = await import('../commands/cache.js')
-    const cacheDir = join(TMP_DIR, '.agent-qa', 'cache')
+    const cacheDir = join(TMP_DIR, '.etus-agent', 'cache')
     await mkdir(join(cacheDir, 'entry'), { recursive: true })
     await writeFile(join(cacheDir, 'entry', 'data.json'), '{}')
-    await writeFile(join(TMP_DIR, 'agent-qa.config.yaml'), `
+    await writeFile(join(TMP_DIR, 'etus-agent.config.yaml'), `
 workspace:
   testMatch:
     - tests/**/*.yaml

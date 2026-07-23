@@ -41,7 +41,7 @@ const {
   },
 }))
 
-vi.mock('@etus/agent-qa-web', () => ({
+vi.mock('@etus/agent-web', () => ({
   WebPlatformAdapter: vi.fn().mockImplementation(function () {
     return {
       platform: 'web',
@@ -57,8 +57,8 @@ vi.mock('@etus/agent-qa-web', () => ({
   }),
 }))
 
-vi.mock('@etus/agent-qa-core', async () => {
-  const actual = await vi.importActual<typeof import('@etus/agent-qa-core')>('@etus/agent-qa-core')
+vi.mock('@etus/agent-core', async () => {
+  const actual = await vi.importActual<typeof import('@etus/agent-core')>('@etus/agent-core')
   return {
     ...actual,
     executeStep: (...args: unknown[]) => mockExecuteStep(...args),
@@ -82,7 +82,7 @@ import {
   AUTH_STATE_SCHEMA_VERSION,
   resolveAuthStatePaths,
   type AuthStateMetadata,
-} from '@etus/agent-qa-core'
+} from '@etus/agent-core'
 import { ConfigManager } from '../../config/index.js'
 import { LiveSession } from '../live-session.js'
 import type { LiveSessionConfig } from '../types.js'
@@ -147,7 +147,7 @@ async function expectPathFreeRejection(promise: Promise<unknown>): Promise<strin
 
   expect(rejection).toBeInstanceOf(Error)
   const message = rejection instanceof Error ? rejection.message : String(rejection)
-  expect(message).not.toContain('.agent-qa/auth-states')
+  expect(message).not.toContain('.etus-agent/auth-states')
   expect(message).not.toContain('.json')
   expect(message).not.toContain('payloadPath')
   expect(message).not.toContain('metadataPath')
@@ -174,13 +174,13 @@ describe('LiveSession.captureWebAuthState', () => {
     mockVariableStoreInstance.getAll.mockReturnValue(new Map())
     mockVariableStoreInstance.snapshot.mockReturnValue({})
 
-    tempDir = await mkdtemp(join(tmpdir(), 'agent-qa-live-auth-state-'))
-    configPath = join(tempDir, 'agent-qa.config.yaml')
+    tempDir = await mkdtemp(join(tmpdir(), 'etus-agent-live-auth-state-'))
+    configPath = join(tempDir, 'etus-agent.config.yaml')
     configManager = new ConfigManager(configPath)
     await writeFile(configPath, [
       'services:',
       '  authState:',
-      '    dir: .agent-qa/auth-states',
+      '    dir: .etus-agent/auth-states',
       'registry:',
       '  targets:',
       '    staging-web:',
@@ -231,7 +231,7 @@ describe('LiveSession.captureWebAuthState', () => {
     expect(new Date(metadata.capturedAt).toISOString()).toBe(metadata.capturedAt)
 
     const serializedMetadata = JSON.stringify(metadata)
-    expect(serializedMetadata).not.toContain('.agent-qa/auth-states')
+    expect(serializedMetadata).not.toContain('.etus-agent/auth-states')
     expect(serializedMetadata).not.toContain('.json')
     expect(serializedMetadata).not.toContain('payloadPath')
     expect(serializedMetadata).not.toContain('metadataPath')
@@ -241,7 +241,7 @@ describe('LiveSession.captureWebAuthState', () => {
 
     const paths = resolveAuthStatePaths({
       configDir: tempDir,
-      authStateDir: '.agent-qa/auth-states',
+      authStateDir: '.etus-agent/auth-states',
       targetName: 'staging-web',
       stateName: 'admin',
       platform: 'web',

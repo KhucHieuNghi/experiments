@@ -11,11 +11,11 @@ import {
 } from '../migrate-hook-refs.js'
 
 const DEMO_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '../../../../../demo-project')
-const CLEANUP_TARGETS = ['.agent-qa'] as const
-const COMMIT_SAFE_MEMORY_DIR = 'agent-qa-memory'
+const CLEANUP_TARGETS = ['.etus-agent'] as const
+const COMMIT_SAFE_MEMORY_DIR = 'etus-agent-memory'
 const SYNTHETIC_SUITE_FILE = 'suites/hook-reference-migration.suite.yaml'
 const FIXTURE_FILES = [
-  'agent-qa.config.yaml',
+  'etus-agent.config.yaml',
   'hooks.yaml',
   'tests/web/38-hooks-demo.yaml',
   'tests/web/40-hook-runjs-compare.yaml',
@@ -122,7 +122,7 @@ async function copyFixtureFile(workspaceDir: string, relativePath: string) {
 }
 
 async function seedLegacyWorkspace(): Promise<SeededWorkspace> {
-  const workspaceDir = await mkdtemp(join(tmpdir(), 'agent-qa-hook-migrate-'))
+  const workspaceDir = await mkdtemp(join(tmpdir(), 'etus-agent-hook-migrate-'))
   tempDirs.push(workspaceDir)
 
   for (const fixtureFile of FIXTURE_FILES) {

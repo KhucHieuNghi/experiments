@@ -46,18 +46,18 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
-WORKDIR /agent-qa
+WORKDIR /etus-agent
 
 # Copy built monorepo from builder
-COPY --from=builder /build /agent-qa
-COPY LICENSE.md /licenses/agent-qa/LICENSE.md
+COPY --from=builder /build /etus-agent
+COPY LICENSE.md /licenses/etus-agent/LICENSE.md
 
-# Create CLI symlink so 'agent-qa' is available globally
-RUN ln -s /agent-qa/packages/cli/dist/cli.js /usr/local/bin/agent-qa \
-    && chmod +x /agent-qa/packages/cli/dist/cli.js
+# Create CLI symlink so 'etus-agent' is available globally
+RUN ln -s /etus-agent/packages/cli/dist/cli.js /usr/local/bin/etus-agent \
+    && chmod +x /etus-agent/packages/cli/dist/cli.js
 
 # Install ETUS browser support through the public CLI surface.
-RUN agent-qa install-browsers --all --with-deps
+RUN etus-agent install-browsers --all --with-deps
 
 # Working directory for test execution (mount point)
 WORKDIR /tests
@@ -67,5 +67,5 @@ LABEL org.opencontainers.image.title="ETUS Web" \
       org.opencontainers.image.licenses="SEE LICENSE IN LICENSE.md" \
       org.opencontainers.image.vendor="ETUS"
 
-ENTRYPOINT ["agent-qa"]
+ENTRYPOINT ["etus-agent"]
 CMD ["--help"]

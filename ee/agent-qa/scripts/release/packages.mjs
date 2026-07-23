@@ -3,15 +3,15 @@ import { basename, dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 export const publicPackageNames = [
-  '@etus/agent-qa-ids',
-  '@etus/agent-qa-core',
-  '@etus/agent-qa-web',
-  '@etus/agent-qa-android',
-  '@etus/agent-qa-ios',
-  '@etus/agent-qa-mcp',
-  '@etus/agent-qa-dashboard-ui',
-  '@etus/agent-qa-dashboard',
-  'agent-qa',
+  '@etus/agent-ids',
+  '@etus/agent-core',
+  '@etus/agent-web',
+  '@etus/agent-android',
+  '@etus/agent-ios',
+  '@etus/agent-mcp',
+  '@etus/agent-dashboard-ui',
+  '@etus/agent-dashboard',
+  'etus-agent',
 ]
 
 export const defaultRootDir = join(dirname(fileURLToPath(import.meta.url)), '..', '..')

@@ -54,9 +54,9 @@ const config = {
 let tempDirs: string[] = []
 
 async function createTempWorkspace(): Promise<{ dir: string; configPath: string }> {
-  const dir = await mkdtemp(join(tmpdir(), 'agent-qa-live-mobile-'))
+  const dir = await mkdtemp(join(tmpdir(), 'etus-agent-live-mobile-'))
   tempDirs.push(dir)
-  return { dir, configPath: join(dir, 'agent-qa.config.yaml') }
+  return { dir, configPath: join(dir, 'etus-agent.config.yaml') }
 }
 
 afterEach(async () => {
@@ -75,7 +75,7 @@ describe('prepareMobileLiveSession', () => {
       useDeviceName: 'release-android-emu',
       appState: 'preserve',
       configManager: makeConfigManager(config),
-      configPath: '/tmp/agent-qa.config.yaml',
+      configPath: '/tmp/etus-agent.config.yaml',
       appiumManager,
     })
 
@@ -100,7 +100,7 @@ describe('prepareMobileLiveSession', () => {
       useDeviceName: 'ios-sim',
       appState: 'reset',
       configManager: makeConfigManager(config),
-      configPath: '/tmp/agent-qa.config.yaml',
+      configPath: '/tmp/etus-agent.config.yaml',
       appiumManager,
     })
 
@@ -126,7 +126,7 @@ describe('prepareMobileLiveSession', () => {
         ...config,
         use: { mobile: { appState: 'reset' } },
       }),
-      configPath: '/tmp/agent-qa.config.yaml',
+      configPath: '/tmp/etus-agent.config.yaml',
       appiumManager,
     })
 
@@ -147,7 +147,7 @@ describe('prepareMobileLiveSession', () => {
         useDeviceName: 'release-android-emu',
         appState: 'preserve',
         configManager: makeConfigManager(config),
-        configPath: '/tmp/agent-qa.config.yaml',
+        configPath: '/tmp/etus-agent.config.yaml',
         appiumManager,
       }),
     ).rejects.toMatchObject({
@@ -166,7 +166,7 @@ describe('prepareMobileLiveSession', () => {
       useDeviceName: 'release-android-emu',
       appState: 'preserve',
       configManager: makeConfigManager(config),
-      configPath: '/tmp/agent-qa.config.yaml',
+      configPath: '/tmp/etus-agent.config.yaml',
       appiumManager,
     })
 
@@ -176,12 +176,12 @@ describe('prepareMobileLiveSession', () => {
     expect(releaseLease).toHaveBeenCalledWith('live-release', 'setup-failed')
   })
 
-  it('resolves live session app path from agent-qa.local.yaml', async () => {
+  it('resolves live session app path from etus-agent.local.yaml', async () => {
     const { dir, configPath } = await createTempWorkspace()
     await mkdir(join(dir, 'apps'), { recursive: true })
     await writeFile(join(dir, 'apps', 'wikipedia.apk'), 'apk', 'utf-8')
     await writeFile(
-      join(dir, 'agent-qa.local.yaml'),
+      join(dir, 'etus-agent.local.yaml'),
       [
         'apps:',
         '  release-android-wikipedia:',
@@ -209,12 +209,12 @@ describe('prepareMobileLiveSession', () => {
     })
   })
 
-  it('does not read agent-qa.devices.local.yaml for app install data', async () => {
+  it('does not read etus-agent.devices.local.yaml for app install data', async () => {
     const { dir, configPath } = await createTempWorkspace()
     await mkdir(join(dir, 'apps'), { recursive: true })
     await writeFile(join(dir, 'apps', 'ignored.apk'), 'apk', 'utf-8')
     await writeFile(
-      join(dir, 'agent-qa.devices.local.yaml'),
+      join(dir, 'etus-agent.devices.local.yaml'),
       [
         'apps:',
         '  release-android-wikipedia:',
@@ -242,7 +242,7 @@ describe('prepareMobileLiveSession', () => {
   it('surfaces missing live app path as app-install', async () => {
     const { dir, configPath } = await createTempWorkspace()
     await writeFile(
-      join(dir, 'agent-qa.local.yaml'),
+      join(dir, 'etus-agent.local.yaml'),
       [
         'apps:',
         '  release-android-wikipedia:',

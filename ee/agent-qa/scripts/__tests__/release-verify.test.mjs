@@ -16,13 +16,13 @@ import {
 function createPackage(rootDir, name, version = '0.1.1') {
   const dir = join(rootDir, name.replace('@etus/', '').replaceAll('/', '-'))
   mkdirSync(dir, { recursive: true })
-  const dependencies = name === '@etus/agent-qa-core' ? { '@etus/agent-qa-ids': version } : {}
+  const dependencies = name === '@etus/agent-core' ? { '@etus/agent-ids': version } : {}
   writeFileSync(join(dir, 'package.json'), JSON.stringify({
     name,
     version,
     private: false,
-    files: name === 'agent-qa' ? ['dist', 'skills', 'LICENSE.md', 'NOTICE.md'] : ['dist', 'LICENSE.md', 'NOTICE.md'],
-    exports: name === '@etus/agent-qa-dashboard-ui' ? undefined : { '.': { import: './dist/index.js' } },
+    files: name === 'etus-agent' ? ['dist', 'skills', 'LICENSE.md', 'NOTICE.md'] : ['dist', 'LICENSE.md', 'NOTICE.md'],
+    exports: name === '@etus/agent-dashboard-ui' ? undefined : { '.': { import: './dist/index.js' } },
     dependencies,
   }, null, 2))
   return dir
@@ -73,7 +73,7 @@ test('parses preflight and postbuild verify CLI args', () => {
 })
 
 test('validates staged pack dry-runs from .release/staged-packages with exact internal versions', async () => {
-  const rootDir = await mkdtemp(join(tmpdir(), 'agent-qa-release-verify-pack-'))
+  const rootDir = await mkdtemp(join(tmpdir(), 'etus-agent-release-verify-pack-'))
   try {
     const { stagedDir } = createStagedFixture(rootDir)
     const calls = []
@@ -88,7 +88,7 @@ test('validates staged pack dry-runs from .release/staged-packages with exact in
           { path: 'LICENSE.md' },
           { path: 'NOTICE.md' },
           { path: 'dist/index.js' },
-          ...(manifest.name === 'agent-qa' ? [{ path: 'skills/agent-qa-authoring/SKILL.md' }] : []),
+          ...(manifest.name === 'etus-agent' ? [{ path: 'skills/etus-agent-authoring/SKILL.md' }] : []),
         ]
         return JSON.stringify([{ files }])
       },
@@ -157,11 +157,11 @@ test('postbuild verification checks the actual npm version before release mutati
 
 test('preflight verification checks bump, git tag, npm registry, and POSTHOG_PROJECT_KEY', async () => {
   const calls = []
-  const rootDir = await mkdtemp(join(tmpdir(), 'agent-qa-release-verify-preflight-'))
+  const rootDir = await mkdtemp(join(tmpdir(), 'etus-agent-release-verify-preflight-'))
   try {
     const packagesRoot = join(rootDir, 'packages')
     for (const name of publicPackageNames) {
-      const dirName = name === 'agent-qa' ? 'cli' : name.replace('@etus/agent-qa-', '')
+      const dirName = name === 'etus-agent' ? 'cli' : name.replace('@etus/agent-', '')
       const dir = join(packagesRoot, dirName)
       mkdirSync(dir, { recursive: true })
       writeFileSync(join(dir, 'package.json'), JSON.stringify({ name, version: '0.1.0', private: false }, null, 2))
@@ -172,7 +172,7 @@ test('preflight verification checks bump, git tag, npm registry, and POSTHOG_PRO
       checkGitTagAbsent: (version) => calls.push(`git ${version}`),
       checkNpmVersionsAbsent: (packages, version) => {
         calls.push(`npm ${packages.length} ${version}`)
-        assert.ok(packages.some(record => (record.pkg?.name ?? record.name) === '@etus/agent-qa-subscription-auth'))
+        assert.ok(packages.some(record => (record.pkg?.name ?? record.name) === '@etus/agent-subscription-auth'))
       },
     })
     assert.deepEqual(calls, ['git 0.1.1', 'npm 10 0.1.1'])

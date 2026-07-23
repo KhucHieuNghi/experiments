@@ -12,7 +12,7 @@ import { ConfigManager } from '../config/config-manager.js'
 import { createRouter } from '../server/routes.js'
 import { SuiteFileManager } from '../tests/suite-file-manager.js'
 import { TestFileManager } from '../tests/test-file-manager.js'
-import { resolveWorkspacePaths, type ResolvedWorkspacePaths } from '@etus/agent-qa-core'
+import { resolveWorkspacePaths, type ResolvedWorkspacePaths } from '@etus/agent-core'
 
 interface MockResponse {
   status: number
@@ -100,9 +100,9 @@ async function invokeRoute(url: string): Promise<MockResponse> {
 }
 
 async function applyAnalyticsScopeConfig(content: string): Promise<void> {
-  const configDir = await mkdtemp(join(tmpdir(), `agent-qa-insights-scope-${randomUUID()}-`))
+  const configDir = await mkdtemp(join(tmpdir(), `etus-agent-insights-scope-${randomUUID()}-`))
   tempDirs.push(configDir)
-  const configPath = join(configDir, 'agent-qa.config.yaml')
+  const configPath = join(configDir, 'etus-agent.config.yaml')
   await writeFile(configPath, [
     'workspace:',
     '  testMatch:',
@@ -128,7 +128,7 @@ async function applyAnalyticsScopeConfig(content: string): Promise<void> {
 }
 
 beforeEach(async () => {
-  testsDir = await mkdtemp(join(tmpdir(), 'agent-qa-insights-routes-'))
+  testsDir = await mkdtemp(join(tmpdir(), 'etus-agent-insights-routes-'))
   tempDirs.push(testsDir)
 
   await mkdir(join(testsDir, 'tests'), { recursive: true })
@@ -151,7 +151,7 @@ beforeEach(async () => {
     'utf-8',
   )
 
-  const dbDir = await mkdtemp(join(tmpdir(), 'agent-qa-insights-db-'))
+  const dbDir = await mkdtemp(join(tmpdir(), 'etus-agent-insights-db-'))
   tempDirs.push(dbDir)
   db = new DashboardDatabase({ dbPath: join(dbDir, 'dashboard.db') })
 
@@ -166,7 +166,7 @@ beforeEach(async () => {
         secretsFile: '.env.secrets.local',
       },
     },
-    configPath: join(testsDir, 'agent-qa.config.yaml'),
+    configPath: join(testsDir, 'etus-agent.config.yaml'),
   })
   testFileManager = new TestFileManager(workspacePaths)
   suiteFileManager = new SuiteFileManager(workspacePaths, testFileManager)

@@ -19,7 +19,7 @@ export function formatMissingBrowserError(browserName: BrowserName): string {
     `ETUS browser support is not installed for ${displayBrowserName(browserName)}.`,
     '',
     'Install the browser managed by ETUS, then rerun the test:',
-    `  agent-qa install-browsers --${browserName}`,
+    `  etus-agent install-browsers --${browserName}`,
     '',
     'This can happen after upgrading ETUS or Playwright because browser binaries live outside the package install.',
   ].join('\n')

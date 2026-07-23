@@ -1,11 +1,11 @@
 import type { AnalyticsEventProperties, AnalyticsSurface, BuiltAnalyticsEvent } from './events.js'
 import { resolveAnalyticsIdentity } from './identity.js'
-import { AGENT_QA_POSTHOG_HOST, AGENT_QA_POSTHOG_KEY } from './posthog-project.js'
+import { ETUS_AGENT_POSTHOG_HOST, ETUS_AGENT_POSTHOG_KEY } from './posthog-project.js'
 import { PostHogAnalyticsTransport } from './posthog-transport.js'
 import { NoopAnalyticsTransport, type AnalyticsTransport } from './transport.js'
 import { getAgentQaVersion } from '../version.js'
 
-export const EMPTY_POSTHOG_KEY_WARNING = 'PostHog analytics initialization failed because AGENT_QA_POSTHOG_KEY is empty. Analytics telemetry is disabled.'
+export const EMPTY_POSTHOG_KEY_WARNING = 'PostHog analytics initialization failed because ETUS_AGENT_POSTHOG_KEY is empty. Analytics telemetry is disabled.'
 
 export interface AnalyticsServiceConfig {
   analytics?: {
@@ -52,7 +52,7 @@ export async function resolveAnalyticsStandardProperties(
   })
 
   return {
-    agent_qa_version: options.agentQaVersion ?? getAgentQaVersion(),
+    etus_agent_version: options.agentQaVersion ?? getAgentQaVersion(),
     surface: options.surface,
     runtime_context: identity.runtimeContext,
     ...(identity.agentProduct ? { agent_product: identity.agentProduct } : {}),
@@ -67,7 +67,7 @@ class DefaultAnalyticsService implements AnalyticsService {
 
   constructor(options: AnalyticsServiceOptions = {}) {
     const privacyEnabled = options.config?.analytics?.privacy === true
-    this.disabled = privacyEnabled || (!options.transport && !(options.projectKey ?? AGENT_QA_POSTHOG_KEY).trim())
+    this.disabled = privacyEnabled || (!options.transport && !(options.projectKey ?? ETUS_AGENT_POSTHOG_KEY).trim())
     this.identityPath = options.identityPath
     this.env = options.env
 
@@ -81,14 +81,14 @@ class DefaultAnalyticsService implements AnalyticsService {
       return
     }
 
-    const projectKey = options.projectKey ?? AGENT_QA_POSTHOG_KEY
+    const projectKey = options.projectKey ?? ETUS_AGENT_POSTHOG_KEY
     if (!projectKey.trim()) {
       ;(options.warningSink ?? console.warn)(EMPTY_POSTHOG_KEY_WARNING)
       this.transport = new NoopAnalyticsTransport()
       return
     }
 
-    const host = options.projectHost ?? AGENT_QA_POSTHOG_HOST
+    const host = options.projectHost ?? ETUS_AGENT_POSTHOG_HOST
     this.transport = (options.posthogTransportFactory ?? ((factoryOptions) => new PostHogAnalyticsTransport({
       projectKey: factoryOptions.projectKey,
       host: factoryOptions.host,

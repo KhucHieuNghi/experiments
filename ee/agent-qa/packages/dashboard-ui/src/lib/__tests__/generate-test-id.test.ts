@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { isCanonicalTestId } from '@etus/agent-qa-ids'
+import { isCanonicalTestId } from '@etus/agent-ids'
 import { generateTestId } from '../generate-test-id.js'
 
 describe('generateTestId', () => {

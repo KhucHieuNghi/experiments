@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Suites - ETUS Documentation</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+  <div class="docs-layout">
+    <aside class="docs-sidebar">
+      <div class="docs-logo">ETUS <span>docs</span></div>
+      <nav class="docs-nav">
+        <div class="docs-nav-group">
+          <div class="docs-nav-label">Getting Started</div>
+          <a href="index.html">Overview</a>
+          <a href="quickstart.html">Quickstart</a>
+        </div>
+        <div class="docs-nav-group">
+          <div class="docs-nav-label">Core Concepts</div>
+          <a href="configuration.html">Configuration</a>
+          <a href="tests.html">Tests</a>
+          <a href="suites.html">Suites</a>
+          <a href="hooks.html">Hooks</a>
+        </div>
+        <div class="docs-nav-group">
+          <div class="docs-nav-label">Features</div>
+          <a href="memory.html">Memory</a>
+          <a href="caching.html">Caching</a>
+          <a href="web-testing.html">Web Testing</a>
+          <a href="auth-state.html">Auth State</a>
+        </div>
+        <div class="docs-nav-group">
+          <div class="docs-nav-label">Reference</div>
+          <a href="cli.html">CLI Commands</a>
+          <a href="env-vars.html">Environment Variables</a>
+        </div>
+      </nav>
+    </aside>
+    <main class="docs-main">
+      <button class="docs-menu-btn">Menu</button>
+      <div class="docs-breadcrumb"><a href="index.html">Docs</a> / Suites</div>
+
+      <h1>Suites</h1>
+      <p class="docs-subtitle">Suites group related tests together with shared configuration, hooks, and execution order.</p>
+
+      <h2>Suite file format</h2>
+      <pre><code># suites/smoke.yaml
+suite-id: suite_smoke_critical
+name: Critical smoke tests
+
+use:
+  browser: chromium
+  baseUrl: http://localhost:3000
+  timeout: 45000
+
+hooks:
+  setup:
+    - hook_seed_database
+  teardown:
+    - hook_cleanup_data
+
+tests:
+  - tests/login.yaml
+  - tests/dashboard.yaml
+  - tests/checkout.yaml</code></pre>
+
+      <h2>Required fields</h2>
+      <table>
+        <thead>
+          <tr><th>Field</th><th>Type</th><th>Description</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>suite-id</code></td><td>string</td><td>Unique identifier. Use the ID generation helpers.</td></tr>
+          <tr><td><code>name</code></td><td>string</td><td>Human-readable suite name.</td></tr>
+          <tr><td><code>tests</code></td><td>string[]</td><td>Ordered list of test file paths relative to project root.</td></tr>
+        </tbody>
+      </table>
+
+      <h2>Optional fields</h2>
+      <table>
+        <thead>
+          <tr><th>Field</th><th>Type</th><th>Description</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>use</code></td><td>object</td><td>Suite-level config overrides applied to all tests in the suite.</td></tr>
+          <tr><td><code>hooks</code></td><td>object</td><td>Setup and teardown hook references.</td></tr>
+          <tr><td><code>meta</code></td><td>object</td><td>Metadata: tags, description, owner.</td></tr>
+          <tr><td><code>variables</code></td><td>object</td><td>Suite-scoped variables available to all tests.</td></tr>
+        </tbody>
+      </table>
+
+      <h2>Suite-level overrides</h2>
+      <p>The <code>use</code> block applies to every test in the suite. Individual tests can override these settings further with their own <code>use</code> block.</p>
+      <pre><code>use:
+  browser: firefox
+  headless: true
+  video: true
+  baseUrl: https://staging.example.com</code></pre>
+
+      <h2>Setup and teardown hooks</h2>
+      <p>Hooks run in order before the first test (setup) and after the last test (teardown). Reference hooks by their ID:</p>
+      <pre><code>hooks:
+  setup:
+    - hook_seed_database
+    - hook_start_mock_server
+  teardown:
+    - hook_cleanup_data</code></pre>
+      <p>See <a href="hooks.html">Hooks</a> for details on writing hook scripts.</p>
+
+      <h2>Running a suite</h2>
+      <pre><code>npx etus-agent run suites/smoke.yaml</code></pre>
+      <p>ETUS executes setup hooks, then each test in order, then teardown hooks. Results are reported to the terminal and dashboard.</p>
+
+      <div class="docs-callout">
+        <strong>Tip</strong><br>
+        Suite variables propagate to all tests. Use this for shared credentials, base URLs, or environment identifiers without repeating them in each test file.
+      </div>
+
+      <div class="docs-footer">
+        <p>ETUS Documentation</p>
+      </div>
+    </main>
+  </div>
+  <script src="assets/docs.js"></script>
+</body>
+</html>

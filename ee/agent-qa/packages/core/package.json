@@ -1,5 +1,5 @@
 {
-  "name": "@etus/agent-qa-core",
+  "name": "@etus/agent-core",
   "version": "0.1.21",
   "private": false,
   "description": "Core ETUS runtime, schemas, tools, and execution services.",
@@ -55,7 +55,7 @@
     "@ai-sdk/anthropic": "3.0.74",
     "@ai-sdk/google": "3.0.67",
     "@ai-sdk/openai": "3.0.58",
-    "@etus/agent-qa-ids": "workspace:*",
+    "@etus/agent-ids": "workspace:*",
     "ai": "6.0.174",
     "better-sqlite3": "12.9.0",
     "bytes": "3.1.2",

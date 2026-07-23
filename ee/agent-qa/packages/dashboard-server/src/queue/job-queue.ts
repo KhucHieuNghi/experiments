@@ -1,6 +1,6 @@
 import { EventEmitter } from 'node:events'
 import { cpus } from 'node:os'
-import type { RunArtifactKind, RunAttributes } from '@etus/agent-qa-core'
+import type { RunArtifactKind, RunAttributes } from '@etus/agent-core'
 import type { DashboardDatabase, RunRow } from '../db/database.js'
 
 interface EnqueueOptions {

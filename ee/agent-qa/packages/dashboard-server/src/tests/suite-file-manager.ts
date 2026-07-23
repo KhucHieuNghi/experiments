@@ -1,9 +1,9 @@
 import { readFile, writeFile, mkdir, stat, rm } from 'node:fs/promises'
 import { dirname, basename } from 'node:path'
-import { generateSuiteId } from '@etus/agent-qa-ids'
+import { generateSuiteId } from '@etus/agent-ids'
 import { parse as parseYaml } from 'yaml'
-import { discoverWorkspaceFiles, resolveWorkspaceFileTarget, SuiteDefinitionSchema } from '@etus/agent-qa-core'
-import type { ResolvedWorkspacePaths, SuiteDefinition } from '@etus/agent-qa-core'
+import { discoverWorkspaceFiles, resolveWorkspaceFileTarget, SuiteDefinitionSchema } from '@etus/agent-core'
+import type { ResolvedWorkspacePaths, SuiteDefinition } from '@etus/agent-core'
 import type { TestFileManager } from './test-file-manager.js'
 
 interface SuiteFileInfo {

@@ -3,8 +3,8 @@ import { tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
 import { parse as parseYaml } from 'yaml'
 import { afterEach, describe, expect, it } from 'vitest'
-import { isCanonicalSuiteId } from '@etus/agent-qa-ids'
-import { resolveWorkspacePaths } from '@etus/agent-qa-core'
+import { isCanonicalSuiteId } from '@etus/agent-ids'
+import { resolveWorkspacePaths } from '@etus/agent-core'
 import { SuiteFileManager } from '../tests/suite-file-manager.js'
 
 const tempDirs: string[] = []
@@ -16,7 +16,7 @@ afterEach(async () => {
 
 describe('SuiteFileManager missing-id backfill', () => {
   it('writes a canonical 10-word suite-id when list() finds a file without one', async () => {
-    const workspaceDir = await mkdtemp(join(tmpdir(), 'agent-qa-suite-file-manager-ids-'))
+    const workspaceDir = await mkdtemp(join(tmpdir(), 'etus-agent-suite-file-manager-ids-'))
     tempDirs.push(workspaceDir)
     const suitePath = join(workspaceDir, 'cases/smoke.suite.yaml')
     await mkdir(dirname(suitePath), { recursive: true })
@@ -37,7 +37,7 @@ describe('SuiteFileManager missing-id backfill', () => {
           secretsFile: '.env.secrets.local',
         },
       },
-      configPath: join(workspaceDir, 'agent-qa.config.yaml'),
+      configPath: join(workspaceDir, 'etus-agent.config.yaml'),
     }))
     const files = await manager.list()
 

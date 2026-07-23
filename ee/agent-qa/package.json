@@ -1,5 +1,5 @@
 {
-  "name": "agent-qa-monorepo",
+  "name": "etus-agent-monorepo",
   "private": true,
   "license": "SEE LICENSE IN LICENSE.md",
   "homepage": "https://www.onpoint.vn",
@@ -31,7 +31,7 @@
     "release:verify": "node scripts/release/verify.mjs",
     "release:publish": "node scripts/release/publish.mjs",
     "release:github": "node scripts/release/github-release.mjs",
-    "lint:namespace": "! grep -r '@agent-qa/' packages/ --include='*.ts' --include='*.json' --include='*.js' -l --exclude-dir=node_modules --exclude-dir=dist"
+    "lint:namespace": "! grep -r '@etus-agent/' packages/ --include='*.ts' --include='*.json' --include='*.js' -l --exclude-dir=node_modules --exclude-dir=dist"
   },
   "pnpm": {
     "onlyBuiltDependencies": [

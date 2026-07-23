@@ -16,7 +16,7 @@ function timeAgo(dateStr: string): string {
 
 async function resolveServerUrl(opts: { server?: string }, globalOpts: { config?: string }): Promise<string> {
   if (opts.server) return opts.server
-  const envUrl = process.env.AGENT_QA_DASHBOARD_URL
+  const envUrl = process.env.ETUS_AGENT_DASHBOARD_URL
   if (envUrl) return envUrl
   try {
     const config = await resolveConfig({ configPath: globalOpts.config })
@@ -54,7 +54,7 @@ export function createQueueCommand(): Command {
           data = await response.json()
         } catch {
           console.error(pc.red(`Could not connect to dashboard server at ${serverUrl}`))
-          console.error(pc.dim('Make sure the dashboard is running: agent-qa dashboard'))
+          console.error(pc.dim('Make sure the dashboard is running: etus-agent dashboard'))
           process.exit(1)
         }
 
@@ -141,7 +141,7 @@ export function createQueueCommand(): Command {
           response = await fetch(`${serverUrl}/api/runs/${runId}/cancel`, { method: 'POST' })
         } catch {
           console.error(pc.red(`Could not connect to dashboard server at ${serverUrl}`))
-          console.error(pc.dim('Make sure the dashboard is running: agent-qa dashboard'))
+          console.error(pc.dim('Make sure the dashboard is running: etus-agent dashboard'))
           process.exit(1)
         }
 

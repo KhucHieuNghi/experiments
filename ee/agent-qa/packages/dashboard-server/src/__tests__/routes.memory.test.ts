@@ -108,10 +108,10 @@ async function invokeRoute(
 }
 
 async function createWorkspace() {
-  const dir = await mkdtemp(join(tmpdir(), 'agent-qa-memory-routes-'))
+  const dir = await mkdtemp(join(tmpdir(), 'etus-agent-memory-routes-'))
   tempDirs.push(dir)
 
-  const configPath = join(dir, 'agent-qa.config.yaml')
+  const configPath = join(dir, 'etus-agent.config.yaml')
   await writeFile(
     configPath,
     [
@@ -284,7 +284,7 @@ async function writeObservation(
   observationId: string,
   data: Record<string, unknown>,
 ) {
-  const dir = join(root, 'agent-qa-memory', tier, scope)
+  const dir = join(root, 'etus-agent-memory', tier, scope)
   await mkdir(dir, { recursive: true })
   const { content, updated, ...frontmatter } = data
   const lines = Object.entries(frontmatter).flatMap(([key, value]) => {
@@ -316,7 +316,7 @@ async function writeLegacyTitlelessObservation(
   observationId: string,
   data: Record<string, unknown>,
 ) {
-  const dir = join(root, 'agent-qa-memory', tier, scope)
+  const dir = join(root, 'etus-agent-memory', tier, scope)
   await mkdir(dir, { recursive: true })
   const { content, title: _title, ...frontmatter } = data
   const lines = Object.entries(frontmatter).map(([key, value]) => `${key}: ${JSON.stringify(value)}`)
@@ -658,19 +658,19 @@ describe('memory routes', () => {
     expect(res.status).toBe(200)
     expect(JSON.parse(res.body)).toEqual({ deleted: true })
     await expect(
-      readFile(join(workspaceDir, 'agent-qa-memory', 'tests', TEST_ALPHA, `${OBS_TEST}.md`), 'utf-8'),
+      readFile(join(workspaceDir, 'etus-agent-memory', 'tests', TEST_ALPHA, `${OBS_TEST}.md`), 'utf-8'),
     ).rejects.toMatchObject({ code: 'ENOENT' })
   })
 
   it('rejects encoded path traversal when deleting memory observations', async () => {
     const { configManager, configPath } = await createWorkspace()
     const workspaceDir = dirname(configPath)
-    const siblingPath = join(workspaceDir, 'agent-qa-memory2', 'tests', TEST_ALPHA, `${OBS_TEST}.md`)
+    const siblingPath = join(workspaceDir, 'etus-agent-memory2', 'tests', TEST_ALPHA, `${OBS_TEST}.md`)
     await mkdir(dirname(siblingPath), { recursive: true })
     await writeFile(siblingPath, 'do not delete', 'utf-8')
     const router = createRouter({ db: { getRuns: () => [] } as any, configManager, configPath })
 
-    const escapedTestId = encodeURIComponent(`../../agent-qa-memory2/tests/${TEST_ALPHA}`)
+    const escapedTestId = encodeURIComponent(`../../etus-agent-memory2/tests/${TEST_ALPHA}`)
     const res = await invokeRoute(router, `/api/memory/observations/${escapedTestId}/${OBS_TEST}`, {
       method: 'DELETE',
     })

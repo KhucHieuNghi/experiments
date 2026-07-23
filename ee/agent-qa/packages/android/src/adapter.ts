@@ -1,6 +1,6 @@
-import type { PlatformAdapter, PlatformConfig, ScreenState, Action, ActionResult, ElementInfo, ObserveOptions, ConsoleLogEntry } from '@etus/agent-qa-core'
-import { MobileSetupError, parseMobileSource, MobileElementResolver, KEY_MAP, computeSwipe, computePinch, computeFingerPositions, warnIfOutOfBounds } from '@etus/agent-qa-core'
-import type { MobileRefMap } from '@etus/agent-qa-core'
+import type { PlatformAdapter, PlatformConfig, ScreenState, Action, ActionResult, ElementInfo, ObserveOptions, ConsoleLogEntry } from '@etus/agent-core'
+import { MobileSetupError, parseMobileSource, MobileElementResolver, KEY_MAP, computeSwipe, computePinch, computeFingerPositions, warnIfOutOfBounds } from '@etus/agent-core'
+import type { MobileRefMap } from '@etus/agent-core'
 import { createAndroidSession } from './session.js'
 import type { AndroidAdapterConfig } from './types.js'
 
@@ -253,7 +253,7 @@ export class AndroidPlatformAdapter implements PlatformAdapter {
 
     // Resolve app PID for logcat filtering only when explicitly enabled. Appium
     // 3 blocks mobile: shell unless the server is started with adb_shell enabled.
-    if (process.env.AGENT_QA_ANDROID_USE_MOBILE_SHELL === '1' && this.appPackage && this.driver) {
+    if (process.env.ETUS_AGENT_ANDROID_USE_MOBILE_SHELL === '1' && this.appPackage && this.driver) {
       try {
         const result = String(await this.driver.execute('mobile: shell', { command: 'pidof', args: [this.appPackage] }))
         const pid = result?.trim()
@@ -397,7 +397,7 @@ export class AndroidPlatformAdapter implements PlatformAdapter {
       // On native, dims match (1080x2400 == 1080x2400 getWindowSize). Phase 142 removed all
       // scaling code — coords are viewport-space identity. Log kept for diagnostics.
       try {
-        const { getImageDimensions } = await import('@etus/agent-qa-core')
+        const { getImageDimensions } = await import('@etus/agent-core')
         const dims = await getImageDimensions(buf)
         const { width } = await this.driver.getWindowSize()
         if (dims && Math.abs(dims.width - width) > 1) {

@@ -1,5 +1,5 @@
 import type { Page } from 'playwright-core'
-import type { ScreenState, ElementInfo } from '@etus/agent-qa-core'
+import type { ScreenState, ElementInfo } from '@etus/agent-core'
 import type { RefMap } from './types.js'
 import { extractDom } from './dom-extractor.js'
 
@@ -94,7 +94,7 @@ export function parseAriaSnapshot(ariaTree: string): { tree: string; elements: E
 // because the Node tsconfig has no DOM lib — these functions serialize and run in browser
 function hideAgentQaElements() {
   const doc = (globalThis as any).document
-  doc.querySelectorAll('[data-agent-qa-internal]').forEach((el: any) => {
+  doc.querySelectorAll('[data-etus-agent-internal]').forEach((el: any) => {
     el.style.display = 'none'
     el.setAttribute('aria-hidden', 'true')
   })
@@ -102,7 +102,7 @@ function hideAgentQaElements() {
 
 function restoreAgentQaElements() {
   const doc = (globalThis as any).document
-  doc.querySelectorAll('[data-agent-qa-internal]').forEach((el: any) => {
+  doc.querySelectorAll('[data-etus-agent-internal]').forEach((el: any) => {
     el.style.display = ''
     el.removeAttribute('aria-hidden')
   })

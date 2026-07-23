@@ -227,9 +227,9 @@ function resolveAppInstall(
   const targetPath = asOptionalString(target.app?.path)
   const pathValue = localPath ?? targetPath
   const pathSource = localPath
-    ? `agent-qa.local.yaml apps.${input.targetName}.path`
+    ? `etus-agent.local.yaml apps.${input.targetName}.path`
     : targetPath
-      ? `agent-qa.config.yaml registry.targets.${input.targetName}.app.path`
+      ? `etus-agent.config.yaml registry.targets.${input.targetName}.app.path`
       : undefined
   const pathBaseDir = localPath
     ? baseDirFor(input.localConfigFilePath ?? input.localBindings?.filePath)
@@ -241,9 +241,9 @@ function resolveAppInstall(
   const targetBrowserStack = asOptionalString(target.app?.browserstack)
   const browserstackValue = localBrowserStack ?? targetBrowserStack
   const browserstackSource = localBrowserStack
-    ? `agent-qa.local.yaml apps.${input.targetName}.browserstack`
+    ? `etus-agent.local.yaml apps.${input.targetName}.browserstack`
     : targetBrowserStack
-      ? `agent-qa.config.yaml registry.targets.${input.targetName}.app.browserstack`
+      ? `etus-agent.config.yaml registry.targets.${input.targetName}.app.browserstack`
       : undefined
   const browserstackBaseDir = localBrowserStack
     ? baseDirFor(input.localConfigFilePath ?? input.localBindings?.filePath)

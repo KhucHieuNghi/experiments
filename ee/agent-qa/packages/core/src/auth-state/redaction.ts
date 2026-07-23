@@ -121,11 +121,11 @@ function redactStructuredAuthStateText(value: string): string {
       (_match, prefix: string) => `${prefix}${AUTH_STATE_REDACTION_MARKER}`,
     )
     .replace(
-      /(["']?(?:authState|auth_state|storageStatePath|AGENT_QA_AUTH_STATE_JSON|AGENT_QA_AUTH_STATE_STORAGE_STATE_PATH)["']?\s*[:=]\s*)(["'])[^"']*\2/gi,
+      /(["']?(?:authState|auth_state|storageStatePath|ETUS_AGENT_AUTH_STATE_JSON|ETUS_AGENT_AUTH_STATE_STORAGE_STATE_PATH)["']?\s*[:=]\s*)(["'])[^"']*\2/gi,
       (_match, prefix: string, quote: string) => `${prefix}${quote}${AUTH_STATE_REDACTION_MARKER}${quote}`,
     )
     .replace(
-      /((?:authState|auth_state|storageStatePath|AGENT_QA_AUTH_STATE_JSON|AGENT_QA_AUTH_STATE_STORAGE_STATE_PATH)\s*[:=]\s*)[^\s,}\]]+/gi,
+      /((?:authState|auth_state|storageStatePath|ETUS_AGENT_AUTH_STATE_JSON|ETUS_AGENT_AUTH_STATE_STORAGE_STATE_PATH)\s*[:=]\s*)[^\s,}\]]+/gi,
       (_match, prefix: string) => `${prefix}${AUTH_STATE_REDACTION_MARKER}`,
     )
 }

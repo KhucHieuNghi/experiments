@@ -33,7 +33,7 @@ importers:
 
   packages/android:
     dependencies:
-      '@etus/agent-qa-core':
+      '@etus/agent-core':
         specifier: workspace:*
         version: link:../core
       webdriverio:
@@ -55,28 +55,28 @@ importers:
 
   packages/cli:
     dependencies:
-      '@etus/agent-qa-android':
+      '@etus/agent-android':
         specifier: workspace:*
         version: link:../android
-      '@etus/agent-qa-core':
+      '@etus/agent-core':
         specifier: workspace:*
         version: link:../core
-      '@etus/agent-qa-dashboard':
+      '@etus/agent-dashboard':
         specifier: workspace:*
         version: link:../dashboard-server
-      '@etus/agent-qa-dashboard-ui':
+      '@etus/agent-dashboard-ui':
         specifier: workspace:*
         version: link:../dashboard-ui
-      '@etus/agent-qa-ids':
+      '@etus/agent-ids':
         specifier: workspace:*
         version: link:../ids
-      '@etus/agent-qa-ios':
+      '@etus/agent-ios':
         specifier: workspace:*
         version: link:../ios
-      '@etus/agent-qa-mcp':
+      '@etus/agent-mcp':
         specifier: workspace:*
         version: link:../mcp
-      '@etus/agent-qa-web':
+      '@etus/agent-web':
         specifier: workspace:*
         version: link:../web
       '@inquirer/checkbox':
@@ -140,7 +140,7 @@ importers:
       '@ai-sdk/openai':
         specifier: 3.0.58
         version: 3.0.58(zod@4.4.2)
-      '@etus/agent-qa-ids':
+      '@etus/agent-ids':
         specifier: workspace:*
         version: link:../ids
       ai:
@@ -207,22 +207,22 @@ importers:
 
   packages/dashboard-server:
     dependencies:
-      '@etus/agent-qa-android':
+      '@etus/agent-android':
         specifier: workspace:*
         version: link:../android
-      '@etus/agent-qa-core':
+      '@etus/agent-core':
         specifier: workspace:*
         version: link:../core
-      '@etus/agent-qa-ids':
+      '@etus/agent-ids':
         specifier: workspace:*
         version: link:../ids
-      '@etus/agent-qa-ios':
+      '@etus/agent-ios':
         specifier: workspace:*
         version: link:../ios
-      '@etus/agent-qa-mcp':
+      '@etus/agent-mcp':
         specifier: workspace:*
         version: link:../mcp
-      '@etus/agent-qa-web':
+      '@etus/agent-web':
         specifier: workspace:*
         version: link:../web
       ai:
@@ -277,7 +277,7 @@ importers:
       '@dnd-kit/utilities':
         specifier: 3.2.2
         version: 3.2.2(react@19.2.5)
-      '@etus/agent-qa-ids':
+      '@etus/agent-ids':
         specifier: workspace:*
         version: link:../ids
       '@fontsource-variable/geist':
@@ -399,7 +399,7 @@ importers:
 
   packages/ios:
     dependencies:
-      '@etus/agent-qa-core':
+      '@etus/agent-core':
         specifier: workspace:*
         version: link:../core
       webdriverio:
@@ -421,10 +421,10 @@ importers:
 
   packages/mcp:
     dependencies:
-      '@etus/agent-qa-core':
+      '@etus/agent-core':
         specifier: workspace:*
         version: link:../core
-      '@etus/agent-qa-ids':
+      '@etus/agent-ids':
         specifier: workspace:*
         version: link:../ids
       '@modelcontextprotocol/sdk':
@@ -458,7 +458,7 @@ importers:
       '@axe-core/playwright':
         specifier: 4.11.3
         version: 4.11.3(playwright-core@1.59.1)
-      '@etus/agent-qa-core':
+      '@etus/agent-core':
         specifier: workspace:*
         version: link:../core
       playwright-core:

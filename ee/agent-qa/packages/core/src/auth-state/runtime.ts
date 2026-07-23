@@ -29,7 +29,7 @@ export interface ResolvedAuthStateForRun {
 function createAuthStateReadError(targetName: string, stateName: string): Error {
   return new Error(
     `Auth state "${stateName}" for target "${targetName}" was not found or could not be read. ` +
-    `Run agent-qa auth-state capture --target ${targetName} --name ${stateName}.`,
+    `Run etus-agent auth-state capture --target ${targetName} --name ${stateName}.`,
   )
 }
 

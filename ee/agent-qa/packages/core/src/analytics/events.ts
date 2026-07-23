@@ -17,15 +17,15 @@ export type {
 } from './types.js'
 
 export const ANALYTICS_EVENT_NAMES = [
-  'agent-qa.analytics.initialized',
-  'agent-qa.analytics.test_event',
-  'agent-qa.test_run.completed',
-  'agent-qa.suite_run.completed',
-  'agent-qa.dashboard.opened',
-  'agent-qa.dashboard.live_mode.started',
-  'agent-qa.dashboard.entity.created',
-  'agent-qa.mcp.server.lifecycle',
-  'agent-qa.mcp.tool.invoked',
+  'etus-agent.analytics.initialized',
+  'etus-agent.analytics.test_event',
+  'etus-agent.test_run.completed',
+  'etus-agent.suite_run.completed',
+  'etus-agent.dashboard.opened',
+  'etus-agent.dashboard.live_mode.started',
+  'etus-agent.dashboard.entity.created',
+  'etus-agent.mcp.server.lifecycle',
+  'etus-agent.mcp.tool.invoked',
 ] as const
 
 export const ANALYTICS_SURFACES = [
@@ -103,7 +103,7 @@ const NonNegativeIntegerSchema = z.number().int().min(0)
 const NonNegativeNumberSchema = z.number().min(0)
 
 const AnalyticsBasePropertiesSchema = z.object({
-  agent_qa_version: z.string().min(1).optional(),
+  etus_agent_version: z.string().min(1).optional(),
   surface: z.enum(ANALYTICS_SURFACES).optional(),
   runtime_context: z.enum(ANALYTICS_RUNTIME_CONTEXTS).optional(),
   agent_product: z.enum(ANALYTICS_AGENT_PRODUCTS).optional(),
@@ -202,21 +202,21 @@ const AnalyticsMcpToolInvokedPropertiesSchema = AnalyticsBasePropertiesSchema.ex
 }).strip()
 
 const AnalyticsEventPropertiesSchemaByName = {
-  'agent-qa.analytics.initialized': AnalyticsRunPropertiesSchema,
-  'agent-qa.analytics.test_event': AnalyticsRunPropertiesSchema,
-  'agent-qa.test_run.completed': AnalyticsRunPropertiesSchema,
-  'agent-qa.suite_run.completed': AnalyticsRunPropertiesSchema,
-  'agent-qa.dashboard.opened': AnalyticsDashboardOpenedPropertiesSchema,
-  'agent-qa.dashboard.live_mode.started': AnalyticsDashboardLiveModeStartedPropertiesSchema,
-  'agent-qa.dashboard.entity.created': AnalyticsDashboardEntityCreatedPropertiesSchema,
-  'agent-qa.mcp.server.lifecycle': AnalyticsMcpServerLifecyclePropertiesSchema,
-  'agent-qa.mcp.tool.invoked': AnalyticsMcpToolInvokedPropertiesSchema,
+  'etus-agent.analytics.initialized': AnalyticsRunPropertiesSchema,
+  'etus-agent.analytics.test_event': AnalyticsRunPropertiesSchema,
+  'etus-agent.test_run.completed': AnalyticsRunPropertiesSchema,
+  'etus-agent.suite_run.completed': AnalyticsRunPropertiesSchema,
+  'etus-agent.dashboard.opened': AnalyticsDashboardOpenedPropertiesSchema,
+  'etus-agent.dashboard.live_mode.started': AnalyticsDashboardLiveModeStartedPropertiesSchema,
+  'etus-agent.dashboard.entity.created': AnalyticsDashboardEntityCreatedPropertiesSchema,
+  'etus-agent.mcp.server.lifecycle': AnalyticsMcpServerLifecyclePropertiesSchema,
+  'etus-agent.mcp.tool.invoked': AnalyticsMcpToolInvokedPropertiesSchema,
 } satisfies Record<typeof ANALYTICS_EVENT_NAMES[number], z.ZodType<BuiltAnalyticsEventProperties>>
 
 export function buildAnalyticsEvent(input: AnalyticsEventInput): BuiltAnalyticsEvent {
   const name = AnalyticsEventNameSchema.parse(input.name)
   const properties = AnalyticsEventPropertiesSchemaByName[name].parse({
-    agent_qa_version: getAgentQaVersion(),
+    etus_agent_version: getAgentQaVersion(),
     ...(input.properties ?? {}),
     $process_person_profile: false,
   }) as BuiltAnalyticsEventProperties

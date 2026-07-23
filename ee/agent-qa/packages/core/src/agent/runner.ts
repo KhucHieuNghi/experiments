@@ -23,7 +23,7 @@ import type { LogManager } from '../logging/log-manager.js'
 import type { HookDefinition } from '../hooks/types.js'
 import { runHookInSandbox, type SandboxRunnerOptions } from '../hooks/sandbox-runner.js'
 
-const accessibilityWebModuleName: string = '@etus/agent-qa-web'
+const accessibilityWebModuleName: string = '@etus/agent-web'
 
 export interface AccessibilityCheckOptions {
   standard?: 'wcag2a' | 'wcag2aa' | 'wcag2aaa'

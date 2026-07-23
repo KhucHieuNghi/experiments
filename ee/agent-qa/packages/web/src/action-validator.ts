@@ -1,4 +1,4 @@
-import type { Action } from '@etus/agent-qa-core'
+import type { Action } from '@etus/agent-core'
 
 export type ValidationResult =
   | { valid: true }

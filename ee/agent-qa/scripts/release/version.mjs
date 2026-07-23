@@ -3,7 +3,7 @@ import semver from 'semver'
 import { getPublicPackages } from './packages.mjs'
 
 const dependencyBlocks = ['dependencies', 'devDependencies', 'peerDependencies', 'optionalDependencies']
-const internalPackagePrefix = '@etus/agent-qa-'
+const internalPackagePrefix = '@etus/agent-'
 
 export function assertAllowedBump(bump) {
   if (bump !== 'patch' && bump !== 'minor') {

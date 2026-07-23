@@ -1,4 +1,4 @@
-# ETUS package instructions: @etus/agent-qa-web
+# ETUS package instructions: @etus/agent-web
 
 Inherit the root ETUS branding, security, and release rules.
 
@@ -21,9 +21,9 @@ accessibility checks.
 
 ## Commands
 
-- Test: `pnpm --filter @etus/agent-qa-web test`
-- Typecheck: `pnpm --filter @etus/agent-qa-web typecheck`
-- Build: `pnpm --filter @etus/agent-qa-web build`
+- Test: `pnpm --filter @etus/agent-web test`
+- Typecheck: `pnpm --filter @etus/agent-web typecheck`
+- Build: `pnpm --filter @etus/agent-web build`
 
 ## Local Rules
 
@@ -39,6 +39,6 @@ accessibility checks.
 Run focused web tests after behavior changes:
 
 ```bash
-pnpm --filter @etus/agent-qa-web test
-pnpm --filter @etus/agent-qa-web typecheck
+pnpm --filter @etus/agent-web test
+pnpm --filter @etus/agent-web typecheck
 ```

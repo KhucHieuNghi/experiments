@@ -1,0 +1,18 @@
+workspace:
+  testMatch:
+    - release-action-pack/**/*.yaml
+  suiteMatch:
+    - release-action-pack/**/*.suite.yaml
+  hooksFile: hooks.yaml
+  agentRules: ./agent-rules.md
+  envFile: .env
+  secretsFile: .env.secrets.local
+services:
+  cache:
+    dir: .etus-agent/cache
+    ttl: 7d
+  memory:
+    dir: etus-agent-memory
+use:
+  mobile:
+    appState: preserve

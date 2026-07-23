@@ -42,7 +42,7 @@ async function seedWorkspace() {
   await writeFile(path.join(workspaceDir, 'agent-rules.md'), '# rules\n')
   await writeFile(path.join(workspaceDir, '.env'), '')
   await writeFile(path.join(workspaceDir, '.env.secrets.local'), '')
-  await writeFile(path.join(workspaceDir, 'agent-qa.config.yaml'), [
+  await writeFile(path.join(workspaceDir, 'etus-agent.config.yaml'), [
     'workspace:',
     '  testMatch:',
     '    - specs/web/**/*.yaml',
@@ -61,13 +61,13 @@ async function seedWorkspace() {
 
 async function runValidate(...args: string[]) {
   const program = new Command()
-  program.option('--config <path>', 'config file path', 'agent-qa.config.yaml')
+  program.option('--config <path>', 'config file path', 'etus-agent.config.yaml')
   program.addCommand(createValidateCommand())
   await program.parseAsync([
     'node',
-    'agent-qa',
+    'etus-agent',
     '--config',
-    path.join(workspaceDir, 'agent-qa.config.yaml'),
+    path.join(workspaceDir, 'etus-agent.config.yaml'),
     'validate',
     ...args,
   ])
@@ -80,7 +80,7 @@ function output() {
 describe('validate command workspace resolution', () => {
   beforeEach(async () => {
     originalCwd = process.cwd()
-    workspaceDir = await mkdtemp(path.join(tmpdir(), 'agent-qa-validate-'))
+    workspaceDir = await mkdtemp(path.join(tmpdir(), 'etus-agent-validate-'))
     await seedWorkspace()
     process.chdir(workspaceDir)
     process.exitCode = 0

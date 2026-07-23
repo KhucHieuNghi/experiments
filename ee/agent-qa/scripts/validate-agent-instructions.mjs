@@ -4,7 +4,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url'
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..')
 const ignoredDirs = new Set(['.git', '.turbo', '.pnpm-store', '.release', 'dist', 'node_modules'])
-const requiredRootSnippets = ['agent-qa', 'AGENT_QA_*', 'agent_qa_*', '@etus/agent-qa-*']
+const requiredRootSnippets = ['etus-agent', 'ETUS_AGENT_*', 'etus_agent_*', '@etus/agent-*']
 const forbiddenBranding = ['AgentQA', 'AGENTQA', 'agentqa', 'agentqa_']
 const forbiddenStart = '<!-- branding-forbidden:start -->'
 const forbiddenEnd = '<!-- branding-forbidden:end -->'
@@ -123,11 +123,11 @@ export function validateAgentInstructions(rootDir = root, options = {}) {
 function main() {
   const errors = validateAgentInstructions(root)
   if (errors.length === 0) {
-    console.log('agent-qa AGENTS.md validation passed')
+    console.log('etus-agent AGENTS.md validation passed')
     return
   }
 
-  console.error('agent-qa AGENTS.md validation failed:')
+  console.error('etus-agent AGENTS.md validation failed:')
   for (const error of errors) console.error(`- ${error}`)
   process.exitCode = 1
 }

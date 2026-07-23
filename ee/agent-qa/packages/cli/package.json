@@ -1,5 +1,5 @@
 {
-  "name": "agent-qa",
+  "name": "etus-agent",
   "version": "0.1.21",
   "private": false,
   "description": "The self-improving Agentic QA harness with Memory",
@@ -49,7 +49,7 @@
   },
   "type": "module",
   "bin": {
-    "agent-qa": "./dist/cli.js"
+    "etus-agent": "./dist/cli.js"
   },
   "exports": {
     ".": {
@@ -84,14 +84,14 @@
     "@inquirer/input": "5.0.12",
     "@inquirer/password": "5.0.12",
     "@inquirer/select": "5.1.4",
-    "@etus/agent-qa-android": "workspace:*",
-    "@etus/agent-qa-core": "workspace:*",
-    "@etus/agent-qa-dashboard": "workspace:*",
-    "@etus/agent-qa-dashboard-ui": "workspace:*",
-    "@etus/agent-qa-ids": "workspace:*",
-    "@etus/agent-qa-ios": "workspace:*",
-    "@etus/agent-qa-mcp": "workspace:*",
-    "@etus/agent-qa-web": "workspace:*",
+    "@etus/agent-android": "workspace:*",
+    "@etus/agent-core": "workspace:*",
+    "@etus/agent-dashboard": "workspace:*",
+    "@etus/agent-dashboard-ui": "workspace:*",
+    "@etus/agent-ids": "workspace:*",
+    "@etus/agent-ios": "workspace:*",
+    "@etus/agent-mcp": "workspace:*",
+    "@etus/agent-web": "workspace:*",
     "ai": "6.0.174",
     "commander": "14.0.3",
     "glob": "13.0.6",
