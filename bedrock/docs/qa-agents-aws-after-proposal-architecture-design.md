@@ -49,7 +49,7 @@ The design is intentionally progressive:
 
 ## 4. Required Diagrams
 
-The HTML rendering must contain six diagrams. Each diagram must use labeled frames and a legend so ownership is visible without reading the surrounding prose.
+The HTML rendering must contain seven diagrams. Each diagram must use labeled frames and a legend so ownership is visible without reading the surrounding prose.
 
 ### Diagram 1: AWS deployment and network boundary
 
@@ -139,6 +139,22 @@ Show the cross-cutting controls:
 - CloudWatch logs/metrics/traces.
 - Evaluation dataset and evaluator result.
 - Release gate for prompt/model/source/tool changes.
+
+### Diagram 7: Event-driven AWS workflow
+
+Show the asynchronous control plane separately from the synchronous agent call:
+
+- CloudFront/WAF/Cognito or enterprise OIDC and API Gateway ingress.
+- Lambda validation and idempotency adapter.
+- EventBridge domain event bus.
+- SQS work queue with visibility timeout and dead-letter queue.
+- Lambda worker or AgentCore Runtime consumer.
+- Step Functions workflow for retries, waits, human approval and evidence processing.
+- Bedrock/Knowledge Bases synthesis path.
+- S3 artifacts, DynamoDB job state and SNS notification fan-out.
+- CloudWatch/CloudTrail operational and audit path.
+
+The diagram must state that EventBridge, SNS and SQS use at-least-once delivery patterns, consumers must be idempotent, and the DLQ requires an operational replay owner.
 
 ## 5. Data Contracts Represented in the Diagrams
 

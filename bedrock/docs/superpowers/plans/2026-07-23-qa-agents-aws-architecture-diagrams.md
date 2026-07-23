@@ -30,7 +30,7 @@
 
 **Interfaces:**
 - Consumes: approved design spec, existing proposal contracts, official AWS research links.
-- Produces: the authoritative architecture decisions, AWS responsibility matrix, six Mermaid diagrams, deployment configuration notes and implementation gates.
+- Produces: the authoritative architecture decisions, AWS responsibility matrix, seven Mermaid diagrams, deployment configuration notes and implementation gates.
 
 - [x] **Step 1: Add document metadata and scope boundary**
 
@@ -40,9 +40,9 @@ Include source-of-truth rules, relationship to the proposal draft and the select
 
 Document the account/region assumptions, VPC/private connectivity options, IAM roles, data stores, service integrations, MVP status and Phase 2 status.
 
-- [x] **Step 3: Add the six Mermaid diagrams**
+- [x] **Step 3: Add the seven Mermaid diagrams**
 
-Include deployment/network, component/container, sequence, Knowledge Base/memory lifecycle, ETUS evidence flow and security/observability/evaluation flow. Each must label ownership and MVP versus Phase 2.
+Include deployment/network, component/container, sequence, Knowledge Base/memory lifecycle, ETUS evidence flow, security/observability/evaluation flow and event-driven AWS workflow. Each must label ownership and MVP versus Phase 2.
 
 - [x] **Step 4: Add contracts, security rules, failure handling and acceptance criteria**
 
@@ -86,7 +86,7 @@ Map logical containers to AWS services and identify owner lanes for QA, AI, Soft
 
 Show the ticket-to-final-QA-note path, human approval gates and failure branches.
 
-- [x] **Step 5: Add Knowledge Base/memory, ETUS evidence and security/evaluation SVGs**
+- [x] **Step 5: Add Knowledge Base/memory, ETUS evidence, security/evaluation and event-driven workflow SVGs**
 
 Show source trust, citation, memory promotion, local evidence, policy decisions, traces, audit events and release gates.
 

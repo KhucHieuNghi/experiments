@@ -41,20 +41,26 @@ The ticket is an intent artifact, not the complete business truth. Every importa
 
 | Layer | Service or capability | Responsibility | Phase |
 |---|---|---|---|
+| Edge and identity | CloudFront, AWS WAF, Amazon Cognito or enterprise OIDC | Protect the public UI/API and establish user identity before application ingress | MVP for internet-facing deployment |
 | Ingress | API Gateway or authenticated application endpoint | Accept ticket context and return a session/job reference | MVP |
+| Adapter compute | AWS Lambda | Validate payloads, publish events, start workflows and implement thin integration adapters | MVP |
 | Runtime | Amazon Bedrock AgentCore Runtime | Host a production-shaped QA assistant session | MVP when service endpoint is introduced |
 | Model | Amazon Bedrock Converse API | Generate structured verification context from grounded input | MVP |
 | Safety | Amazon Bedrock Guardrails | Filter sensitive content and apply model input/output controls | MVP |
 | Retrieval | Amazon Bedrock Knowledge Bases or controlled retrieval service | Search approved sources and return citations | MVP before broad pilot |
 | Source store | Amazon S3 | Store source snapshots, exported artifacts and evaluation fixtures | MVP |
 | Record store | Amazon DynamoDB | Store context records, job state, source metadata and idempotency keys | MVP |
-| Async control | SQS, EventBridge or Step Functions | Run ingestion, evaluation and evidence workflows asynchronously | Later MVP / scale |
+| Work queue | Amazon SQS, visibility timeout and dead-letter queue | Buffer work, isolate retries and prevent burst traffic from overwhelming workers | MVP for asynchronous work |
+| Event routing | Amazon EventBridge | Publish domain events and route them to workflows, queues, notifications or integrations | MVP for event-driven scale |
+| Orchestration | AWS Step Functions | Coordinate ingestion, synthesis, human review, evidence and retryable workflow states | Phase 2 |
+| Notification | Amazon SNS | Fan out clarification, review, failure and sign-off notifications | Phase 2 |
 | Tool boundary | AgentCore Gateway | Expose governed MCP, API and Lambda tools | Phase 2 |
 | Identity | IAM, AgentCore Identity and workload identity | Separate user, runtime and downstream credentials | MVP for protected integrations |
 | Policy | AgentCore Policy with Cedar | Enforce tool and input-level allow/deny decisions | Phase 2 before tools |
 | Memory | AgentCore Memory plus promotion rules | Store approved session and long-term QA knowledge | Phase 2 |
 | Observability | CloudWatch, OpenTelemetry/OpenInference and CloudTrail | Trace calls, policy decisions, latency, failures and audit events | MVP |
 | Evaluation | AgentCore Evaluations and golden dataset | Measure grounding, task completion, tool behavior and regressions | Before rollout changes |
+| Protection and secrets | AWS WAF, AWS KMS and AWS Secrets Manager | Protect ingress, encrypt records/artifacts and keep credentials outside prompts | MVP for production data |
 
 ## 4. AWS Deployment and Network Boundary
 
@@ -395,7 +401,84 @@ Security requirements:
 - Record model, prompt, guardrail, source set, policy decision and approval versions for replay.
 - Treat CloudWatch logs, traces, artifacts and tickets as potentially sensitive data with retention controls.
 
-## 10. Cross-Boundary Contracts
+## 10. Event-Driven AWS Workflow
+
+Use synchronous invocation only for short interactive actions such as intake validation, retrieval and draft generation. Use an event-driven path for source ingestion, long-running agent tasks, ETUS execution requests, evidence processing, human approval and notifications.
+
+```mermaid
+flowchart LR
+  USER[QA workbench / ETUS]
+  EDGE[CloudFront + WAF + Cognito/OIDC]
+  API[API Gateway]
+  VALIDATE[Lambda\nvalidate + idempotency]
+  EVENTS[EventBridge\nQA domain event bus]
+  QUEUE[SQS work queue\nvisibility timeout]
+  DLQ[SQS dead-letter queue]
+  WORKER[Lambda worker or AgentCore Runtime]
+  SFN[Step Functions\nworkflow + human approval]
+  BEDROCK[Bedrock + Knowledge Bases\nGuardrails + citations]
+  ETUS[ETUS local runner]
+  S3[S3\nsource snapshots + artifacts]
+  DDB[DynamoDB\njob state + records]
+  SNS[SNS\nnotification fan-out]
+  OPS[CloudWatch + CloudTrail\nmetrics, logs, audit]
+
+  USER --> EDGE --> API --> VALIDATE
+  VALIDATE -->|accepted| EVENTS
+  VALIDATE -->|sync response| USER
+  EVENTS -->|source.updated| SFN
+  EVENTS -->|verification.requested| QUEUE
+  QUEUE --> WORKER
+  WORKER -->|retryable failure| QUEUE
+  QUEUE -->|max receives| DLQ
+  WORKER --> SFN
+  SFN --> BEDROCK
+  SFN -->|bounded execution request| ETUS
+  ETUS -->|evidence upload| S3
+  SFN --> S3
+  SFN --> DDB
+  SFN -->|clarification / sign-off| SNS
+  EVENTS -->|audit and lifecycle events| OPS
+  WORKER --> OPS
+  SFN --> OPS
+
+  classDef human fill:#f8eded,stroke:#cb222a,color:#313331;
+  classDef edge fill:#f3f3f3,stroke:#777,color:#313331;
+  classDef aws fill:#fff4df,stroke:#ff9900,color:#313331;
+  classDef local fill:#f3f3f3,stroke:#777,color:#313331;
+  classDef failure fill:#fff0f0,stroke:#b91c1c,color:#313331;
+  class USER human;
+  class EDGE,API,VALIDATE,EVENTS,QUEUE,WORKER,SFN,BEDROCK,S3,DDB,SNS,OPS aws;
+  class ETUS local;
+  class DLQ failure;
+```
+
+Service selection rules:
+
+| Need | Preferred service | Why | Do not use it for |
+|---|---|---|---|
+| Public API and authentication | API Gateway + Cognito/OIDC + WAF | Authenticated ingress, throttling and edge protection | Long-running workflow execution |
+| Short stateless adapter | Lambda | Low-ops validation, transformation, event publication and integration glue | Long-running browser/device execution or heavy agent state |
+| Durable work buffer | SQS Standard + DLQ | Backpressure, at-least-once processing, retry isolation and failure recovery | Fan-out domain notification semantics |
+| Domain event routing | EventBridge | Content-based routing, cross-service and cross-account event delivery | Strict ordering or durable work ownership |
+| Ordered durable work | SQS FIFO | Idempotent ordered processing for a workflow partition | General-purpose event bus routing |
+| Multi-step workflow | Step Functions | Explicit retries, waits, human approval and state transitions | Replacing a simple one-step Lambda call |
+| Notification fan-out | SNS | Send one event to email, webhook, Lambda or multiple SQS subscribers | Durable workflow state |
+| Source and evidence objects | S3 | Versioned, encrypted, durable artifacts and source snapshots | Transactional job state |
+| Job state and idempotency | DynamoDB | Conditional writes, TTL, status transitions and lookup by ticket/session | Large binary artifacts |
+
+Event and reliability rules:
+
+- Every event carries `event_id`, `event_type`, `event_version`, `project_id`, `ticket_id`, `session_id`, `trace_id`, `actor_id` and `occurred_at`.
+- Consumers must be idempotent because EventBridge, SNS and SQS use at-least-once delivery patterns.
+- SQS consumers must define visibility timeout, maximum receives, backoff and DLQ ownership.
+- A DLQ is an operational state requiring alerting and replay tooling, not a silent discard bucket.
+- Step Functions owns workflow state; DynamoDB owns queryable business/job state; S3 owns large immutable artifacts.
+- SNS is for notifications and fan-out. It must not be treated as the system of record.
+- Use EventBridge for lifecycle events such as `verification.requested`, `context.ready`, `clarification.required`, `evidence.attached`, `signoff.ready` and `evaluation.failed`.
+- Use Step Functions for the long-running path where the system may wait for Product/Engineer clarification or QA approval.
+
+## 11. Cross-Boundary Contracts
 
 | Contract | Required fields | Owner |
 |---|---|---|
@@ -410,7 +493,7 @@ Security requirements:
 
 Cross-boundary records should carry `session_id`, `trace_id`, `source_set_id`, `created_at`, `actor_id` and `schema_version` where applicable.
 
-## 11. MVP and Enhancement Gates
+## 12. MVP and Enhancement Gates
 
 | Layer | Capability | Gate before enabling |
 |---|---|---|
@@ -418,13 +501,16 @@ Cross-boundary records should carry `session_id`, `trace_id`, `source_set_id`, `
 | MVP | Approved source retrieval | Source owner, trust level, freshness and project scope |
 | MVP | Bedrock Guardrails | PII/secrets policy and blocked-content handling |
 | MVP | Durable records and traces | Replay fields, retention and access policy |
+| MVP | Async work queue | SQS visibility timeout, DLQ, idempotency key and replay owner |
+| Phase 2 | Event-driven orchestration | EventBridge schema, Step Functions state machine and human approval callback |
+| Phase 2 | Notification fan-out | SNS subscriptions, preference/PII policy and delivery audit |
 | Phase 2 | AgentCore Gateway read-only tools | Identity, tool schema, Cedar policy, audit and timeout |
 | Phase 2 | AgentCore Memory | Promotion, contradiction, expiry and retrieval tests |
 | Phase 2 | Private VPC access | Approved subnets, security groups, endpoints and test target classification |
 | Later | Draft or approved write-back | Human approval, idempotency, audit and rollback |
 | Later | Semi-automated execution | Bounded actions, sandbox target, evidence completeness and release gate |
 
-## 12. Acceptance Criteria
+## 13. Acceptance Criteria
 
 - Cloud can identify account, region, VPC, subnet, security group, endpoint and service boundary from the deployment diagram.
 - QA can follow ticket-to-evidence flow and see every human approval point.
@@ -432,10 +518,12 @@ Cross-boundary records should carry `session_id`, `trace_id`, `source_set_id`, `
 - Software engineering can identify contracts and durable records required for implementation.
 - Security can identify identity, secret, private-network, policy and audit controls.
 - Every diagram labels MVP and Phase 2 capability.
+- Cloud can distinguish synchronous request flow from asynchronous queue, event bus and workflow paths.
+- SQS retry and DLQ ownership, EventBridge event contracts and Step Functions state ownership are explicit.
 - HTML diagrams are readable on desktop and horizontally scrollable on narrow screens.
 - No diagram implies autonomous release approval or unrestricted production access.
 
-## 13. Research Basis
+## 14. Research Basis
 
 - [Amazon Bedrock AgentCore overview](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/)
 - [AgentCore Gateway](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/gateway.html)
@@ -445,4 +533,10 @@ Cross-boundary records should carry `session_id`, `trace_id`, `source_set_id`, `
 - [AgentCore resource-based policies](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/resource-based-policies.html)
 - [AgentCore observability](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/observability-configure.html)
 - [Bedrock Guardrails with Converse](https://docs.aws.amazon.com/bedrock/latest/userguide/guardrails-use-converse-api.html)
+- [AWS event-driven architecture for serverless AI](https://docs.aws.amazon.com/prescriptive-guidance/latest/agentic-ai-serverless/event-driven-architecture.html)
+- [Choosing SQS, SNS or EventBridge](https://docs.aws.amazon.com/decision-guides/latest/sns-or-sqs-or-eventbridge/sns-or-sqs-or-eventbridge.html)
+- [Lambda event-driven architectures](https://docs.aws.amazon.com/lambda/latest/dg/concepts-event-driven-architectures.html)
+- [Invoke AgentCore Harness with Step Functions](https://docs.aws.amazon.com/step-functions/latest/dg/connect-bedrockagentcore.html)
+- [AgentCore long-running tasks](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/runtime-long-run.html)
+- [Knowledge Base direct ingestion](https://docs.aws.amazon.com/bedrock/latest/userguide/kb-direct-ingestion.html)
 - [AWS Architecture Icons](https://aws.amazon.com/architecture/icons/)

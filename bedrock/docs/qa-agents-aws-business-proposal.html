@@ -269,7 +269,6 @@
 
       .arrow {
         fill: none;
-        marker-end: url(#arrowhead);
         stroke: var(--proposal-line);
         stroke-width: 2;
       }
@@ -465,19 +464,19 @@
               <text class="label" x="55" y="368">Evidence and tests</text>
               <text class="label small" x="55" y="388">Manual, CI, screenshots, logs</text>
 
-              <path class="arrow" d="M260 71 C330 71 350 220 420 220"></path>
-              <path class="arrow" d="M260 171 C330 171 350 225 420 225"></path>
-              <path class="arrow" d="M260 271 C330 271 350 235 420 235"></path>
-              <path class="arrow" d="M260 371 C330 371 350 245 420 245"></path>
+              <path class="arrow" marker-end="url(#arrowhead)" d="M260 71 C330 71 350 220 420 220"></path>
+              <path class="arrow" marker-end="url(#arrowhead)" d="M260 171 C330 171 350 225 420 225"></path>
+              <path class="arrow" marker-end="url(#arrowhead)" d="M260 271 C330 271 350 235 420 235"></path>
+              <path class="arrow" marker-end="url(#arrowhead)" d="M260 371 C330 371 350 245 420 245"></path>
 
               <rect class="box primary" x="420" y="165" width="250" height="130" rx="10"></rect>
               <text class="label light" x="450" y="205">Ready-for-QA</text>
               <text class="label light" x="450" y="228">Verification Context Record</text>
               <text class="label light" x="450" y="255">shared context before QA executes</text>
 
-              <path class="arrow" d="M680 230 C735 230 765 100 820 100"></path>
-              <path class="arrow" d="M680 230 C735 230 765 210 820 210"></path>
-              <path class="arrow" d="M680 230 C735 230 765 320 820 320"></path>
+              <path class="arrow" marker-end="url(#arrowhead)" d="M680 230 C735 230 765 100 820 100"></path>
+              <path class="arrow" marker-end="url(#arrowhead)" d="M680 230 C735 230 765 210 820 210"></path>
+              <path class="arrow" marker-end="url(#arrowhead)" d="M680 230 C735 230 765 320 820 320"></path>
 
               <rect class="box" x="820" y="58" width="185" height="78" rx="8"></rect>
               <text class="label" x="845" y="88">Risk summary</text>
@@ -994,7 +993,7 @@
                 <div class="service-card"><strong>AWS Lambda</strong><span>Request validation, prompt assembly, record generation API.</span></div>
                 <div class="service-card"><strong>AgentCore Runtime/Harness</strong><span>Host/wrap QA Assistant with endpoint, session and trace discipline.</span></div>
                 <div class="service-card"><strong>AWS Step Functions</strong><span>Orchestrate longer workflows: create record, review, evidence, publish.</span></div>
-                <div class="service-card"><strong>Amazon SQS</strong><span>Durable async queue for ingestion, exports, retryable jobs.</span></div>
+                <div class="service-card"><strong>Amazon SQS + DLQ</strong><span>Durable async queue, visibility timeout, retry isolation and replay ownership.</span></div>
               </div>
             </div>
 
@@ -1014,6 +1013,7 @@
                 <div class="service-card"><strong>DynamoDB</strong><span>Verification sessions, status, metadata, TTL for drafts.</span></div>
                 <div class="service-card"><strong>Amazon S3</strong><span>Evidence, exported markdown/html, ingestion documents.</span></div>
                 <div class="service-card"><strong>EventBridge</strong><span>Domain events: record created, clarification needed, sign-off ready.</span></div>
+                <div class="service-card"><strong>Amazon SNS</strong><span>Fan-out review, clarification, failure and sign-off notifications.</span></div>
                 <div class="service-card"><strong>Secrets Manager</strong><span>Store external API tokens for future integrations.</span></div>
               </div>
             </div>
@@ -1875,6 +1875,33 @@
                   <path class="arrow" d="M200 142 L230 142" style="color:#cb222a" marker-end="url(#arch-arrowhead-6)" /><path class="arrow" d="M460 142 L500 142" style="color:#ff9900" marker-end="url(#arch-arrowhead-6)" /><path class="arrow" d="M730 142 L770 142" style="color:#ff9900" marker-end="url(#arch-arrowhead-6)" /><path class="arrow" d="M730 214 L790 214" style="color:#ff9900" marker-end="url(#arch-arrowhead-6)" /><path class="arrow dashed" d="M460 214 L940 164" style="color:#777" marker-end="url(#arch-arrowhead-6)" /><text class="label small" x="404" y="286">Release gate: prompt, model, source, policy and tool versions must pass evaluation before rollout.</text>
                 </svg>
               </div>
+            </article>
+
+            <article class="tile">
+              <h3>7. Event-driven AWS workflow</h3>
+              <p class="diagram-caption">Use synchronous calls for short interactions and an asynchronous path for ingestion, long-running verification, evidence processing and human approval.</p>
+              <div class="diagram">
+                <svg viewBox="0 0 1120 470" role="img" aria-label="Event-driven AWS workflow with API Gateway Lambda EventBridge SQS Step Functions SNS S3 and DynamoDB">
+                  <defs><marker id="arch-arrowhead-7" markerHeight="7" markerWidth="7" orient="auto" refX="6" refY="3.5" viewBox="0 0 7 7"><path d="M0,0 L7,3.5 L0,7 z" fill="currentColor" /></marker></defs>
+                  <rect class="frame human" height="360" rx="10" width="150" x="18" y="48" /><text class="frame-label" x="34" y="76">USER / ETUS</text><rect class="box" height="62" rx="6" width="110" x="38" y="112" /><text class="label" x="52" y="138">Workbench</text><text class="label small" x="52" y="158">ticket / intent</text><rect class="box" height="62" rx="6" width="110" x="38" y="198" /><text class="label" x="52" y="224">ETUS runner</text><text class="label small" x="52" y="244">bounded local run</text>
+                  <rect class="frame aws" height="360" rx="10" width="190" x="188" y="48" /><text class="frame-label" x="204" y="76">EDGE AND API</text><rect class="box" height="62" rx="6" width="150" x="208" y="112" /><text class="label" x="224" y="138">CloudFront / WAF</text><text class="label small" x="224" y="158">Cognito / OIDC</text><rect class="box" height="62" rx="6" width="150" x="208" y="198" /><text class="label" x="224" y="224">API Gateway</text><text class="label small" x="224" y="244">sync ingress</text><rect class="box" height="62" rx="6" width="150" x="208" y="284" /><text class="label" x="224" y="310">Lambda adapter</text><text class="label small" x="224" y="330">validate / idempotency</text>
+                  <rect class="frame aws" height="360" rx="10" width="210" x="398" y="48" /><text class="frame-label" x="414" y="76">EVENT AND QUEUE</text><rect class="box" height="62" rx="6" width="170" x="418" y="112" /><text class="label" x="434" y="138">EventBridge bus</text><text class="label small" x="434" y="158">domain event routing</text><rect class="box" height="62" rx="6" width="170" x="418" y="198" /><text class="label" x="434" y="224">SQS work queue</text><text class="label small" x="434" y="244">buffer + retry</text><rect class="box warn" height="62" rx="6" width="170" x="418" y="284" /><text class="label" x="434" y="310">SQS dead-letter queue</text><text class="label small" x="434" y="330">replay + alert owner</text>
+                  <rect class="frame aws" height="360" rx="10" width="210" x="628" y="48" /><text class="frame-label" x="644" y="76">WORKFLOW</text><rect class="box" height="62" rx="6" width="170" x="648" y="112" /><text class="label" x="664" y="138">Lambda worker</text><text class="label small" x="664" y="158">or AgentCore Runtime</text><rect class="box" height="62" rx="6" width="170" x="648" y="198" /><text class="label" x="664" y="224">Step Functions</text><text class="label small" x="664" y="244">retry / wait / approval</text><rect class="box" height="62" rx="6" width="170" x="648" y="284" /><text class="label" x="664" y="310">Bedrock + Knowledge Bases</text><text class="label small" x="664" y="330">grounded synthesis</text>
+                  <rect class="frame aws" height="360" rx="10" width="230" x="858" y="48" /><text class="frame-label" x="874" y="76">STATE AND FAN-OUT</text><rect class="box" height="52" rx="6" width="190" x="878" y="104" /><text class="label" x="894" y="130">S3 artifacts / sources</text><text class="label small" x="894" y="148">versioned evidence</text><rect class="box" height="52" rx="6" width="190" x="878" y="174" /><text class="label" x="894" y="200">DynamoDB state</text><text class="label small" x="894" y="218">job + idempotency</text><rect class="box" height="52" rx="6" width="190" x="878" y="244" /><text class="label" x="894" y="270">SNS topic</text><text class="label small" x="894" y="288">review / sign-off notice</text><rect class="box soft" height="52" rx="6" width="190" x="878" y="314" /><text class="label" x="894" y="340">CloudWatch / CloudTrail</text><text class="label small" x="894" y="358">trace / audit</text>
+                  <path class="arrow" d="M168 142 L208 142" style="color:#cb222a" marker-end="url(#arch-arrowhead-7)" /><path class="arrow" d="M168 228 L208 228" style="color:#777" marker-end="url(#arch-arrowhead-7)" /><path class="arrow" d="M358 314 L418 142" style="color:#ff9900" marker-end="url(#arch-arrowhead-7)" /><path class="arrow" d="M503 174 L503 198" style="color:#ff9900" marker-end="url(#arch-arrowhead-7)" /><path class="arrow dashed" d="M588 230 L588 284" style="color:#b91c1c" marker-end="url(#arch-arrowhead-7)" /><path class="arrow" d="M588 230 L648 142" style="color:#ff9900" marker-end="url(#arch-arrowhead-7)" /><path class="arrow" d="M733 174 L733 198" style="color:#ff9900" marker-end="url(#arch-arrowhead-7)" /><path class="arrow" d="M733 260 L733 284" style="color:#ff9900" marker-end="url(#arch-arrowhead-7)" /><path class="arrow dashed" d="M818 230 L878 130" style="color:#ff9900" marker-end="url(#arch-arrowhead-7)" /><path class="arrow dashed" d="M818 230 L878 200" style="color:#ff9900" marker-end="url(#arch-arrowhead-7)" /><path class="arrow dashed" d="M818 230 L878 270" style="color:#ff9900" marker-end="url(#arch-arrowhead-7)" /><path class="arrow dashed" d="M818 230 L878 340" style="color:#777" marker-end="url(#arch-arrowhead-7)" /><text class="label small" x="240" y="438">Event rules: at-least-once delivery, idempotent consumers, explicit visibility timeout, DLQ replay owner.</text>
+                </svg>
+              </div>
+              <table>
+                <thead><tr><th>Service</th><th>Role in QA-Agents</th><th>Boundary</th></tr></thead>
+                <tbody>
+                  <tr><td>Lambda</td><td>Validation, adapters, event publication and queue workers.</td><td>Stateless; no unrestricted device or production access.</td></tr>
+                  <tr><td>SQS + DLQ</td><td>Backpressure, retry isolation and failed-message recovery.</td><td>Every consumer is idempotent and has an owner.</td></tr>
+                  <tr><td>EventBridge</td><td>Route lifecycle events such as context ready, evidence attached and sign-off ready.</td><td>Not the system of record; no strict ordering guarantee.</td></tr>
+                  <tr><td>Step Functions</td><td>Coordinate long-running synthesis, clarification, approval and evidence states.</td><td>Owns workflow state, not large artifacts.</td></tr>
+                  <tr><td>SNS</td><td>Fan out notifications and review alerts.</td><td>Notification channel, not durable job state.</td></tr>
+                  <tr><td>S3 / DynamoDB</td><td>Immutable artifacts versus queryable job/record state.</td><td>KMS, retention, TTL and replay policy required.</td></tr>
+                </tbody>
+              </table>
             </article>
 
             <aside class="docs-callout">
