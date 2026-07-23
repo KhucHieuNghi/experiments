@@ -32,23 +32,23 @@
 - Consumes: approved design spec, existing proposal contracts, official AWS research links.
 - Produces: the authoritative architecture decisions, AWS responsibility matrix, six Mermaid diagrams, deployment configuration notes and implementation gates.
 
-- [ ] **Step 1: Add document metadata and scope boundary**
+- [x] **Step 1: Add document metadata and scope boundary**
 
 Include source-of-truth rules, relationship to the proposal draft and the selected production-shaped hybrid approach.
 
-- [ ] **Step 2: Add AWS service responsibility and deployment configuration tables**
+- [x] **Step 2: Add AWS service responsibility and deployment configuration tables**
 
 Document the account/region assumptions, VPC/private connectivity options, IAM roles, data stores, service integrations, MVP status and Phase 2 status.
 
-- [ ] **Step 3: Add the six Mermaid diagrams**
+- [x] **Step 3: Add the six Mermaid diagrams**
 
 Include deployment/network, component/container, sequence, Knowledge Base/memory lifecycle, ETUS evidence flow and security/observability/evaluation flow. Each must label ownership and MVP versus Phase 2.
 
-- [ ] **Step 4: Add contracts, security rules, failure handling and acceptance criteria**
+- [x] **Step 4: Add contracts, security rules, failure handling and acceptance criteria**
 
 Name the cross-boundary fields and require explicit behavior for missing sources, unsupported claims, denied tool actions, incomplete evidence, stale memory and failed evaluation gates.
 
-- [ ] **Step 5: Run Markdown checks**
+- [x] **Step 5: Run Markdown checks**
 
 Run:
 
@@ -70,27 +70,27 @@ Expected: `git diff --check` passes and the placeholder search returns no output
 - Consumes: `qa-agents-aws-after-proposal-architecture.md` decisions and existing HTML diagram conventions.
 - Produces: a navigable `After Proposal` architecture section with six readable, labeled SVG diagrams.
 
-- [ ] **Step 1: Add the new document link to the After Proposal navigation group**
+- [x] **Step 1: Add the new document link to the After Proposal navigation group**
 
 Link to the local Markdown source and preserve existing menu anchors.
 
-- [ ] **Step 2: Add deployment/network SVG**
+- [x] **Step 2: Add deployment/network SVG**
 
 Use nested frames for User Machine, Third Party, AWS Account/Region, VPC and optional private connectivity. Label arrows as local-only, HTTPS/public, AWS service API or private VPC path.
 
-- [ ] **Step 3: Add component/container SVG**
+- [x] **Step 3: Add component/container SVG**
 
 Map logical containers to AWS services and identify owner lanes for QA, AI, Software, Cloud and Security.
 
-- [ ] **Step 4: Add sequence SVG**
+- [x] **Step 4: Add sequence SVG**
 
 Show the ticket-to-final-QA-note path, human approval gates and failure branches.
 
-- [ ] **Step 5: Add Knowledge Base/memory, ETUS evidence and security/evaluation SVGs**
+- [x] **Step 5: Add Knowledge Base/memory, ETUS evidence and security/evaluation SVGs**
 
 Show source trust, citation, memory promotion, local evidence, policy decisions, traces, audit events and release gates.
 
-- [ ] **Step 6: Add diagram legends and MVP/Phase 2 callouts**
+- [x] **Step 6: Add diagram legends and MVP/Phase 2 callouts**
 
 Make ownership and deployment phase understandable without relying on color alone.
 
@@ -104,11 +104,11 @@ Make ownership and deployment phase understandable without relying on color alon
 - Consumes: new architecture Markdown path.
 - Produces: a stable cross-reference from proposal to implementation architecture.
 
-- [ ] **Step 1: Add a concise cross-reference**
+- [x] **Step 1: Add a concise cross-reference**
 
 State that implementation diagrams and cloud configuration detail live in the separate architecture document.
 
-- [ ] **Step 2: Verify no existing proposal heading or anchor changes**
+- [x] **Step 2: Verify no existing proposal heading or anchor changes**
 
 Compare the existing navigation anchors and heading IDs before and after the edit.
 
@@ -122,11 +122,11 @@ Compare the existing navigation anchors and heading IDs before and after the edi
 - Consumes: completed Markdown and HTML artifacts.
 - Produces: passing static checks and a reviewed desktop screenshot.
 
-- [ ] **Step 1: Validate HTML anchors and entities**
+- [x] **Step 1: Validate HTML anchors and entities**
 
 Run the existing Node check for duplicate IDs, missing local anchors and unescaped ampersands.
 
-- [ ] **Step 2: Validate Markdown and HTML whitespace**
+- [x] **Step 2: Validate Markdown and HTML whitespace**
 
 Run:
 
@@ -134,14 +134,14 @@ Run:
 git diff --check -- bedrock/docs/qa-agents-aws-after-proposal-architecture.md bedrock/docs/qa-agents-aws-business-proposal.html
 ```
 
-- [ ] **Step 3: Render the HTML with Chrome headless**
+- [x] **Step 3: Render the HTML with Chrome headless**
 
 Capture a desktop screenshot and inspect that nested frames, labels, arrows and legends remain readable without overlap.
 
-- [ ] **Step 4: Check responsive overflow behavior**
+- [x] **Step 4: Check responsive overflow behavior**
 
 Verify that diagrams remain horizontally scrollable on narrow viewports and that surrounding text does not overflow its parent.
 
-- [ ] **Step 5: Report residual risks**
+- [x] **Step 5: Report residual risks**
 
 Call out any AWS capability that remains conditional on account region, service availability, security approval or future implementation validation.
