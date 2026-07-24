@@ -1,0 +1,16 @@
+# =============================================================================
+# COPY THIS FILE TO terraform.tfvars AND FILL IN YOUR VALUES
+# DO NOT COMMIT terraform.tfvars TO VERSION CONTROL
+# =============================================================================
+
+# AWS (uses ~/.aws/credentials profile)
+aws_region  = "ap-southeast-1"
+aws_profile = "default"
+
+# Project
+project_name     = "verify-ticket"
+bedrock_model_id = "anthropic.claude-3-5-sonnet-20241022-v2:0"
+
+# ClickUp
+clickup_api_token = "YOUR_CLICKUP_API_TOKEN"
+clickup_team_id   = "YOUR_CLICKUP_TEAM_ID"

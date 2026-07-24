@@ -1,0 +1,160 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Memory Actions",
+    "version": "1.0.0",
+    "description": "Actions to manage verification memory and history"
+  },
+  "paths": {
+    "/getVerificationHistory": {
+      "get": {
+        "operationId": "getVerificationHistory",
+        "summary": "Get past verification records for a ticket",
+        "description": "Retrieves previous verification context records for a specific ticket ID.",
+        "parameters": [
+          {
+            "name": "ticketId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The ticket ID to look up verification history for"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Verification history retrieved",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "records": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "ticket_id": { "type": "string" },
+                          "timestamp": { "type": "string" },
+                          "verification_context": { "type": "string" },
+                          "confidence_score": { "type": "number" }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/getRelatedTickets": {
+      "get": {
+        "operationId": "getRelatedTickets",
+        "summary": "Find related verified tickets by service name",
+        "description": "Queries the verification memory by service name to find related tickets that were previously verified.",
+        "parameters": [
+          {
+            "name": "serviceName",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The service name to search for related verifications"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 5
+            },
+            "description": "Maximum number of results to return"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Related tickets found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "related_tickets": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "ticket_id": { "type": "string" },
+                          "service_name": { "type": "string" },
+                          "timestamp": { "type": "string" },
+                          "summary": { "type": "string" }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/saveVerificationContext": {
+      "post": {
+        "operationId": "saveVerificationContext",
+        "summary": "Save a verification context record",
+        "description": "Persists the current verification context to memory for future reference.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["ticketId", "serviceName", "verificationContext"],
+                "properties": {
+                  "ticketId": {
+                    "type": "string",
+                    "description": "The ticket ID being verified"
+                  },
+                  "serviceName": {
+                    "type": "string",
+                    "description": "The primary service affected"
+                  },
+                  "verificationContext": {
+                    "type": "string",
+                    "description": "The full verification context summary"
+                  },
+                  "confidenceScore": {
+                    "type": "number",
+                    "description": "Confidence score 0-1 based on available context"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Verification context saved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean" },
+                    "record_id": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

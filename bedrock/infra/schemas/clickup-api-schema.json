@@ -1,0 +1,139 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "ClickUp Actions",
+    "version": "1.0.0",
+    "description": "Actions to interact with ClickUp tasks for ticket verification"
+  },
+  "paths": {
+    "/getTask": {
+      "get": {
+        "operationId": "getTask",
+        "summary": "Get a ClickUp task by its ID",
+        "description": "Fetches task details including title, description, status, assignee, priority, and custom fields from ClickUp.",
+        "parameters": [
+          {
+            "name": "taskId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The ClickUp task ID (e.g., CU-12345 or just 12345)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Task details retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": { "type": "string" },
+                    "name": { "type": "string" },
+                    "description": { "type": "string" },
+                    "status": { "type": "string" },
+                    "assignee": { "type": "string" },
+                    "priority": { "type": "string" },
+                    "date_created": { "type": "string" },
+                    "date_updated": { "type": "string" },
+                    "tags": { "type": "array", "items": { "type": "string" } }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/getTaskComments": {
+      "get": {
+        "operationId": "getTaskComments",
+        "summary": "Get comments on a ClickUp task",
+        "description": "Fetches all comments on a task, useful for understanding discussion and decisions.",
+        "parameters": [
+          {
+            "name": "taskId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The ClickUp task ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Comments retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "comments": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": { "type": "string" },
+                          "comment_text": { "type": "string" },
+                          "user": { "type": "string" },
+                          "date": { "type": "string" }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/searchTasks": {
+      "get": {
+        "operationId": "searchTasks",
+        "summary": "Search for related tasks in ClickUp",
+        "description": "Searches for tasks related to a keyword or service name to find context from related work.",
+        "parameters": [
+          {
+            "name": "query",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Search query (e.g., service name, feature name)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Search results",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "tasks": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": { "type": "string" },
+                          "name": { "type": "string" },
+                          "status": { "type": "string" },
+                          "date_updated": { "type": "string" }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

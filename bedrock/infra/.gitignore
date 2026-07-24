@@ -1,0 +1,18 @@
+# Terraform
+*.tfstate
+*.tfstate.*
+*.tfstate.backup
+.terraform/
+.terraform.lock.hcl
+crash.log
+crash.*.log
+
+# Sensitive files - NEVER commit
+terraform.tfvars
+*.auto.tfvars
+
+# Build artifacts
+.build/
+
+# OS
+.DS_Store
